@@ -185,7 +185,6 @@ const studentSchema = new mongoose.Schema(
         },
         promotedToNextClass: {
           type: Boolean,
-          required: true,
           default: false,
         },
       },
