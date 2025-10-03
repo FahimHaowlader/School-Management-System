@@ -30,6 +30,12 @@ const classSchema = new mongoose.Schema(
       default: "none",
       trim: true,
     },
+    // we have to change this code base on the school
+    shift: {
+      type: String, 
+        enum: ["day", "morning"],
+       required: [true, "Shift is required"],
+    },
     classTeacher: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Teacher", // assuming you have a Teacher model
