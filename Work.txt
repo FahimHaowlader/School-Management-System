@@ -1,0 +1,11 @@
+Date : 2/10/2025
+   
+   work :-
+
+     1 . project setup
+     2 . backend setup
+     3 . server making and connected to database
+     4 . route file and controllers folder setup done
+
+
+Date : 
