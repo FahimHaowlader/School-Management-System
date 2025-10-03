@@ -4,7 +4,7 @@ const routineSchema = new mongoose.Schema(
   {
     day: {
       type: String,
-      enum: ["SAT", "SUN", "MON", "TUE", "WED", "THU", "FRI"],
+       enum: ["sat", "sun", "mon", "tue", "wed", "thu", "fri"],
       required: [true, "Day is required"],
       trim: true,
     },
