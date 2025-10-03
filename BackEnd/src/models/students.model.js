@@ -2,37 +2,39 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-const studentSchema = new mongoose.Schema(
+const studentsSchema = new mongoose.Schema(
   {
     studentId: {
       type: String,
       required: [true, "Student ID is required"],
       unique: true,
       trim: true,
-      match: [/^\d{9}$/, "Student ID must be exactly 9 digits"], // exactly 9 digits
+      match: [/^\d{9}$/, "Student ID must be exactly 9 digits"],
       validate: [
         {
           validator: function (value) {
             const firstFour = parseInt(value.slice(0, 4), 10);
-            return firstFour >= 2000; // first 4 digits cannot be less than 2000
+            return firstFour >= 2000; // First 4 digits cannot be less than 2000
           },
           message: "Invalid Student ID",
         },
         {
           validator: function (value) {
-            const twoDigits56 = parseInt(value.slice(4, 6), 10); // digits 5 & 6
-            return twoDigits56 <= 12;
+            const twoDigits56 = parseInt(value.slice(4, 6), 10);
+            return twoDigits56 <= 12; // 5th & 6th digits validation
           },
           message: "Invalid Student ID",
         },
       ],
     },
+
     prefixName: {
       type: String,
-      trim: true, // remove leading/trailing spaces
+      trim: true,
       minlength: [1, "Prefix must be at least 1 character"],
       maxlength: [10, "Prefix cannot exceed 10 characters"],
     },
+
     firstName: {
       type: String,
       required: [true, "First name is required"],
@@ -61,23 +63,14 @@ const studentSchema = new mongoose.Schema(
 
     dateOfBirth: {
       type: Date,
-      set: (value) => new Date(value), // Convert string → Date
+      set: (value) => new Date(value),
       validate: {
         validator: function (value) {
-          // Check if the date is valid
           if (isNaN(value.getTime())) return false;
 
           const today = new Date();
-          const minDate = new Date(
-            today.getFullYear() - 25,
-            today.getMonth(),
-            today.getDate()
-          ); // Max 25 years old
-          const maxDate = new Date(
-            today.getFullYear() - 4,
-            today.getMonth(),
-            today.getDate()
-          ); // Min 4 years old
+          const minDate = new Date(today.getFullYear() - 25, today.getMonth(), today.getDate()); // Max 25 years old
+          const maxDate = new Date(today.getFullYear() - 4, today.getMonth(), today.getDate()); // Min 4 years old
 
           return value >= minDate && value <= maxDate;
         },
@@ -87,16 +80,17 @@ const studentSchema = new mongoose.Schema(
 
     bloodGroup: {
       type: String,
-      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], // allowed blood types
-      trim: true, // remove extra spaces
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+      trim: true,
     },
 
     address: {
       type: String,
-      trim: true, // removes leading/trailing spaces
+      trim: true,
       minlength: [5, "Address must be at least 5 characters"],
       maxlength: [200, "Address cannot exceed 200 characters"],
     },
+
     phoneNumber: {
       type: String,
       required: [true, "Phone number is required"],
@@ -104,64 +98,80 @@ const studentSchema = new mongoose.Schema(
       match: [/^[0-9]{11}$/, "Phone number must be exactly 11 digits"],
     },
 
-    mother:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Guardian",
-         required: true
-        },
-    father:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Guardian",
-            required: true
-        },
+    mother: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Guardian",
+      required: true,
+    },
+
+    father: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Guardian",
+      required: true,
+    },
+
     guardian: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Guardian",
-        default: null
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Guardian",
+      default: null,
     },
 
     pic: {
       type: String,
       trim: true,
-      match: [/^(https?:\/\/.*\.(?:png|jpg|jpeg|webp))$/, "Invalid image URL"],
       default: null,
+      set: (value) => (value === "" ? null : value), // Convert empty string to null
+      match: [/^(https?:\/\/.*\.(?:png|jpg|jpeg|webp))$/, "Invalid image URL"],
+      validate: {
+        validator: function (value) {
+          return value === null || /^(https?:\/\/.*\.(?:png|jpg|jpeg|webp))$/.test(value);
+        },
+        message: "Invalid image URL",
+      },
     },
+
     scholarship: {
       type: Number,
-      default: 0, // 0 means no scholarship
+      default: 0,
       min: [0, "Scholarship cannot be negative"],
       max: [100, "Scholarship cannot exceed 100"],
     },
+
     status: {
       type: String,
-      enum: ["active", "inactive", "suspended", "transferred", "passout"], // allowed statuses
+      enum: ["active", "inactive", "suspended", "transferred", "passout"],
       default: "active",
       trim: true,
     },
+
     password: {
       type: String,
       required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 characters"],
-      select: false, // Exclude password from queries by default to get this we have to do it like .select (+password)
+      select: false, // must be explicitly selected in queries
     },
+
     accountType: {
       type: String,
-      enum: ["student"], // only "student" allowed for now
+      enum: ["student"],
       default: "student",
-      immutable: true, // prevents changing after creation
+      immutable: true, // cannot be changed later
       trim: true,
     },
+
     gender: {
       type: String,
-      enum: ["male", "female", "other"], // allowed values
+      enum: ["male", "female", "other"],
       required: [true, "Gender is required"],
       trim: true,
     },
+
     admittedAt: {
       type: Date,
       required: [true, "Admission date is required"],
-      set: (value) => new Date(value), // Convert string → Date automatically
+      set: (value) => new Date(value),
     },
+
     classes: [
       {
         classId: {
@@ -173,21 +183,23 @@ const studentSchema = new mongoose.Schema(
           type: String,
           enum: ["A+", "A", "A-", "B", "C", "D", "F"],
         },
-        promotedToNextClass: { 
-            type: Boolean,
-             required: true,
-             default: false 
+        promotedToNextClass: {
+          type: Boolean,
+          required: true,
+          default: false,
         },
       },
     ],
+
     leavedAt: {
       type: Date,
-      set: (value) => new Date(value), // Convert string → Date
+      default: null,
+      set: (value) => new Date(value),
       validate: {
         validator: function (value) {
-          if (!value) return true; // allow empty (student may not have left yet)
-          if (isNaN(value.getTime())) return false; // invalid date
-          return !this.admittedAt || value >= this.admittedAt; // must be after admission
+          if (!value) return true;
+          if (isNaN(value.getTime())) return false;
+          return !this.admittedAt || value >= this.admittedAt;
         },
         message: "Leave date cannot be before admission date",
       },
@@ -195,11 +207,51 @@ const studentSchema = new mongoose.Schema(
 
     refreshToken: {
       type: String,
-      select: false, // Exclude refreshToken from queries by default
+      select: false,
     },
   },
   { timestamps: true }
 );
 
+// 🔹 Pre-save middleware for hashing password
+studentsSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
-export const Student = mongoose.model("Student", studentSchema);
+  try {
+    this.password = await bcrypt.hash(this.password, 12);
+    next();
+  } catch (error) {
+    return next(error);
+  }
+});
+
+// 🔹 Compare passwords
+studentsSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+// 🔹 Generate access token
+studentsSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      studentId: this.studentId,
+      accountType: this.accountType,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+  );
+};
+
+// 🔹 Generate refresh token
+studentsSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+  );
+};
+
+export const Student = mongoose.model("Student", studentsSchema);
