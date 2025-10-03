@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-const studentsSchema = new mongoose.Schema(
+const studentSchema = new mongoose.Schema(
   {
     studentId: {
       type: String,
@@ -157,6 +157,7 @@ const studentsSchema = new mongoose.Schema(
       default: "student",
       immutable: true, // cannot be changed later
       trim: true,
+      required: true,
     },
 
     gender: {
@@ -214,7 +215,7 @@ const studentsSchema = new mongoose.Schema(
 );
 
 // 🔹 Pre-save middleware for hashing password
-studentsSchema.pre("save", async function (next) {
+studentSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   try {
@@ -231,7 +232,7 @@ studentsSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 // 🔹 Generate access token
-studentsSchema.methods.generateAccessToken = function () {
+studentSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
@@ -244,7 +245,7 @@ studentsSchema.methods.generateAccessToken = function () {
 };
 
 // 🔹 Generate refresh token
-studentsSchema.methods.generateRefreshToken = function () {
+studentSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       _id: this._id,
@@ -254,4 +255,4 @@ studentsSchema.methods.generateRefreshToken = function () {
   );
 };
 
-export const Student = mongoose.model("Student", studentsSchema);
+export const Student = mongoose.model("Student", studentSchema);
