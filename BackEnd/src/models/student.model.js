@@ -157,7 +157,6 @@ const studentSchema = new mongoose.Schema(
       default: "student",
       immutable: true, // cannot be changed later
       trim: true,
-      required: true,
     },
 
     gender: {
@@ -207,9 +206,10 @@ const studentSchema = new mongoose.Schema(
     },
 
     refreshToken: {
-      type: String,
-      select: false,
-    },
+         type: String, 
+         select: false,
+         default: null 
+        },
   },
   { timestamps: true }
 );
