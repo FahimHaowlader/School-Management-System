@@ -8,4 +8,14 @@ Date : 2/10/2025
      4 . route file and controllers folder setup done
 
 
-Date : 
+Date : 3/10/2025 
+
+    work :-
+
+     1 . student model done 
+     2 . guardian model done 
+     3 . class model done 
+     4 . routine model done 
+
+
+Date :
