@@ -1,0 +1,2 @@
+
+1 .To delete the attendance document after the year end for teacher and fail student and another feature that delete the record after the promotion to next class also create a summary document in another collection
