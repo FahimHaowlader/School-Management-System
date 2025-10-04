@@ -18,4 +18,18 @@ Date : 3/10/2025
      4 . routine model done 
 
 
-Date :
+Date : 4/10/2025 
+
+     work :-
+
+     1 . mark model done 
+     2 . enrollment model done 
+     3 . assignment model done 
+     4 . attendance model done 
+     5 . fee model one 
+     6 . holiday model done 
+     7 . subject model done
+     8 . syllabus model done
+
+
+Date : 
