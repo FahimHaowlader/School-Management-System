@@ -223,6 +223,15 @@ classes: {
         message: "Leave date cannot be before admission date",
       },
     },
+    admitCards: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "AdmitCard",
+      }
+    ],
+    default: [],
+  },
 
     refreshToken: {
          type: String, 
