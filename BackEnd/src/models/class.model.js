@@ -18,7 +18,7 @@ const classSchema = new mongoose.Schema(
       type: String,
       required: [true, "Section is required"],
       trim: true,
-      uppercase: true,
+      lowercase: true,
       enum: {
         values: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
         message: "Section must be a single uppercase letter A-J",

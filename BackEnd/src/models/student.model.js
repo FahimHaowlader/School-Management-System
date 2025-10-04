@@ -31,6 +31,7 @@ const studentSchema = new mongoose.Schema(
     prefixName: {
       type: String,
       trim: true,
+      lowercase: true,
       minlength: [1, "Prefix must be at least 1 character"],
       maxlength: [10, "Prefix cannot exceed 10 characters"],
     },
@@ -39,6 +40,7 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: [true, "First name is required"],
       trim: true,
+      lowercase: true,
       minlength: [2, "First name must be at least 2 characters"],
       maxlength: [15, "First name cannot exceed 15 characters"],
       match: [/^[A-Za-z]+$/, "First name can only contain letters"],
@@ -48,6 +50,7 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: [true, "Middle name is required"],
       trim: true,
+      lowercase: true,
       minlength: [2, "Middle name must be at least 2 characters"],
       maxlength: [15, "Middle name cannot exceed 15 characters"],
       match: [/^[A-Za-z]+$/, "Middle name can only contain letters"],
@@ -56,6 +59,7 @@ const studentSchema = new mongoose.Schema(
     lastName: {
       type: String,
       trim: true,
+      lowercase: true,
       minlength: [2, "Last name must be at least 2 characters"],
       maxlength: [15, "Last name cannot exceed 15 characters"],
       match: [/^[A-Za-z]+$/, "Last name can only contain letters"],
@@ -78,15 +82,21 @@ const studentSchema = new mongoose.Schema(
       },
     },
 
-    bloodGroup: {
-      type: String,
-      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-      trim: true,
-    },
+  bloodGroup: {
+  type: String,
+  enum: {
+    values: ["a+", "a-", "b+", "b-", "ab+", "ab-", "o+", "o-"],
+    message: "Blood group must be one of A+, A-, B+, B-, AB+, AB-, O+, O-",
+  },
+  lowercase: true,   // store in lowercase
+  trim: true,
+}
+,
 
     address: {
       type: String,
       trim: true,
+      lowercase: true,
       minlength: [5, "Address must be at least 5 characters"],
       maxlength: [200, "Address cannot exceed 200 characters"],
     },
@@ -172,23 +182,33 @@ const studentSchema = new mongoose.Schema(
       set: (value) => new Date(value),
     },
 
-    classes: [
-      {
-        classId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Class",
-          required: true,
-        },
-        result: {
-          type: String,
-          enum: ["A+", "A", "A-", "B", "C", "D", "F"],
-        },
-        promotedToNextClass: {
-          type: Boolean,
-          default: false,
-        },
-      },
-    ],
+    // classes: [
+    //   {
+    //     classId: {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "Class",
+    //       required: true,
+    //     },
+    //     result: {
+    //       type: String,
+    //       enum: ["A+", "A", "A-", "B", "C", "D", "F"],
+    //     },
+    //     promotedToNextClass: {
+    //       type: Boolean,
+    //       default: false,
+    //     },
+    //   },
+    // ],
+classes: {
+  type: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Enrollment",
+      required: true,
+    }
+  ],
+  required: [true, "At least one enrolled class is required"],
+},
 
     leavedAt: {
       type: Date,
@@ -255,3 +275,8 @@ studentSchema.methods.generateRefreshToken = function () {
 };
 
 export const Student = mongoose.model("Student", studentSchema);
+
+
+
+
+

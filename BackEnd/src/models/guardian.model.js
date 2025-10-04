@@ -38,6 +38,7 @@ const guardianSchema = new mongoose.Schema(
     prefixName: {
       type: String,
       trim: true,
+      lowercase: true,
       minlength: [1, "Prefix must be at least 1 character"],
       maxlength: [10, "Prefix cannot exceed 10 characters"],
     },
@@ -46,6 +47,7 @@ const guardianSchema = new mongoose.Schema(
       type: String,
       required: [true, "First name is required"],
       trim: true,
+      lowercase: true,
       minlength: [2, "First name must be at least 2 characters"],
       maxlength: [15, "First name cannot exceed 15 characters"],
       match: [/^[A-Za-z]+$/, "First name can only contain letters"],
@@ -55,6 +57,7 @@ const guardianSchema = new mongoose.Schema(
       type: String,
       required: [true, "Middle name is required"],
       trim: true,
+      lowercase: true,
       minlength: [2, "Middle name must be at least 2 characters"],
       maxlength: [15, "Middle name cannot exceed 15 characters"],
       match: [/^[A-Za-z]+$/, "Middle name can only contain letters"],
@@ -63,6 +66,7 @@ const guardianSchema = new mongoose.Schema(
     lastName: {
       type: String,
       trim: true,
+      lowercase: true,
       minlength: [2, "Last name must be at least 2 characters"],
       maxlength: [15, "Last name cannot exceed 15 characters"],
       match: [/^[A-Za-z]+$/, "Last name can only contain letters"],
@@ -78,6 +82,7 @@ const guardianSchema = new mongoose.Schema(
     address: {
       type: String,
       trim: true,
+      lowercase: true,
       minlength: [5, "Address must be at least 5 characters"],
       maxlength: [200, "Address cannot exceed 200 characters"],
     },

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const enrollmentSchema = new mongoose.Schema(
   {
-    student: {
+    studentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
       required: true,
@@ -14,7 +14,9 @@ const enrollmentSchema = new mongoose.Schema(
     },
     result: {
       type: String,
-      enum: ["A+", "A", "A-", "B", "C", "D", "F"],
+      enum: ["a+", "a", "a-", "b", "c", "d", "f"], // lowercase values
+      lowercase: true, // ensures whatever is saved is converted to lowercase
+      trim: true,
     },
     promotedToNextClass: {
       type: Boolean,

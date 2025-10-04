@@ -24,17 +24,17 @@ const routineSchema = new mongoose.Schema(
       required: [true, "End time is required"],
       match: [/^([0-1]\d|2[0-3]):([0-5]\d)$/, "End time must be in HH:MM format"],
     },
-    subject: {
+    subjectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Subject",
       required: [true, "Subject is required"],  
     },
-    teacher: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Teacher",
-      required: [true, "Teacher is required"],
-    },
-    class: {
+    // teacherId: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Teacher",
+    //   required: [true, "Teacher is required"],
+    // },
+    classId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Class",
       required: [true, "Class is required"],
