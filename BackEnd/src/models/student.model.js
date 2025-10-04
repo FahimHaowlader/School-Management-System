@@ -238,6 +238,14 @@ classes: {
          select: false,
          default: null 
         },
+        borrowedBook: {
+           type: mongoose.Schema.Types.ObjectId,
+           ref:"BookRent",
+           default: null
+        },
+
+        // have to add admitcard in array
+
   },
   { timestamps: true }
 );
