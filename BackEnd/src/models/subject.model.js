@@ -16,11 +16,20 @@ const subjectSchema = new mongoose.Schema(
     },
 
     subjectCode: {
-      type: String,
-      required: [true, "Subject code is required"],
-      trim: true,
-      unique: true, // Prevent duplicate codes
+  type: Number,
+  required: [true, "Subject code is required"],
+  validate: {
+    validator: function (value) {
+      // ✅ Check if it's a 3-digit number
+      if (!/^\d{3}$/.test(value.toString())) return false;
+
+      // ✅ Check that the last digit is 0, 1, or 2
+      const lastDigit = parseInt(value.toString().slice(-1));
+      return lastDigit <= 2;
     },
+    message: "Subject code must invalid",
+  },
+},
 
     paper: {
       type: String,
