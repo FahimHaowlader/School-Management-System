@@ -119,44 +119,50 @@ const eventSchema = new mongoose.Schema(
     },
 
     audience: {
-      type: [
-        {
-          group: {
-            type: String,
-            enum: [
-              "all",
-              "teachers",
-              "allstudents",
-              "students",
-              "staff",
-              "students&teachers",
-              "students&staff",
-              "teachers&staff",
-              "parents",
-              "students&parents",
-              "teachers&parents",
-            ],
-            required: true,
-            trim: true,
-          },
-          classId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Class",
-            required: function () {
-              const studentGroups = [
-                "students",
-                "students&teachers",
-                "students&staff",
-                "students&parents",
-                "teachers&parents",
-              ];
-              return this.group && studentGroups.includes(this.group);
+          type: [
+            {
+              group: {
+                type: String,
+                enum: [
+                  "all",
+                  "teachers",
+                  "allstudents",
+                  "students",
+                  "staff",
+                  "students&teachers",
+                  "students&staff",
+                  "teachers&staff",
+                  "parents",
+                  "students&parents",
+                  "teachers&parents",
+                ],
+                required: true,
+                trim: true,
+              },
+              classId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Class",
+                required: function () {
+                  const studentGroups = [
+                    "students",
+                    "students&teachers",
+                    "students&staff",
+                    "students&parents",
+                    "teachers&parents",
+                  ];
+                  return this.group && studentGroups.includes(this.group);
+                },
+              },
             },
+          ],
+          required: [true, "At least one audience group is required"],
+          validate: {
+            validator: function (value) {
+              return value.length > 0;
+            },
+            message: "At least one audience group must be specified.",
           },
         },
-      ],
-      default: [],
-    },
   },
   { timestamps: true }
 );
