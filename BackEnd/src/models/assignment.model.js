@@ -23,7 +23,7 @@ const assignmentSchema = new mongoose.Schema(
       ref: "Routine",
       required: [true, "Routine ID is required"],
     },
-  assignmentCode: {
+ assignmentCode: {
   type: String,
   required: [true, "Assignment code is required"],
   trim: true,
@@ -32,20 +32,23 @@ const assignmentSchema = new mongoose.Schema(
       // Must be exactly 13 digits
       if (!/^\d{13}$/.test(value)) return false;
 
-      const first4 = parseInt(value.slice(0, 4), 10);   // first 4 digits
-      const fifth = parseInt(value[4], 10);            // 5th digit
-      const sixthSeventh = parseInt(value.slice(5, 7), 10); // 6th & 7th digits
-      const eleventh = parseInt(value[10], 10);        // 11th digit
+      const currentYearMinus1 = new Date().getFullYear() - 1;
 
-      if (first4 <= 2025) return false;               // first 4 > 2025
-      if (fifth >= 3) return false;                   // 5th < 3
-      if (sixthSeventh >= 13) return false;          // 6th & 7th < 13
-      if (eleventh >= 3) return false;               // 11th < 3
+      const first4 = parseInt(value.slice(0, 4), 10);         // first 4 digits
+      const fifth = parseInt(value[4], 10);                  // 5th digit
+      const sixthSeventh = parseInt(value.slice(5, 7), 10);  // 6th & 7th digits
+      const eleventh = parseInt(value[10], 10);              // 11th digit
+
+      if (first4 <= currentYearMinus1) return false;        // first 4 > currentYear-1
+      if (fifth > 3) return false;                         // 5th < 3
+      if (sixthSeventh > 13) return false;                 // 6th & 7th < 13
+      if (eleventh > 3) return false;                      // 11th < 3
       return true;
     },
     message: "Assignment code is invalid. Must follow the 13-digit format with segment rules."
   }
 },
+
 
     submissionDate: {
       type: Date,
