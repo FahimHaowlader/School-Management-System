@@ -8,28 +8,33 @@ const certificateSchema = new mongoose.Schema(
       trim: true,
       validate: {
         validator: function (value) {
-          return /^https?:\/\/.*\.(?:pdf|jpg|jpeg|png|docx?)$/.test(value);
+          return /^https?:\/\/.*\.(?:pdf|jpg|jpeg|png|docx?)$/i.test(value);
         },
-        message: "Attachment must be a valid URL to a file",
+        message: "Attachment must be a valid URL (pdf, jpg, jpeg, png, or docx)",
       },
     },
+
     type: {
       type: String,
       enum: ["admitcard", "registrationcard", "marksheet", "transcript", "certificate"],
       required: [true, "Certificate type is required"],
       trim: true,
     },
+
     examName: {
       type: String,
       enum: ["psc", "jsc", "ssc", "hsc"],
       required: [true, "Exam name is required"],
       trim: true,
     },
+
     studentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
       required: [true, "Student ID is required"],
+      immutable: true,
     },
+
     isCollected: {
       type: Boolean,
       default: false,

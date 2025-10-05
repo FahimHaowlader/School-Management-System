@@ -1,0 +1,230 @@
+import mongoose from "mongoose";
+
+const staffSchema = new mongoose.Schema(
+  {
+    staffId: {
+      type: String,
+      required: [true, "Staff ID is required"],
+      unique: true,
+      trim: true,
+      match: [/^\d{8}$/, "Staff ID must be exactly 8 digits"],
+      validate: {
+        validator(value) {
+          const firstFour = parseInt(value.slice(0, 4), 10);
+          return firstFour >= 2025;
+        },
+        message: "Invalid Staff ID",
+      },
+      immutable: true,
+    },
+
+    prefixName: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      minlength: [1, "Prefix must be at least 1 character"],
+      maxlength: [10, "Prefix cannot exceed 10 characters"],
+    },
+
+    firstName: {
+      type: String,
+      required: [true, "First name is required"],
+      trim: true,
+      lowercase: true,
+      minlength: [2, "First name must be at least 2 characters"],
+      maxlength: [15, "First name cannot exceed 15 characters"],
+      match: [/^[A-Za-z]+$/, "First name can only contain letters"],
+    },
+
+    middleName: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      minlength: [2, "Middle name must be at least 2 characters"],
+      maxlength: [15, "Middle name cannot exceed 15 characters"],
+      match: [/^[A-Za-z]+$/, "Middle name can only contain letters"],
+    },
+
+    lastName: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      minlength: [2, "Last name must be at least 2 characters"],
+      maxlength: [15, "Last name cannot exceed 15 characters"],
+      match: [/^[A-Za-z]+$/, "Last name can only contain letters"],
+    },
+
+    dateOfBirth: {
+      type: Date,
+      set: (value) => new Date(value),
+      validate: {
+        validator(value) {
+          if (isNaN(value.getTime())) return false;
+
+          const today = new Date();
+          const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
+          const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+
+          return value >= minDate && value <= maxDate;
+        },
+        message: "Invalid DOB. Age must be between 18 and 100 years.",
+      },
+    },
+
+    bloodGroup: {
+      type: String,
+      enum: ["a+", "a-", "b+", "b-", "ab+", "ab-", "o+", "o-"],
+      lowercase: true,
+      trim: true,
+    },
+
+    address: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      minlength: [5, "Address must be at least 5 characters"],
+      maxlength: [200, "Address cannot exceed 200 characters"],
+    },
+
+    phoneNumber: {
+      type: String,
+      required: [true, "Phone number is required"],
+      trim: true,
+      match: [/^[0-9]{11}$/, "Phone number must be exactly 11 digits"],
+    },
+
+    pic: {
+      type: String,
+      trim: true,
+      default: null,
+      set: (value) => (value === "" ? null : value),
+      match: [/^(https?:\/\/.*\.(?:png|jpg|jpeg|webp))$/, "Invalid image URL"],
+    },
+
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: [8, "Password must be at least 8 characters"],
+      select: false,
+    },
+
+    accountType: {
+      type: String,
+      enum: ["staff", "admin", "teacher"],
+      default: "staff",
+      immutable: true,
+      trim: true,
+    },
+
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      required: [true, "Gender is required"],
+    },
+
+    joinedAt: {
+      type: Date,
+      required: [true, "Joining date is required"],
+      set: (value) => new Date(value),
+    },
+
+    leavedAt: {
+      type: Date,
+      default: null,
+      validate: {
+        validator(value) {
+          return !value || !this.joinedAt || value >= this.joinedAt;
+        },
+        message: "Leave date cannot be before joining date",
+      },
+    },
+
+    borrowedBook: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BookRent",
+      default: null,
+    },
+
+    status: {
+      type: String,
+      enum: ["active", "inactive", "suspended", "transferred", "retired"],
+      default: "active",
+    },
+
+    role: {
+      type: String,
+      enum: ["normal", "librarian", "technician"],
+      default: "normal",
+    },
+
+    position: {
+      type: String,
+      enum: ["newbie", "junior", "senior", "mostsenior", "headstaff"],
+      default: "newbie",
+    },
+
+    attendance: [
+      {
+        date: { type: Date, required: true },
+        status: {
+          type: String,
+          enum: ["present", "absent", "leave", "late", "half-day"],
+          default: "present",
+        },
+        markedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Staff",
+        },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+
+    attendanceSummary: [
+      {
+        year: {
+          type: Number,
+          required: true,
+          min: [2025, "Year must be 2025 or later"],
+          validate: {
+            validator(value) {
+              return value <= new Date().getFullYear();
+            },
+            message: "Year cannot be in the future",
+          },
+        },
+        present: { type: Number, default: 0, min: 0 },
+        absent: { type: Number, default: 0, min: 0 },
+        late: { type: Number, default: 0, min: 0 },
+        leave: { type: Number, default: 0, min: 0 },
+        halfDay: { type: Number, default: 0, min: 0 },
+      },
+    ],
+
+    refreshToken: {
+      type: String,
+      select: false,
+      default: null,
+    },
+  },
+  { timestamps: true }
+);
+
+// ✅ Prevent modifying attendance status after 15 days
+staffSchema.pre("save", function (next) {
+  if (!this.isModified("attendance")) return next();
+
+  const today = new Date();
+
+  for (const record of this.attendance) {
+    if (!record.isNew && record.createdAt) {
+      const diffDays = (today - record.createdAt) / (1000 * 60 * 60 * 24);
+      if (diffDays > 15 && this.isModified(`attendance.${record._id}.status`)) {
+        return next(new Error("Attendance status cannot be modified after 15 days"));
+      }
+    }
+  }
+
+  next();
+});
+
+export const Staff = mongoose.model("Staff", staffSchema);

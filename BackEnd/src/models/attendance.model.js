@@ -3,18 +3,13 @@ import mongoose from "mongoose";
 const attendanceSchema = new mongoose.Schema(
   {
     // Who this attendance record belongs to
-    personId: {
+    studentId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      refPath: "type", // dynamically references correct model
+      ref:"Student", // dynamically references correct model
       immutable: true, // cannot be changed after creation
     },
-    type: {
-      type: String,
-      required: true,
-      enum: ["Student", "Teacher", "Staff"], // Models to refer to
-      immutable: true,
-    },
+  
 
     // Attendance date
     date: {
@@ -31,7 +26,7 @@ const attendanceSchema = new mongoose.Schema(
     // Status of attendance
     status: {
       type: String,
-      enum: ["present", "absent", "leave", "late", "half-day"],
+      enum: ["present", "absent", "late",],
       default: "present",
       required: true,
       trim: true,
@@ -39,18 +34,10 @@ const attendanceSchema = new mongoose.Schema(
 
     // Who recorded this attendance
     recordedBy: {
-      id: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        refPath: "recordedBy.type",
+        ref :"Teacher",
         immutable: true,
-      },
-      type: {
-        type: String,
-        enum: ["Staff", "Teacher", "Admin"],
-        required: true,
-        immutable: true,
-      },
     },
   },
   { timestamps: true }
