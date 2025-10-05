@@ -32,4 +32,18 @@ Date : 4/10/2025
      8 . syllabus model done
 
 
-Date : 
+Date : 5/10/2025
+
+
+   work :-
+
+     1 . event model done 
+     2 . announcement model done 
+     3 . admit card model done 
+     4 . book model done 
+     5 . book rent model one 
+     6 . certificate model done 
+     7 . achievement model done
+     8 . staff model done
+     9 . payment model done 
+     10 . expenses model done
