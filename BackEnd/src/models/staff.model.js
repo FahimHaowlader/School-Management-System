@@ -62,12 +62,12 @@ const staffSchema = new mongoose.Schema(
           if (isNaN(value.getTime())) return false;
 
           const today = new Date();
-          const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
+          const minDate = new Date(today.getFullYear() - 80, today.getMonth(), today.getDate());
           const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
 
           return value >= minDate && value <= maxDate;
         },
-        message: "Invalid DOB. Age must be between 18 and 100 years.",
+        message: "Invalid DOB. Age must be between 18 and 80 years.",
       },
     },
 
@@ -187,7 +187,7 @@ const staffSchema = new mongoose.Schema(
           min: [2025, "Year must be 2025 or later"],
           validate: {
             validator(value) {
-              return value <= new Date().getFullYear();
+              return value < new Date().getFullYear();
             },
             message: "Year cannot be in the future",
           },

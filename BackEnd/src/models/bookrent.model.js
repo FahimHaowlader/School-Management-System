@@ -10,6 +10,11 @@ const bookRentSchema = new mongoose.Schema(
       immutable: true,
     },
 
+    issuedBy:{
+      type : mongoose.Schema.Types.ObjectId,
+      ref: "Staff",
+    },
+
     returnDate: {
       type: Date,
       default: null,
@@ -34,10 +39,10 @@ const bookRentSchema = new mongoose.Schema(
       id: {
         type: mongoose.Schema.Types.ObjectId,
         required: [true, "Borrower ID is required"],
-        refPath: "borrower.role",
+        refPath: "borrower.type",
         immutable: true,
       },
-      role: {
+      type: {
         type: String,
         enum: ["Student", "Teacher", "Staff"],
         required: [true, "Borrower role is required"],
