@@ -73,8 +73,16 @@ const studentSchema = new mongoose.Schema(
           if (isNaN(value.getTime())) return false;
 
           const today = new Date();
-          const minDate = new Date(today.getFullYear() - 25, today.getMonth(), today.getDate()); // Max 25 years old
-          const maxDate = new Date(today.getFullYear() - 4, today.getMonth(), today.getDate()); // Min 4 years old
+          const minDate = new Date(
+            today.getFullYear() - 25,
+            today.getMonth(),
+            today.getDate()
+          ); // Max 25 years old
+          const maxDate = new Date(
+            today.getFullYear() - 4,
+            today.getMonth(),
+            today.getDate()
+          ); // Min 4 years old
 
           return value >= minDate && value <= maxDate;
         },
@@ -82,17 +90,15 @@ const studentSchema = new mongoose.Schema(
       },
     },
 
-  bloodGroup: {
-  type: String,
-  enum: {
-    values: ["a+", "a-", "b+", "b-", "ab+", "ab-", "o+", "o-"],
-    message: "Blood group must be one of A+, A-, B+, B-, AB+, AB-, O+, O-",
-  },
-  lowercase: true,   // store in lowercase
-  trim: true,
-}
-,
-
+    bloodGroup: {
+      type: String,
+      enum: {
+        values: ["a+", "a-", "b+", "b-", "ab+", "ab-", "o+", "o-"],
+        message: "Blood group must be one of A+, A-, B+, B-, AB+, AB-, O+, O-",
+      },
+      lowercase: true, // store in lowercase
+      trim: true,
+    },
     address: {
       type: String,
       trim: true,
@@ -134,7 +140,10 @@ const studentSchema = new mongoose.Schema(
       match: [/^(https?:\/\/.*\.(?:png|jpg|jpeg|webp))$/, "Invalid image URL"],
       validate: {
         validator: function (value) {
-          return value === null || /^(https?:\/\/.*\.(?:png|jpg|jpeg|webp))$/.test(value);
+          return (
+            value === null ||
+            /^(https?:\/\/.*\.(?:png|jpg|jpeg|webp))$/.test(value)
+          );
         },
         message: "Invalid image URL",
       },
@@ -199,16 +208,16 @@ const studentSchema = new mongoose.Schema(
     //     },
     //   },
     // ],
-classes: {
-  type: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Enrollment",
-      required: true,
-    }
-  ],
-  required: [true, "At least one enrolled class is required"],
-},
+    classes: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Enrollment",
+          required: true,
+        },
+      ],
+      required: [true, "At least one enrolled class is required"],
+    },
 
     leavedAt: {
       type: Date,
@@ -224,28 +233,35 @@ classes: {
       },
     },
     admitCards: {
-    type: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "AdmitCard",
-      }
-    ],
-    default: [],
-  },
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "AdmitCard",
+        },
+      ],
+      default: [],
+    },
 
     refreshToken: {
-         type: String, 
-         select: false,
-         default: null 
-        },
-        borrowedBook: {
-           type: mongoose.Schema.Types.ObjectId,
-           ref:"BookRent",
-           default: null
-        },
+      type: String,
+      select: false,
+      default: null,
+    },
+    borrowedBook: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BookRent",
+      default: null,
+    },
 
-        // have to add admitcard in array
-
+    libraryFine: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "BookRent",
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );
@@ -292,8 +308,3 @@ studentSchema.methods.generateRefreshToken = function () {
 };
 
 export const Student = mongoose.model("Student", studentSchema);
-
-
-
-
-
