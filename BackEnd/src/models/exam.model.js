@@ -66,17 +66,26 @@ const examSchema = new mongoose.Schema(
       },
     },
 
-    startingTime: {
-      type: String,
-      required: [true, "Starting time is required"],
-      trim: true,
-    },
+   startingTime: {
+  type: String,
+  required: [true, "Starting time is required"],
+  trim: true,
+  validate: {
+    validator: (v) => parseTimeToMinutes(v) !== null,
+    message: "Invalid starting time format",
+  },
+},
+
 
     endTime: {
-      type: String,
-      required: [true, "Ending time is required"],
-      trim: true,
-    },
+  type: String,
+  required: [true, "Ending time is required"],
+  trim: true,
+  validate: {
+    validator: (v) => parseTimeToMinutes(v) !== null,
+    message: "Invalid ending time format",
+  },
+},
 
     marks: {
       type: Number,
