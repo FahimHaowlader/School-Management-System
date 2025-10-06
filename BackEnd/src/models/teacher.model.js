@@ -1,13 +1,15 @@
 import mongoose from "mongoose";
 
-const staffSchema = new mongoose.Schema(
-  {
-    staffId: {
-      type: String,
+
+const teacherSchema  = new mongoose.Schema(
+    {
+        // year+number   
+            teacherId: {
+              _type: String,
       required: [true, "Staff ID is required"],
       unique: true,
       trim: true,
-      match: [/^\d{8}$/, "Staff ID must be exactly 8 digits"],
+      match: [/^\d{7}$/, "Staff ID must be exactly 8 digits"],
       validate: {
         validator(value) {
           const firstFour = parseInt(value.slice(0, 4), 10);
@@ -17,7 +19,6 @@ const staffSchema = new mongoose.Schema(
       },
       immutable: true,
     },
-
     prefixName: {
       type: String,
       trim: true,
@@ -25,7 +26,6 @@ const staffSchema = new mongoose.Schema(
       minlength: [1, "Prefix must be at least 1 character"],
       maxlength: [10, "Prefix cannot exceed 10 characters"],
     },
-
     firstName: {
       type: String,
       required: [true, "First name is required"],
@@ -110,61 +110,60 @@ const staffSchema = new mongoose.Schema(
     },
 
     accountType: {
-      type: String,
-      enum: ["staff"],
-      default: "staff",
-      immutable: true,
-      trim: true,
-    },
-
-    gender: {
-      type: String,
-      enum: ["male", "female", "other"],
-      required: [true, "Gender is required"],
-    },
-
-    joinedAt: {
-      type: Date,
-      required: [true, "Joining date is required"],
-      set: (value) => new Date(value),
-    },
-
-    leavedAt: {
-      type: Date,
-      default: null,
-      validate: {
-        validator(value) {
-          return !value || !this.joinedAt || value >= this.joinedAt;
+          type: String,
+          enum: ["teacher"],
+          default: "teacher",
+          immutable: true,
+          trim: true,
         },
-        message: "Leave date cannot be before joining date",
-      },
-    },
-
-    borrowedBook: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "BookRent",
-      default: null,
-    },
-
-    status: {
-      type: String,
-      enum: ["active", "inactive", "suspended", "transferred", "retired"],
-      default: "active",
-    },
-
-    role: {
-      type: String,
-      enum: ["normal", "librarian", "technician"],
-      default: "normal",
-    },
-
-    position: {
-      type: String,
-      enum: ["newbie", "junior", "senior", "mostsenior", "headstaff"],
-      default: "newbie",
-    },
-
-    attendance: [
+    
+        gender: {
+          type: String,
+          enum: ["male", "female", "other"],
+          required: [true, "Gender is required"],
+        },
+    
+        joinedAt: {
+          type: Date,
+          required: [true, "Joining date is required"],
+          set: (value) => new Date(value),
+        },
+    
+        leavedAt: {
+          type: Date,
+          default: null,
+          validate: {
+            validator(value) {
+              return !value || !this.joinedAt || value >= this.joinedAt;
+            },
+            message: "Leave date cannot be before joining date",
+          },
+        },
+    
+        borrowedBook: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "BookRent",
+          default: null,
+        },
+    
+        status: {
+          type: String,
+          enum: ["active", "inactive", "suspended", "transferred", "retired"],
+          default: "active",
+        },
+    
+        // role: {
+        //   type: String,
+        //   enum: ["normal", "librarian", "technician"],
+        //   default: "normal",
+        // },
+    
+        position: {
+          type: String,
+          enum: ["junior", "senior", "mostsenior","head-of-subject", "vice-principle","principle"],
+          default: "junior",
+        },
+     attendance: [
       {
         date: { type: Date, required: true },
         status: {
@@ -202,8 +201,12 @@ const staffSchema = new mongoose.Schema(
       select: false,
       default: null,
     },
-  },
-  { timestamps: true }
+
+    },
+    {
+        timestamps:true
+    }
+    
 );
 
 // ✅ Prevent modifying attendance status after 15 days
@@ -224,4 +227,4 @@ staffSchema.pre("save", function (next) {
   next();
 });
 
-export const Staff = mongoose.model("Staff", staffSchema);
+export const Teacher = mongoose.model("Teacher",teacherSchema)

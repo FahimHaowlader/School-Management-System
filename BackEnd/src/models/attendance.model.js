@@ -39,6 +39,12 @@ const attendanceSchema = new mongoose.Schema(
         ref :"Teacher",
         immutable: true,
     },
+
+    classId :{
+      type : mongoose.Schema.Types.ObjectId,
+      ref: "Class"
+
+    }
   },
   { timestamps: true }
 );
