@@ -35,13 +35,22 @@ const guardianSchema = new mongoose.Schema(
       ],
     },
 
-    prefixName: {
-      type: String,
-      trim: true,
-      lowercase: true,
-      minlength: [1, "Prefix must be at least 1 character"],
-      maxlength: [10, "Prefix cannot exceed 10 characters"],
+  prefixName: {
+  type: String,
+  trim: true,
+  lowercase: true,
+  minlength: [1, "Prefix must be at least 1 character"],
+  maxlength: [10, "Prefix cannot exceed 10 characters"],
+  validate: {
+    validator: function (v) {
+      // Only lowercase letters and allowed punctuation: . , : - ! ? / () and spaces
+      return /^[a-z.,:!\-?/()\s]+$/.test(v);
     },
+    message:
+      "Prefix can only contain lowercase letters and punctuation . , : - ! ? / ()",
+  },
+},
+
 
     firstName: {
       type: String,

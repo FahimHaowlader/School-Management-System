@@ -5,11 +5,11 @@ const teacherSchema  = new mongoose.Schema(
     {
         // year+number   
             teacherId: {
-              _type: String,
+              type: String,
       required: [true, "Staff ID is required"],
       unique: true,
       trim: true,
-      match: [/^\d{7}$/, "Staff ID must be exactly 8 digits"],
+      match: [/^\d{7}$/, "Staff ID must be exactly 7 digits"],
       validate: {
         validator(value) {
           const firstFour = parseInt(value.slice(0, 4), 10);
@@ -19,13 +19,22 @@ const teacherSchema  = new mongoose.Schema(
       },
       immutable: true,
     },
-    prefixName: {
-      type: String,
-      trim: true,
-      lowercase: true,
-      minlength: [1, "Prefix must be at least 1 character"],
-      maxlength: [10, "Prefix cannot exceed 10 characters"],
+   prefixName: {
+  type: String,
+  trim: true,
+  lowercase: true,
+  minlength: [1, "Prefix must be at least 1 character"],
+  maxlength: [10, "Prefix cannot exceed 10 characters"],
+  validate: {
+    validator: function (v) {
+      // Only lowercase letters and allowed punctuation: . , : - ! ? / () and spaces
+      return /^[a-z.,:!\-?/()\s]+$/.test(v);
     },
+    message:
+      "Prefix can only contain lowercase letters and punctuation . , : - ! ? / ()",
+  },
+},
+
     firstName: {
       type: String,
       required: [true, "First name is required"],
@@ -33,7 +42,7 @@ const teacherSchema  = new mongoose.Schema(
       lowercase: true,
       minlength: [2, "First name must be at least 2 characters"],
       maxlength: [15, "First name cannot exceed 15 characters"],
-      match: [/^[A-Za-z]+$/, "First name can only contain letters"],
+      match: [/^[a-z]+$/, "First name can only contain letters"],
     },
 
     middleName: {
@@ -43,7 +52,7 @@ const teacherSchema  = new mongoose.Schema(
       required: [true, "Middle name is required"],
       minlength: [2, "Middle name must be at least 2 characters"],
       maxlength: [15, "Middle name cannot exceed 15 characters"],
-      match: [/^[A-Za-z]+$/, "Middle name can only contain letters"],
+      match: [/^[a-z]+$/, "Middle name can only contain letters"],
     },
 
     lastName: {
@@ -52,7 +61,7 @@ const teacherSchema  = new mongoose.Schema(
       lowercase: true,
       minlength: [2, "Last name must be at least 2 characters"],
       maxlength: [15, "Last name cannot exceed 15 characters"],
-      match: [/^[A-Za-z]+$/, "Last name can only contain letters"],
+      match: [/^[a-z]+$/, "Last name can only contain letters"],
     },
 
     dateOfBirth: {
@@ -183,7 +192,7 @@ const teacherSchema  = new mongoose.Schema(
           min: [2025, "Year must be 2025 or later"],
           validate: {
             validator(value) {
-              return value < new Date().getFullYear();
+              return value <= new Date().getFullYear();
             },
             message: "Year cannot be in the future",
           },
@@ -210,7 +219,7 @@ const teacherSchema  = new mongoose.Schema(
 );
 
 // ✅ Prevent modifying attendance status after 15 days
-staffSchema.pre("save", function (next) {
+teacherSchema.pre("save", function (next) {
   if (!this.isModified("attendance")) return next();
 
   const today = new Date();
