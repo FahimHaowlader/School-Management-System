@@ -13,6 +13,7 @@ const paymentSchema = new mongoose.Schema(
       ref: "Student",
       required: [true, "Student ID is required"],
     },
+    
 
     paidBy: {
         id : {

@@ -66,6 +66,10 @@ app.use("/api/v1/events", eventsRouter);
 app.use("/api/v1/libraries", librariesRouter);
 app.use("/api/v1/exams", examsRouter);
 
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the School Management System API");
+});
 // ================= OPTIONAL (future v2) =================
 // import route 
    // import { parentsRouter2 } from "./routes/parents.route.js";
