@@ -184,6 +184,7 @@ guardianSchema.methods.generateAccessToken = function () {
       _id: this._id,
       guardianId: this.guardianId,
       accountType: this.accountType,
+      role: this.role,
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }

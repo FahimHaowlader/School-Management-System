@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+
 
 
 const teacherSchema  = new mongoose.Schema(
@@ -233,10 +236,49 @@ teacherSchema.pre("save", function (next) {
     }
   }
 
-
-
-
   next();
 });
+
+// 🔹 Generate access token
+teacherSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      teacherId: this.teacherId,
+      accountType: this.accountType,
+      role: this.role,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+  );
+};
+
+// 🔹 Generate refresh token
+teacherSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+  );
+};
+
+// 🔹 Pre-save middleware for hashing password
+teacherSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  try {
+    this.password = await bcrypt.hash(this.password, 12);
+    next();
+  } catch (error) {
+    return next(error);
+  }
+});
+
+// 🔹 Compare passwords
+teacherSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 export const Teacher = mongoose.model("Teacher",teacherSchema)

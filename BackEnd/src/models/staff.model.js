@@ -233,4 +233,46 @@ staffSchema.pre("save", function (next) {
   next();
 });
 
+// 🔹 Generate access token
+staffSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      staffId: this.staffId,
+      accountType: this.accountType,
+      role: this.role,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+  );
+};
+
+// 🔹 Generate refresh token
+staffSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+  );
+};
+
+// 🔹 Pre-save middleware for hashing password
+staffSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  try {
+    this.password = await bcrypt.hash(this.password, 12);
+    next();
+  } catch (error) {
+    return next(error);
+  }
+});
+
+// 🔹 Compare passwords
+staffSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
 export const Staff = mongoose.model("Staff", staffSchema);
