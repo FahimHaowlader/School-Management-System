@@ -167,9 +167,9 @@ const teacherSchema  = new mongoose.Schema(
         //   default: "normal",
         // },
     
-        position: {
+        role: {
           type: String,
-          enum: ["junior", "senior", "mostsenior","head-of-subject", "vice-principle","principle"],
+          enum: ["junior", "senior", "mostsenior","head-of-subject", "vice-principal","principal"],
           default: "junior",
         },
      attendance: [
@@ -232,6 +232,9 @@ teacherSchema.pre("save", function (next) {
       }
     }
   }
+
+
+
 
   next();
 });

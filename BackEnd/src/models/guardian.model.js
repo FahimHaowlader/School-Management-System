@@ -101,7 +101,10 @@ const guardianSchema = new mongoose.Schema(
       enum: ["male", "female", "other"],
       required: true,
     },
-
+    role: {
+      type: String,
+      default: "guardian",
+    },
     password: {
       type: String,
       required: [true, "Password is required"],

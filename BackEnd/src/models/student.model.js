@@ -256,6 +256,10 @@ const studentSchema = new mongoose.Schema(
       select: false,
       default: null,
     },
+    role: {
+      type: String,
+      default: "student",
+    },
     borrowedBook: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "BookRent",

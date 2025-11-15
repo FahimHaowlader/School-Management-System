@@ -169,7 +169,7 @@ const staffSchema = new mongoose.Schema(
 
     position: {
       type: String,
-      enum: ["newbie", "junior", "senior", "mostsenior", "headstaff"],
+      enum: ["newbie", "junior", "senior", "most-senior", "head-staff"],
       default: "newbie",
     },
 
