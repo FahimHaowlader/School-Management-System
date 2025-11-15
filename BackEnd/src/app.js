@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-
+import verifyUser from "./middlewares/verifyUser.middleware.js";
 const app = express();
 
 app.use(helmet()); // Add helmet for security headers
@@ -50,11 +50,18 @@ import librariesRouter from "./routes/libraries.route.js";
 import examsRouter from "./routes/exams.route.js";
 
 // Mount routes
+
+// public routes
+
+app.use("/api/v1/auths", authsRouter);
+
+// protected routes
+
+app.use(verifyUser); // verify user middleware
 app.use("/api/v1/parents", parentsRouter);
 app.use("/api/v1/teachers", teachersRouter);
 app.use("/api/v1/staffs", staffsRouter);
 app.use("/api/v1/students", studentsRouter);
-app.use("/api/v1/auths", authsRouter);
 app.use("/api/v1/classes", classesRouter);
 app.use("/api/v1/subjects", subjectsRouter);
 app.use("/api/v1/attendances", attendancesRouter);
