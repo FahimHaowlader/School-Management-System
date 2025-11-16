@@ -2,6 +2,7 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import apiError from "../../utils/apiError.js";
 import options from "../../utils/options.js";
 import apiResponse from "../../utils/apiResponse.js";
+import uploadToCloudinary from "../../utils/Cloudinary.js";
 
 // Model Import
 import Guardian from "../../models/guardian.model.js";
@@ -25,8 +26,7 @@ export const guardianRegistration = asyncHandler(async (req, res) => {
     !phoneNumber ||
     !gender ||
     !middleName ||
-    !address ||
-    !lastName
+    !address 
   ) {
     throw new apiError(400, "All required fields must be provided");
   }

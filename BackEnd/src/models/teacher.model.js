@@ -243,7 +243,43 @@ const teacherSchema = new mongoose.Schema(
         },
       ],
       default: [],
-    },  
+    }, 
+    
+    teachingHistory: {
+      type: [
+        {
+          institution: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            minlength: [2, "Institution name must be at least 2 characters"],
+            maxlength: [100, "Institution name cannot exceed 100 characters"],
+          },
+          position: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            minlength: [2, "Position must be at least 2 characters"],
+            maxlength: [50, "Position cannot exceed 50 characters"],
+          },
+          startDate: {
+            type: Date,
+            set: (value) => new Date(value),
+          },
+          endDate: {
+            type: Date,
+            set: (value) => new Date(value),
+          },
+          description: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            maxlength: [200, "Description cannot exceed 200 characters"],
+          },
+        },
+      ],
+      default: [],
+    },
     vision: {
       type: String,
       trim: true,

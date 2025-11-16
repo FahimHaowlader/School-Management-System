@@ -2,6 +2,8 @@ import asyncHandler from "../../utils/asyncHandler.js";
 import apiError from "../../utils/apiError.js";
 import options from "../../utils/options.js";
 import apiResponse from "../../utils/apiResponse.js";
+import uploadToCloudinary from "../../utils/Cloudinary.js";
+
 
 // Model Import
 import Staff from "../../models/staff.model.js";
@@ -27,12 +29,9 @@ export const staffRegistration = asyncHandler(async (req, res) => {
 
   // Validate input
   const requiredFields = {
-    prefixName,
     firstName,
     middleName,
-    lastName,
     dateOfBirth,
-    bloodGroup,
     address,
     phoneNumber,
     password,
@@ -40,7 +39,6 @@ export const staffRegistration = asyncHandler(async (req, res) => {
     joinedAt,
     role,
     position,
-    emergencyContact,
   };
 
   for (const [key, value] of Object.entries(requiredFields)) {
@@ -122,8 +120,8 @@ export const staffRegistration = asyncHandler(async (req, res) => {
     throw new apiError(400, "Address must be between 5 and 200 characters");
   }
 
+  // validate picture
   const pictureLocalPath = req.files?.picture?.[0]?.path || null;
-
   if (
     !pictureLocalPath ||
     !/^.*\.(png|jpg|jpeg|webp)$/i.test(pictureLocalPath)
@@ -148,6 +146,7 @@ export const staffRegistration = asyncHandler(async (req, res) => {
     throw new apiError(400, "Invalid gender value");
   }
 
+  // validate bloodGroup
   if (
     bloodGroup &&
     !["a+", "a-", "b+", "b-", "ab+", "ab-", "o+", "o-"].includes(bloodGroup)
@@ -161,7 +160,7 @@ export const staffRegistration = asyncHandler(async (req, res) => {
     throw new apiError(400, "Invalid date of birth format");
   }
 
-  // validate admittedAt
+  // validate joinedAt
   const joinedDate = new Date(joinedAt);
   if (isNaN(joinedDate.getTime())) {
     throw new apiError(400, "Invalid joining date format");
@@ -181,7 +180,6 @@ export const staffRegistration = asyncHandler(async (req, res) => {
       { phoneNumber: phoneNumber },
       { firstName: firstName },
       { middleName: middleName },
-      { dateOfBirth : dob },
     ],
   });
   if (existingStaff) {
@@ -228,7 +226,7 @@ export const staffLogin = asyncHandler(async (req, res) => {
     }
 
     // Validate staffId format
-    if (!/^[0-9]{10}$/.test(staffId)) {
+    if (!/^[0-9]{7}$/.test(staffId)) {
       throw new apiError(400, "Invalid Staff ID format");
     }
 

@@ -47,3 +47,13 @@ Date : 5/10/2025
      8 . staff model done
      9 . payment model done 
      10 . expenses model done
+
+
+Date : 6/10/2025
+
+
+   work :-
+
+     1 . teacher model done
+     2 . exam model done 
+     3 . exam Duty model done
