@@ -57,3 +57,27 @@ Date : 6/10/2025
      1 . teacher model done
      2 . exam model done 
      3 . exam Duty model done
+
+
+
+Date : 16 / 11 / 2025
+
+    work :- 
+
+    1 . Cloudinary setup  done 
+    2 . delete local file done
+    3 . student.controller in auth done 
+    4 . staff.controller. in auth done 
+    5 . guardian.controller. in auth done  
+    6 . Multer setup done
+    7 . teacher.controller in auth done 
+    8 . authContoller done 
+
+
+
+Date : 17 / 11 /2025
+
+     work:-
+
+     1 . 
+
