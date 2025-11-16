@@ -28,22 +28,21 @@ const studentSchema = new mongoose.Schema(
       ],
     },
 
-   prefixName: {
-  type: String,
-  trim: true,
-  lowercase: true,
-  minlength: [0, "Prefix must be at least 0 character"],
-  maxlength: [10, "Prefix cannot exceed 10 characters"],
-  validate: {
-    validator: function (v) {
-      // Only lowercase letters and allowed punctuation: . , : - ! ? / () and spaces
-      return /^[a-z.,:!\-?/()\s]+$/.test(v);
+    prefixName: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      minlength: [0, "Prefix must be at least 0 character"],
+      maxlength: [10, "Prefix cannot exceed 10 characters"],
+      validate: {
+        validator: function (v) {
+          // Only lowercase letters and allowed punctuation: . , : - ! ? / () and spaces
+          return /^[a-z.,:!\-?/()\s]+$/.test(v);
+        },
+        message:
+          "Prefix can only contain lowercase letters and punctuation . , : - ! ? / ()",
+      },
     },
-    message:
-      "Prefix can only contain lowercase letters and punctuation . , : - ! ? / ()",
-  },
-},
-
 
     firstName: {
       type: String,
@@ -161,7 +160,7 @@ const studentSchema = new mongoose.Schema(
       },
     },
 
-    scholarship: {
+    scholarShip: {
       type: Number,
       default: 0,
       min: [0, "Scholarship cannot be negative"],
@@ -252,6 +251,24 @@ const studentSchema = new mongoose.Schema(
         },
       ],
       default: [],
+    },
+    emergencyContact: {
+      type: {
+        guardian_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Guardian",
+          required: true,
+        },
+        relation: {
+          type: String,
+          trim: true,
+          lowercase: true,
+          minlength: [2, "Relation must be at least 2 characters"],
+          maxlength: [30, "Relation cannot exceed 30 characters"],
+          required: true,
+        },
+      },
+      default: null,
     },
 
     refreshToken: {

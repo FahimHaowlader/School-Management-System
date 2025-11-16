@@ -8,8 +8,6 @@ import uploadToCloudinary from "../../utils/Cloudinary.js";
 import Teacher from "../../models/teacher.model.js";
 
 // 🔹 Teacher Registration
-
-
 export const teacherRegister = asyncHandler(async (req, res) => {
   try {
     const { prefixName, firstName, middleName, lastName, dateOfBirth, bloodGroup, address, phoneNumber, password, gender, emergencyContact, joinedAt, role,  } = req.body;

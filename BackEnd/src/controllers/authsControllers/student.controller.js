@@ -17,14 +17,14 @@ export const studentRegistration = asyncHandler(async (req, res) => {
   try {
     const {
       password,
+      dateOfBirth,
       firstName,
       middleName,
-      dateOfBirth,
       prefixName,
       lastName,
       address,
       phoneNumber,
-      scholarship,
+      scholarShip,
       gender,
       admittedAt,
       bloodGroup,
@@ -32,6 +32,7 @@ export const studentRegistration = asyncHandler(async (req, res) => {
       mother_id,
       father_id,
       guardian_id,
+      relationWithEmergencyContact,
     } = req.body;
 
     // Validate required fields
@@ -47,6 +48,7 @@ export const studentRegistration = asyncHandler(async (req, res) => {
       phoneNumber,
       gender,
       admittedAt,
+      relationWithEmergencyContact,
     };
 
     for (const [key, value] of Object.entries(requiredFields)) {
@@ -92,6 +94,28 @@ export const studentRegistration = asyncHandler(async (req, res) => {
       throw new apiError(400, "Address must be between 5 and 200 characters");
     }
 
+    // validate relationWithEmergencyContact
+    if (!/^[A-Za-z]{2,15}$/.test(relationWithEmergencyContact)) {
+      throw new apiError(400, "Invalid relation with emergency contact format");
+    }
+
+    let emergencyContact = {};
+
+    if (relationWithEmergencyContact.toLowerCase() === "mother") {
+      emergencyContact = { guardian_id: mother_id,
+                          relation: "mother" 
+                          };
+    } else if (relationWithEmergencyContact.toLowerCase() === "father") {
+      emergencyContact = { guardian_id: father_id,
+                           relation: "father" 
+                          };
+    } else {
+      emergencyContact = {
+        guardian_id: guardian_id,
+        relation: relationWithEmergencyContact,
+      };
+    }
+
     // validate pic
 
     const pictureLocalPath = req.files?.picture?.[0]?.path || null;
@@ -134,12 +158,12 @@ export const studentRegistration = asyncHandler(async (req, res) => {
       throw new apiError(400, "Invalid blood group value");
     }
 
-    // validate scholarship
-    if (scholarship && (isNaN(scholarship) || scholarship < 0)) {
-      throw new apiError(400, "Invalid scholarship amount");
+    // validate scholarShip
+    if (scholarShip && (isNaN(scholarShip) || scholarShip < 0)) {
+      throw new apiError(400, "Invalid scholarShip amount");
     }
 
-    // vlidate dateOfBirth
+    // validate dateOfBirth
     const dob = new Date(dateOfBirth);
     if (isNaN(dob.getTime())) {
       throw new apiError(400, "Invalid date of birth format");
@@ -178,6 +202,8 @@ export const studentRegistration = asyncHandler(async (req, res) => {
 
     // Check if class exists
 
+    // still need to fix this part
+
     const classExists = await Class.findOne({
       $and: [{ class: classNO }, { year: new Date().getFullYear() }],
     });
@@ -212,9 +238,10 @@ export const studentRegistration = asyncHandler(async (req, res) => {
       father: father._id,
       guardian: guardian ? guardian._id : null,
       pic: pictureOnlinePath,
-      scholarship: scholarship ? scholarship : 0,
+      scholarShip: scholarShip ? scholarShip : 0,
       gender,
       admittedAt: admittedDate,
+      emergencyContact,
     });
 
     await student.save();
@@ -237,7 +264,7 @@ export const studentRegistration = asyncHandler(async (req, res) => {
     // Send response
     res
       .status(200)
-      .json(new apiResponse(200,  student , "Student registration endpoint"));
+      .json(new apiResponse(200, student, "Student registration endpoint"));
   } catch (error) {
     console.error("Student Registration Error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -259,11 +286,11 @@ export const studentLogin = asyncHandler(async (req, res) => {
       throw new apiError(400, "Invalid Student ID format");
     }
 
-   
     // Validate password
     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
       throw new apiError(
-        400, "Password must be at least 8 characters, include uppercase, lowercase, and a number"
+        400,
+        "Password must be at least 8 characters, include uppercase, lowercase, and a number"
       );
     }
     // Check if student exists
@@ -295,7 +322,9 @@ export const studentLogin = asyncHandler(async (req, res) => {
       .status(200)
       .cookie("refreshToken", refreshToken, options)
       .cookie("accessToken", accessToken, options)
-      .json(new apiResponse(200, { accessToken, refreshToken }, "Login successful"));
+      .json(
+        new apiResponse(200, { accessToken, refreshToken }, "Login successful")
+      );
   } catch (error) {
     console.error("Student Login Error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -371,50 +400,49 @@ export const refreshStudentTokens = asyncHandler(async (req, res) => {
 
 // Change Student Password
 export const changeStudentPassword = asyncHandler(async (req, res) => {
-    try {
-      const student_id = req.user._id;
-      const { currentPassword, newPassword } = req.body;
+  try {
+    const student_id = req.user._id;
+    const { currentPassword, newPassword } = req.body;
 
-      // Validate input
-      if (!currentPassword || !newPassword) {
-        throw new apiError(400, "Current and new passwords are required");
-      }
-
-      // Validate new password strength
-      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(newPassword)) {
-        throw new apiError(
-          400,
-          "New password must be at least 8 characters, include uppercase, lowercase, and a number"
-        );
-      }
-
-      // Find student
-      const student = await Student.findById(student_id).select("+password");
-      if (!student) {
-        throw new apiError(404, "Student not found");
-      }
-
-      // Check if current password is correct
-      const isCurrentPasswordValid = await student.isPasswordCorrect(
-        currentPassword
-      );
-      if (!isCurrentPasswordValid) {
-        throw new apiError(401, "Current password is incorrect");
-      }
-
-      // Update to new password
-      student.password = newPassword;
-      await student.save();
-
-      // Send response
-      res
-        .status(200)
-        .json(new apiResponse(200, null, "Password changed successfully"));
-    } catch (error) {
-      console.error("Change Student Password Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+    // Validate input
+    if (!currentPassword || !newPassword) {
+      throw new apiError(400, "Current and new passwords are required");
     }
+
+    // Validate new password strength
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(newPassword)) {
+      throw new apiError(
+        400,
+        "New password must be at least 8 characters, include uppercase, lowercase, and a number"
+      );
+    }
+
+    // Find student
+    const student = await Student.findById(student_id).select("+password");
+    if (!student) {
+      throw new apiError(404, "Student not found");
+    }
+
+    // Check if current password is correct
+    const isCurrentPasswordValid = await student.isPasswordCorrect(
+      currentPassword
+    );
+    if (!isCurrentPasswordValid) {
+      throw new apiError(401, "Current password is incorrect");
+    }
+
+    // Update to new password
+    student.password = newPassword;
+    await student.save();
+
+    // Send response
+    res
+      .status(200)
+      .json(new apiResponse(200, null, "Password changed successfully"));
+  } catch (error) {
+    console.error("Change Student Password Error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-);
+});
 
 // End of Student Controllers
