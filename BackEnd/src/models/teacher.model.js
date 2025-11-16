@@ -2,13 +2,11 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-
-
-const teacherSchema  = new mongoose.Schema(
-    {
-        // year+number   
-            teacherId: {
-              type: String,
+const teacherSchema = new mongoose.Schema(
+  {
+    // year+number
+    teacherId: {
+      type: String,
       required: [true, "Staff ID is required"],
       unique: true,
       trim: true,
@@ -22,21 +20,21 @@ const teacherSchema  = new mongoose.Schema(
       },
       immutable: true,
     },
-   prefixName: {
-  type: String,
-  trim: true,
-  lowercase: true,
-  minlength: [1, "Prefix must be at least 1 character"],
-  maxlength: [10, "Prefix cannot exceed 10 characters"],
-  validate: {
-    validator: function (v) {
-      // Only lowercase letters and allowed punctuation: . , : - ! ? / () and spaces
-      return /^[a-z.,:!\-?/()\s]+$/.test(v);
+    prefixName: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      minlength: [1, "Prefix must be at least 1 character"],
+      maxlength: [10, "Prefix cannot exceed 10 characters"],
+      validate: {
+        validator: function (v) {
+          // Only lowercase letters and allowed punctuation: . , : - ! ? / () and spaces
+          return /^[a-z.,:!\-?/()\s]+$/.test(v);
+        },
+        message:
+          "Prefix can only contain lowercase letters and punctuation . , : - ! ? / ()",
+      },
     },
-    message:
-      "Prefix can only contain lowercase letters and punctuation . , : - ! ? / ()",
-  },
-},
 
     firstName: {
       type: String,
@@ -75,8 +73,16 @@ const teacherSchema  = new mongoose.Schema(
           if (isNaN(value.getTime())) return false;
 
           const today = new Date();
-          const minDate = new Date(today.getFullYear() - 80, today.getMonth(), today.getDate());
-          const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+          const minDate = new Date(
+            today.getFullYear() - 80,
+            today.getMonth(),
+            today.getDate()
+          );
+          const maxDate = new Date(
+            today.getFullYear() - 18,
+            today.getMonth(),
+            today.getDate()
+          );
 
           return value >= minDate && value <= maxDate;
         },
@@ -122,60 +128,183 @@ const teacherSchema  = new mongoose.Schema(
     },
 
     accountType: {
-          type: String,
-          enum: ["teacher"],
-          default: "teacher",
-          immutable: true,
-          trim: true,
-        },
-    
-        gender: {
-          type: String,
-          enum: ["male", "female", "other"],
-          required: [true, "Gender is required"],
-        },
-    
-        joinedAt: {
-          type: Date,
-          required: [true, "Joining date is required"],
-          set: (value) => new Date(value),
-        },
-    
-        leavedAt: {
-          type: Date,
-          default: null,
-          validate: {
-            validator(value) {
-              return !value || !this.joinedAt || value >= this.joinedAt;
-            },
-            message: "Leave date cannot be before joining date",
+      type: String,
+      enum: ["teacher"],
+      default: "teacher",
+      immutable: true,
+      trim: true,
+    },
+
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      required: [true, "Gender is required"],
+    },
+
+    emergencyContact: {
+      name: {
+        type: String,
+        required: [true, "Emergency contact name is required"],
+        trim: true,
+        lowercase: true,
+        minlength: [2, "Name must be at least 2 characters"],
+        maxlength: [50, "Name cannot exceed 50 characters"],
+        match: [/^[a-z\s]+$/, "Name can only contain letters and spaces"],
+      },
+      relationship: {
+        type: String,
+        required: [true, "Relationship is required"],
+        trim: true,
+        lowercase: true,
+        minlength: [2, "Relationship must be at least 2 characters"],
+        maxlength: [15, "Relationship cannot exceed 15 characters"],
+        match: [
+          /^[a-z\s]+$/,
+          "Relationship can only contain letters and spaces",
+        ],
+      },
+      phoneNumber: {
+        type: String,
+        required: [true, "Emergency contact phone number is required"],
+        trim: true,
+        match: [/^[0-9]{11}$/, "Phone number must be exactly 11 digits"],
+      },
+    },
+    qualification: {
+      type: [
+        {
+          degree: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            minlength: [2, "Qualification must be at least 2 characters"],
+            maxlength: [50, "Qualification cannot exceed 50 characters"],
+          },
+          institution: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            minlength: [2, "Institution name must be at least 2 characters"],
+            maxlength: [100, "Institution name cannot exceed 100 characters"],
+          },
+          yearOfCompletion: {
+            type: Number,
+            min: [1900, "Year of completion cannot be before 1900"],
+            max: [
+              new Date().getFullYear(),
+              "Year of completion cannot be in the future",
+            ],
           },
         },
-    
-        borrowedBook: {
+      ],
+      default: [],
+    },
+
+    biography: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      maxlength: [500, "Biography cannot exceed 500 characters"],
+      default: null,
+    },
+
+    acheivements: {
+      type: [
+        {
+          title: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            minlength: [2, "Title must be at least 2 characters"],
+            maxlength: [100, "Title cannot exceed 100 characters"],
+          },
+          description: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            maxlength: [300, "Description cannot exceed 300 characters"],
+          },
+          date: {
+            type: Date,
+            set: (value) => new Date(value),
+          },
+        },
+      ],
+      default: [],
+    },
+    professionalSkills: {
+      type: [
+        {
+          type: String,
+          trim: true,
+          lowercase: true,
+          minlength: [2, "Skill must be at least 2 characters"],
+          maxlength: [50, "Skill cannot exceed 50 characters"],
+        },
+      ],
+      default: [],
+    },  
+    vision: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      maxlength: [500, "Vision cannot exceed 500 characters"],
+      default: null,
+    }, 
+
+    joinedAt: {
+      type: Date,
+      required: [true, "Joining date is required"],
+      set: (value) => new Date(value),
+    },
+
+    leavedAt: {
+      type: Date,
+      default: null,
+      validate: {
+        validator(value) {
+          return !value || !this.joinedAt || value >= this.joinedAt;
+        },
+        message: "Leave date cannot be before joining date",
+      },
+    },
+
+    borrowedBook: {
+      type: [
+        {
           type: mongoose.Schema.Types.ObjectId,
           ref: "BookRent",
-          default: null,
+          required: true,
         },
-    
-        status: {
-          type: String,
-          enum: ["active", "inactive", "suspended", "transferred", "retired"],
-          default: "active",
-        },
-    
-        // role: {
-        //   type: String,
-        //   enum: ["normal", "librarian", "technician"],
-        //   default: "normal",
-        // },
-    
-        role: {
-          type: String,
-          enum: ["junior", "senior", "mostsenior","head-of-subject", "vice-principal","principal"],
-          default: "junior",
-        },
-     attendance: [
+      ],
+      default: [],
+    },
+
+    status: {
+      type: String,
+      enum: ["active", "inactive", "suspended", "transferred", "retired"],
+      default: "active",
+    },
+
+    // role: {
+    //   type: String,
+    //   enum: ["normal", "librarian", "technician"],
+    //   default: "normal",
+    // },
+
+    role: {
+      type: String,
+      enum: [
+        "junior",
+        "senior",
+        "mostsenior",
+        "head-of-subject",
+        "vice-principal",
+        "principal",
+      ],
+      default: "junior",
+    },
+    attendance: [
       {
         date: { type: Date, required: true },
         status: {
@@ -213,12 +342,10 @@ const teacherSchema  = new mongoose.Schema(
       select: false,
       default: null,
     },
-
-    },
-    {
-        timestamps:true
-    }
-    
+  },
+  {
+    timestamps: true,
+  }
 );
 
 // ✅ Prevent modifying attendance status after 15 days
@@ -231,7 +358,9 @@ teacherSchema.pre("save", function (next) {
     if (!record.isNew && record.createdAt) {
       const diffDays = (today - record.createdAt) / (1000 * 60 * 60 * 24);
       if (diffDays > 15 && this.isModified(`attendance.${record._id}.status`)) {
-        return next(new Error("Attendance status cannot be modified after 15 days"));
+        return next(
+          new Error("Attendance status cannot be modified after 15 days")
+        );
       }
     }
   }
@@ -281,4 +410,14 @@ teacherSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-export const Teacher = mongoose.model("Teacher",teacherSchema)
+// 🔹 Validate refresh token
+studentSchema.methods.validateRefreshToken = function (token) {
+  try {
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    return decoded?._id?.toString() === this._id.toString();
+  } catch (error) {
+    return false;
+  }
+};
+
+export const Teacher = mongoose.model("Teacher", teacherSchema);
