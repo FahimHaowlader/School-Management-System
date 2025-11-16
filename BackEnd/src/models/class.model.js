@@ -20,8 +20,8 @@ const classSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
       enum: {
-        values: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-        message: "Section must be a single uppercase letter A-J",
+        values: ["A", "B", "C", "D"],
+        message: "Section must be a single uppercase letter A-D",
       },
     },
     group: {

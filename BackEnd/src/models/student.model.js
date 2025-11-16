@@ -32,7 +32,7 @@ const studentSchema = new mongoose.Schema(
   type: String,
   trim: true,
   lowercase: true,
-  minlength: [1, "Prefix must be at least 1 character"],
+  minlength: [0, "Prefix must be at least 0 character"],
   maxlength: [10, "Prefix cannot exceed 10 characters"],
   validate: {
     validator: function (v) {
@@ -77,6 +77,7 @@ const studentSchema = new mongoose.Schema(
     dateOfBirth: {
       type: Date,
       set: (value) => new Date(value),
+      require: [true, "Date of birth is required"],
       validate: {
         validator: function (value) {
           if (isNaN(value.getTime())) return false;
@@ -107,10 +108,12 @@ const studentSchema = new mongoose.Schema(
       },
       lowercase: true, // store in lowercase
       trim: true,
+      default: null,
     },
     address: {
       type: String,
       trim: true,
+      require: [true, "Address is required"],
       lowercase: true,
       minlength: [5, "Address must be at least 5 characters"],
       maxlength: [200, "Address cannot exceed 200 characters"],
@@ -144,7 +147,7 @@ const studentSchema = new mongoose.Schema(
     pic: {
       type: String,
       trim: true,
-      default: null,
+      require: [true, "Profile picture is required"],
       set: (value) => (value === "" ? null : value), // Convert empty string to null
       match: [/^(https?:\/\/.*\.(?:png|jpg|jpeg|webp))$/, "Invalid image URL"],
       validate: {
@@ -225,7 +228,7 @@ const studentSchema = new mongoose.Schema(
           required: true,
         },
       ],
-      required: [true, "At least one enrolled class is required"],
+      default: [],
     },
 
     leavedAt: {
@@ -241,11 +244,11 @@ const studentSchema = new mongoose.Schema(
         message: "Leave date cannot be before admission date",
       },
     },
-    admitCards: {
+    documents: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "AdmitCard",
+          ref: "Document",
         },
       ],
       default: [],
@@ -319,6 +322,16 @@ studentSchema.methods.generateRefreshToken = function () {
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
   );
+};
+
+// 🔹 Validate refresh token
+studentSchema.methods.validateRefreshToken = function (token) {
+  try {
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    return decoded?._id?.toString() === this._id.toString();
+  } catch (error) {
+    return false;
+  }
 };
 
 export const Student = mongoose.model("Student", studentSchema);

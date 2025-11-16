@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-const admitCardSchema = new mongoose.Schema(
+const documentSchema = new mongoose.Schema(
   {
-    studentId: {
+    student_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
       required: [true, "Student ID is required"],
@@ -53,4 +53,4 @@ const admitCardSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const AdmitCard = mongoose.model("AdmitCard", admitCardSchema);
+export const Document = mongoose.model("Document", documentSchema);

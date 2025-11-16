@@ -39,7 +39,7 @@ const guardianSchema = new mongoose.Schema(
   type: String,
   trim: true,
   lowercase: true,
-  minlength: [1, "Prefix must be at least 1 character"],
+  minlength: [0, "Prefix must be at least 0 character"],
   maxlength: [10, "Prefix cannot exceed 10 characters"],
   validate: {
     validator: function (v) {
@@ -201,5 +201,16 @@ guardianSchema.methods.generateRefreshToken = function () {
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
   );
 };
+
+// 🔹 Validate refresh token
+studentSchema.methods.validateRefreshToken = function (token) {
+  try {
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    return decoded?._id?.toString() === this._id.toString();
+  } catch (error) {
+    return false;
+  }
+};
+
 
 export const Guardian = mongoose.model("Guardian", guardianSchema);

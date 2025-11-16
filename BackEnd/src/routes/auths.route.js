@@ -9,7 +9,9 @@ const authsRouter = Router();
 // ----- define your routes here ----
 
 
-// router.get('/', (req, res) => res.send('Parent route'));   
+authsRouter.get('/', (req, res) => res.send('auths route'));
+authsRouter.get('/login', (req, res) => res.send('login route'));
+authsRouter.post('/register', (req, res) => res.send('register route'));   
 
 
 

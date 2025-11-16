@@ -7,7 +7,7 @@ const staffSchema = new mongoose.Schema(
       required: [true, "Staff ID is required"],
       unique: true,
       trim: true,
-      match: [/^\d{8}$/, "Staff ID must be exactly 8 digits"],
+      match: [/^\d{7}$/, "Staff ID must be exactly 7 digits"],
       validate: {
         validator(value) {
           const firstFour = parseInt(value.slice(0, 4), 10);
@@ -22,7 +22,7 @@ const staffSchema = new mongoose.Schema(
   type: String,
   trim: true,
   lowercase: true,
-  minlength: [1, "Prefix must be at least 1 character"],
+  minlength: [0, "Prefix must be at least 0 character"],
   maxlength: [10, "Prefix cannot exceed 10 characters"],
   validate: {
     validator: function (v) {
@@ -80,14 +80,6 @@ const staffSchema = new mongoose.Schema(
         message: "Invalid DOB. Age must be between 18 and 80 years.",
       },
     },
-
-    bloodGroup: {
-      type: String,
-      enum: ["a+", "a-", "b+", "b-", "ab+", "ab-", "o+", "o-"],
-      lowercase: true,
-      trim: true,
-    },
-
     address: {
       type: String,
       trim: true,
@@ -131,6 +123,33 @@ const staffSchema = new mongoose.Schema(
       enum: ["male", "female", "other"],
       required: [true, "Gender is required"],
     },
+    emergencyContact: {
+          name: {
+            type: String,
+            required: [true, "Emergency contact name is required"],
+            trim: true,
+            lowercase: true,
+            minlength: [2, "Name must be at least 2 characters"],
+            maxlength: [30, "Name cannot exceed 30 characters"],
+            match: [/^[a-z\s]+$/, "Name can only contain letters and spaces"],
+          },
+          relationship: {
+            type: String,
+            required: [true, "Relationship is required"],
+            trim: true,
+            lowercase: true,
+            minlength: [2, "Relationship must be at least 2 characters"],
+            maxlength: [15, "Relationship cannot exceed 15 characters"],
+            match: [/^[a-z\s]+$/, "Relationship can only contain letters and spaces"],
+          },
+          phoneNumber: {
+            type: String,
+            required: [true, "Emergency contact phone number is required"],
+            trim: true,
+            match: [/^[0-9]{11}$/, "Phone number must be exactly 11 digits"],
+          },
+        },  
+    
 
     joinedAt: {
       type: Date,
@@ -166,12 +185,50 @@ const staffSchema = new mongoose.Schema(
       enum: ["normal", "librarian", "technician"],
       default: "normal",
     },
+    bloodGroup: {
+      type: String,
+      enum: {
+        values: ["a+", "a-", "b+", "b-", "ab+", "ab-", "o+", "o-"],
+        message: "Blood group must be one of A+, A-, B+, B-, AB+, AB-, O+, O-",
+      },
+      lowercase: true, // store in lowercase
+      trim: true,
+      default: null,
+    },
 
     position: {
       type: String,
       enum: ["newbie", "junior", "senior", "most-senior", "head-staff"],
       default: "newbie",
     },
+
+  qualification: {
+  type: [
+    {
+      degree: {
+        type: String,
+        trim: true,
+        lowercase: true,
+        minlength: [2, "Qualification must be at least 2 characters"],
+        maxlength: [50, "Qualification cannot exceed 50 characters"],
+      },
+      institution: {
+        type: String,
+        trim: true,
+        lowercase: true,
+        minlength: [2, "Institution name must be at least 2 characters"],
+        maxlength: [100, "Institution name cannot exceed 100 characters"],
+      },
+      yearOfCompletion: {
+        type: Number,
+        min: [1900, "Year of completion cannot be before 1900"],
+        max: [new Date().getFullYear(), "Year of completion cannot be in the future"],
+      },
+    }
+  ],
+  default: [],
+},
+
 
     attendance: [
       {
@@ -273,6 +330,16 @@ staffSchema.pre("save", async function (next) {
 // 🔹 Compare passwords
 staffSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
+};
+
+// 🔹 Validate refresh token
+studentSchema.methods.validateRefreshToken = function (token) {
+  try {
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    return decoded?._id?.toString() === this._id.toString();
+  } catch (error) {
+    return false;
+  }
 };
 
 export const Staff = mongoose.model("Staff", staffSchema);

@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 
 const enrollmentSchema = new mongoose.Schema(
   {
-    studentId: {
+    student_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
       required: true,
       immutable: true, // studentId cannot change
     },
-    classId: {
+    class_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Class",
       required: true,

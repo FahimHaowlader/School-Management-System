@@ -12,7 +12,7 @@ const teacherSchema  = new mongoose.Schema(
       required: [true, "Staff ID is required"],
       unique: true,
       trim: true,
-      match: [/^\d{7}$/, "Staff ID must be exactly 7 digits"],
+      match: [/^\d{8}$/, "Staff ID must be exactly 8 digits"],
       validate: {
         validator(value) {
           const firstFour = parseInt(value.slice(0, 4), 10);

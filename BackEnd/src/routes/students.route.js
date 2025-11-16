@@ -9,7 +9,7 @@ const studentsRouter = Router();
 // ----- define your routes here ----
 
 
-// router.get('/', (req, res) => res.send('Parent route'));   
+studentsRouter.get('/', (req, res) => res.send('Parent route'));   
 
 
 
