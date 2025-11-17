@@ -47,7 +47,7 @@ export const getStudentAttendance = asyncHandler(async (req, res) => {
       date: { $gte: startOfYear, $lte: endOfYear },
     })
       .sort({ date: -1 }) // newest first
-      .select("-studentId -classId -recordedBy -_id") // exclude unnecessary fields
+      .select("-student_id -classId -recordedBy") // exclude unnecessary fields
       .lean();
 
     res.status(200).json(
@@ -99,11 +99,11 @@ export const getStudentAttendanceByDate = asyncHandler(async (req, res) => {
 
     // Fetch a single attendance record for that day
     const attendanceRecord = await Attendance.findOne({
-      studentId: student_id,
+      student_id,
       date: { $gte: startOfDay, $lte: endOfDay },
     })
       .sort({ date: -1 })
-      .select("-studentId -classId -recordedBy -_id")
+      .select("-studentId -classId -recordedBy")
       .lean();
 
     if (!attendanceRecord) {
