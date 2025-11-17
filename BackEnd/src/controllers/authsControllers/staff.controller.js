@@ -121,7 +121,7 @@ export const staffRegistration = asyncHandler(async (req, res) => {
   }
 
   // validate picture
-  const pictureLocalPath = req.files?.picture?.[0]?.path || null;
+  const pictureLocalPath = await req.files?.picture?.[0]?.path || null;
   if (
     !pictureLocalPath ||
     !/^.*\.(png|jpg|jpeg|webp)$/i.test(pictureLocalPath)
@@ -187,23 +187,24 @@ export const staffRegistration = asyncHandler(async (req, res) => {
   }
 
   // Create new staff
-  const staff = await Staff.create({
-    firstName: firstName,
-    middleName: middleName,
-    lastName: lastName ? lastName : null,
-    prefixName: prefixName ? prefixName : null,
-    dateOfBirth : dob,
-    phoneNumber: phoneNumber,
-    address: address,
-    password,
-    pic: pictureOnlinePath,
-    emergencyContact,
-    gender,
-    joinedAt: joinedDate,
-    bloodGroup: bloodGroup ? bloodGroup : null,
-    role,
-    position,
-  });
+ const staff = await Staff.create({
+  firstName,
+  middleName ,
+  lastName: lastName || null,
+  prefixName: prefixName || null,
+  dateOfBirth: dob,
+  phoneNumber,
+  address,
+  password,
+  pic: pictureOnlinePath ,
+  emergencyContact,
+  gender,
+  joinedAt: joinedDate,
+  bloodGroup: bloodGroup || null,
+  role,
+  position,
+});
+
 
   // Remove password before sending response
   staff.password = undefined;
@@ -225,26 +226,18 @@ export const staffLogin = asyncHandler(async (req, res) => {
       throw new apiError(400, "Staff ID and password are required");
     }
 
-    // Validate staffId format
+    // Validate staffId format (7 digits)
     if (!/^[0-9]{7}$/.test(staffId)) {
       throw new apiError(400, "Invalid Staff ID format");
     }
 
-    // Validate password
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
-      throw new apiError(
-        400,
-        "Password must be at least 8 characters, include uppercase, lowercase, and a number"
-      );
-    }
-    // Check if staff exists
+    // Find staff and include password
     const staff = await Staff.findOne({ staffId }).select("+password");
-
     if (!staff) {
       throw new apiError(404, "Staff does not exist");
     }
 
-    // Check if password is correct
+    // Check password
     const isPasswordValid = await staff.isPasswordCorrect(password);
     if (!isPasswordValid) {
       throw new apiError(401, "Invalid password");
@@ -254,41 +247,51 @@ export const staffLogin = asyncHandler(async (req, res) => {
     const accessToken = staff.generateAccessToken();
     const refreshToken = staff.generateRefreshToken();
 
-    // Save refresh token to database
-    staff.refreshToken = refreshToken;
-    await staff.save({ validateBeforeSave: false });
+    // Save refresh token using findByIdAndUpdate
+    await Staff.findByIdAndUpdate(
+      staff._id,
+      { $set: { refreshToken } },
+      { new: true, select: "-password" }
+    );
 
-    // remove password from response
-    staff.password = undefined;
-
-    // Send response
+    // Send response with cookies directly in res.cookie
     res
       .status(200)
       .cookie("refreshToken", refreshToken, options)
       .cookie("accessToken", accessToken, options)
-      .json(
-        new apiResponse(200, { accessToken, refreshToken }, "Login successful")
-      );
+      .json(new apiResponse(200, { accessToken, refreshToken }, "Login successful"));
   } catch (error) {
     console.error("Staff Login Error:", error);
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
+
 // 🔹 Staff Logout
 export const staffLogout = asyncHandler(async (req, res) => {
   try {
-    const staff_id = req.user._id;
+    const staffId = req.user._id;
 
-    // Find staff and remove refresh token
-    const staff = await Staff.findById(staff_id);
-    if (!staff) {
-      throw new apiError(404, "Staff does not found");
+    // Check if staffId is present
+    if (!staffId) {
+      throw new apiError(400, "Staff ID is required for logout");
     }
 
-    staff.refreshToken = null;
-    await staff.save({ validateBeforeSave: false });
-    // Clear cookies
+    // Remove refresh token using findByIdAndUpdate
+    const staff = await Staff.findByIdAndUpdate(
+      staffId,
+      { $set: { refreshToken: null } },
+      { new: true, select: "-password" }
+    );
+
+    if (!staff) {
+      throw new apiError(404, "Staff not found");
+    }
+
+    // Clear cookies using imported options
     res.clearCookie("refreshToken", options);
     res.clearCookie("accessToken", options);
 
@@ -296,9 +299,15 @@ export const staffLogout = asyncHandler(async (req, res) => {
     res.status(200).json(new apiResponse(200, null, "Logout successful"));
   } catch (error) {
     console.error("Staff Logout Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 // 🔹 Refresh Staff Tokens
 export const staffRefreshToken = asyncHandler(async (req, res) => {
@@ -315,7 +324,7 @@ export const staffRefreshToken = asyncHandler(async (req, res) => {
       throw new apiError(403, "Invalid refresh token");
     }
 
-    // Validate refresh token using method (recommended)
+    // Validate refresh token
     const isValid = staff.validateRefreshToken(refreshToken);
     if (!isValid) {
       throw new apiError(403, "Refresh token expired or invalid");
@@ -325,10 +334,14 @@ export const staffRefreshToken = asyncHandler(async (req, res) => {
     const newAccessToken = staff.generateAccessToken();
     const newRefreshToken = staff.generateRefreshToken();
 
-    // Save new refresh token
-    staff.refreshToken = newRefreshToken;
-    await staff.save({ validateBeforeSave: false });
+    // Save new refresh token using findByIdAndUpdate
+    await Staff.findByIdAndUpdate(
+      staff._id,
+      { $set: { refreshToken: newRefreshToken } },
+      { new: true, select: "-password" }
+    );
 
+    // Send new tokens with cookies
     return res
       .status(200)
       .cookie("refreshToken", newRefreshToken, options)
@@ -342,14 +355,25 @@ export const staffRefreshToken = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     console.error("Refresh Staff Tokens Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 // Change password for staff
 export const changeStaffPassword = asyncHandler(async (req, res) => {
   try {
     const staff_id = req.user._id;
     const { currentPassword, newPassword } = req.body;
+
+    // validate staff_id
+    if (!staff_id) {
+      throw new apiError(400, "Staff ID is required to change password");
+    }
 
     // Validate input
     if (!currentPassword || !newPassword) {

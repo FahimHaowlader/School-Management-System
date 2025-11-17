@@ -6,7 +6,7 @@ import uploadToCloudinary from "../../utils/Cloudinary.js";
 
 // Model Import
 import Student from "../../models/student.model.js";
-import Entrollment from "../../models/enrollment.model.js";
+import Enrollment from "../../models/enrollment.model.js";
 import Class from "../../models/class.model.js";
 import Guardian from "../../models/guardian.model.js";
 
@@ -94,31 +94,11 @@ export const studentRegistration = asyncHandler(async (req, res) => {
       throw new apiError(400, "Address must be between 5 and 200 characters");
     }
 
-    // validate relationWithEmergencyContact
-    if (!/^[A-Za-z]{2,15}$/.test(relationWithEmergencyContact)) {
-      throw new apiError(400, "Invalid relation with emergency contact format");
-    }
-
-    let emergencyContact = {};
-
-    if (relationWithEmergencyContact.toLowerCase() === "mother") {
-      emergencyContact = { guardian_id: mother_id,
-                          relation: "mother" 
-                          };
-    } else if (relationWithEmergencyContact.toLowerCase() === "father") {
-      emergencyContact = { guardian_id: father_id,
-                           relation: "father" 
-                          };
-    } else {
-      emergencyContact = {
-        guardian_id: guardian_id,
-        relation: relationWithEmergencyContact,
-      };
-    }
+ 
 
     // validate pic
 
-    const pictureLocalPath = req.files?.picture?.[0]?.path || null;
+    const pictureLocalPath = await req.files?.picture?.[0]?.path || null;
 
     if (
       !pictureLocalPath ||
@@ -200,9 +180,24 @@ export const studentRegistration = asyncHandler(async (req, res) => {
       }
     }
 
+       // validate relationWithEmergencyContact
+    if (!/^[A-Za-z]{2,15}$/.test(relationWithEmergencyContact)) {
+      throw new apiError(400, "Invalid relation with emergency contact format");
+    }
+
+    let emergencyContact = {};
+
+    if (relationWithEmergencyContact.toLowerCase() === "mother") {
+      emergencyContact = mother_id;
+    } else if (relationWithEmergencyContact.toLowerCase() === "father") {
+      emergencyContact =  father_id;                        
+    } else {
+      emergencyContact = guardian_id;
+    }
+
     // Check if class exists
 
-    // still need to fix this part
+                      // still need to fix this part
 
     const classExists = await Class.findOne({
       $and: [{ class: classNO }, { year: new Date().getFullYear() }],
@@ -224,39 +219,41 @@ export const studentRegistration = asyncHandler(async (req, res) => {
     }
 
     // Create new student
-    const student = new Student({
-      password,
-      firstName,
-      middleName,
-      dateOfBirth: dob,
-      prefixName,
-      lastName,
-      bloodGroup: bloodGroup ? bloodGroup : null,
-      address,
-      phoneNumber,
-      mother: mother._id,
-      father: father._id,
-      guardian: guardian ? guardian._id : null,
-      pic: pictureOnlinePath,
-      scholarShip: scholarShip ? scholarShip : 0,
-      gender,
-      admittedAt: admittedDate,
-      emergencyContact,
-    });
+   const newStudent = await Student.create({
+  password,
+  firstName,
+  middleName,
+  dateOfBirth: dob,
+  prefixName,
+  lastName,
+  bloodGroup: bloodGroup || null,
+  address,
+  phoneNumber,
+  mother: mother._id,
+  father: father._id,
+  guardian: guardian || null,
+  pic: pictureOnlinePath,
+  scholarShip: scholarShip || 0,
+  gender,
+  admittedAt: admittedDate,
+  emergencyContact,
+});
 
-    await student.save();
 
     // Enroll student in the class
-    const enrollment = new Entrollment({
-      student_id: student._id,
-      class_id: classExists._id,
-    });
+    const enrollment = await Enrollment.create({
+  student_id: newStudent._id,
+  class_id: classExists._id,
+});
 
-    await enrollment.save();
 
     // add enrolled classes to student document
-    student.Classes.push(enrollment._id);
-    await student.save();
+  const student =  await Student.findByIdAndUpdate(
+  newStudent._id,
+  { $push: { Classes: enrollment._id } },
+  { new: true }
+);
+
 
     //  Remove password before sending response
     student.password = undefined;
@@ -281,26 +278,18 @@ export const studentLogin = asyncHandler(async (req, res) => {
       throw new apiError(400, "Student ID and password are required");
     }
 
-    // Validate studentId format
+    // Validate studentId format (9 digits)
     if (!/^[0-9]{9}$/.test(studentId)) {
       throw new apiError(400, "Invalid Student ID format");
     }
 
-    // Validate password
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
-      throw new apiError(
-        400,
-        "Password must be at least 8 characters, include uppercase, lowercase, and a number"
-      );
-    }
-    // Check if student exists
+    // Find student and include password
     const student = await Student.findOne({ studentId }).select("+password");
-
     if (!student) {
       throw new apiError(404, "Student does not exist");
     }
 
-    // Check if password is correct
+    // Check password
     const isPasswordValid = await student.isPasswordCorrect(password);
     if (!isPasswordValid) {
       throw new apiError(401, "Invalid password");
@@ -310,40 +299,59 @@ export const studentLogin = asyncHandler(async (req, res) => {
     const accessToken = student.generateAccessToken();
     const refreshToken = student.generateRefreshToken();
 
-    // Save refresh token to database
-    student.refreshToken = refreshToken;
-    await student.save({ validateBeforeSave: false });
+    // Save refresh token using findByIdAndUpdate
+    const updatedStudent = await Student.findByIdAndUpdate(
+      student._id,
+      { $set: { refreshToken } },
+      { new: true, select: "-password" } // Return updated document without password
+    );
 
-    // remove password from response
-    student.password = undefined;
+    // Cookie options
+    // const options = {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "Strict",
+    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    // };
 
-    // Send response
+    // Send response with cookies
     res
       .status(200)
       .cookie("refreshToken", refreshToken, options)
       .cookie("accessToken", accessToken, options)
-      .json(
-        new apiResponse(200, { accessToken, refreshToken }, "Login successful")
-      );
+      .json(new apiResponse(200, { accessToken, refreshToken }, "Login successful"));
   } catch (error) {
     console.error("Student Login Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 // Student Logout
 export const studentLogout = asyncHandler(async (req, res) => {
   try {
     const student_id = req.user._id;
 
-    // Find student and remove refresh token
-    const student = await Student.findById(student_id);
-    if (!student) {
-      throw new apiError(404, "Student does not found");
+    // Check if student_id is present
+    if (!student_id) {
+      throw new apiError(400, "Student ID is required for logout");
     }
 
-    student.refreshToken = null;
-    await student.save({ validateBeforeSave: false });
+    // Remove refresh token in a single DB call
+    const updatedStudent = await Student.findByIdAndUpdate(
+      student_id,
+      { $set: { refreshToken: null } },
+      { new: true }
+    );
+
+    if (!updatedStudent) {
+      throw new apiError(404, "Student not found");
+    }
 
     // Clear cookies
     res.clearCookie("refreshToken", options);
@@ -365,13 +373,13 @@ export const refreshStudentTokens = asyncHandler(async (req, res) => {
     throw new apiError(401, "Refresh token missing");
   }
 
-  // Find the student with matching refresh token
+  // Find the student with the matching refresh token
   const student = await Student.findOne({ refreshToken });
   if (!student) {
     throw new apiError(403, "Invalid refresh token");
   }
 
-  // Validate refresh token using method (recommended)
+  // Validate refresh token
   const isValid = student.validateRefreshToken(refreshToken);
   if (!isValid) {
     throw new apiError(403, "Refresh token expired or invalid");
@@ -381,9 +389,20 @@ export const refreshStudentTokens = asyncHandler(async (req, res) => {
   const newAccessToken = student.generateAccessToken();
   const newRefreshToken = student.generateRefreshToken();
 
-  // Save new refresh token
-  student.refreshToken = newRefreshToken;
-  await student.save({ validateBeforeSave: false });
+  // Save new refresh token using findByIdAndUpdate
+  await Student.findByIdAndUpdate(
+    student._id,
+    { $set: { refreshToken: newRefreshToken } },
+    { new: true, select: "-password" } // Return updated doc without password
+  );
+
+  // Cookie options
+  // const options = {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === "production",
+  //   sameSite: "Strict",
+  //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  // };
 
   return res
     .status(200)
@@ -398,12 +417,17 @@ export const refreshStudentTokens = asyncHandler(async (req, res) => {
     );
 });
 
+
 // Change Student Password
 export const changeStudentPassword = asyncHandler(async (req, res) => {
   try {
     const student_id = req.user._id;
     const { currentPassword, newPassword } = req.body;
 
+    // Check if student_id is present
+    if (!student_id) {
+      throw new apiError(400, "Student ID is required to change password");
+    }
     // Validate input
     if (!currentPassword || !newPassword) {
       throw new apiError(400, "Current and new passwords are required");

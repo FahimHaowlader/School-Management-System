@@ -138,8 +138,19 @@ const studentSchema = new mongoose.Schema(
     },
 
     guardian: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Guardian",
+      guardian_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Guardian",
+        required: [true, "Guardian ID is required"],
+      },
+      relationshipWithGuardian: {
+        type: String,
+        required: [true, "Relationship with guardian is required"],
+        trim: true,
+        lowercase: true,
+        minlength: [2, "Relationship must be at least 2 characters"],
+        maxlength: [30, "Relationship cannot exceed 30 characters"],
+      },
       default: null,
     },
 
@@ -253,22 +264,9 @@ const studentSchema = new mongoose.Schema(
       default: [],
     },
     emergencyContact: {
-      type: {
-        guardian_id: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Guardian",
-          required: true,
-        },
-        relation: {
-          type: String,
-          trim: true,
-          lowercase: true,
-          minlength: [2, "Relation must be at least 2 characters"],
-          maxlength: [30, "Relation cannot exceed 30 characters"],
-          required: true,
-        },
-      },
-      default: null,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Guardian",
+      required: true,
     },
 
     refreshToken: {

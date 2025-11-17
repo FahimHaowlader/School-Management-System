@@ -106,7 +106,7 @@ export const teacherRegister = asyncHandler(async (req, res) => {
   }
 
   // validate picture
-  const pictureLocalPath = req.files?.picture?.[0]?.path || null;
+  const pictureLocalPath = await req.files?.picture?.[0]?.path || null;
   if (
     !pictureLocalPath ||
     !/^.*\.(png|jpg|jpeg|webp)$/i.test(pictureLocalPath)
@@ -174,24 +174,23 @@ export const teacherRegister = asyncHandler(async (req, res) => {
   }
 
   // Create new Teacher
-  const newTeacher = new Teacher({
-    prefixName : prefixName ? prefixName : null,
-    firstName,
-    middleName,
-    lastName : lastName ? lastName : null,
-    dateOfBirth: dob,
-    bloodGroup : bloodGroup ? bloodGroup : null,
-    address,
-    phoneNumber,  
-    password,
-    gender,
-    emergencyContact,
-    joinedAt: joinedDate,
-    role,
-    pic: pictureOnlinePath,
-  });
+  const newTeacher = await Teacher.create({
+  prefixName: prefixName || null,
+  firstName,
+  middleName,
+  lastName: lastName || null,
+  dateOfBirth: dob,
+  bloodGroup: bloodGroup || null,
+  address,
+  phoneNumber,  
+  password,
+  gender,
+  emergencyContact,
+  joinedAt: joinedDate,
+  role,
+  pic: pictureOnlinePath,
+});
 
-  await newTeacher.save();
 
   // Remove password before sending response
   newTeacher.password = undefined;
@@ -216,7 +215,7 @@ export const teacherRegister = asyncHandler(async (req, res) => {
 
 
 // 🔹 Teacher Login
-    export const teacherLogin = asyncHandler(async (req, res) => {
+export const teacherLogin = asyncHandler(async (req, res) => {
   try {
     const { teacherId, password } = req.body;
 
@@ -225,26 +224,18 @@ export const teacherRegister = asyncHandler(async (req, res) => {
       throw new apiError(400, "Teacher ID and password are required");
     }
 
-    // Validate teacherId format
+    // Validate teacherId format (8 digits)
     if (!/^[0-9]{8}$/.test(teacherId)) {
       throw new apiError(400, "Invalid Teacher ID format");
     }
 
-    // Validate password
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
-      throw new apiError(
-        400,
-        "Password must be at least 8 characters, include uppercase, lowercase, and a number"
-      );
-    }
-    // Check if teacher exists
+    // Find teacher and include password
     const teacher = await Teacher.findOne({ teacherId }).select("+password");
-
     if (!teacher) {
       throw new apiError(404, "Teacher does not exist");
     }
 
-    // Check if password is correct
+    // Check password
     const isPasswordValid = await teacher.isPasswordCorrect(password);
     if (!isPasswordValid) {
       throw new apiError(401, "Invalid password");
@@ -254,41 +245,67 @@ export const teacherRegister = asyncHandler(async (req, res) => {
     const accessToken = teacher.generateAccessToken();
     const refreshToken = teacher.generateRefreshToken();
 
-    // Save refresh token to database
-    teacher.refreshToken = refreshToken;
-    await teacher.save({ validateBeforeSave: false });
+    // Save refresh token using findByIdAndUpdate
+    await Teacher.findByIdAndUpdate(
+      teacher._id,
+      { $set: { refreshToken } },
+      { new: true, select: "-password" }
+    );
 
-    // remove password from response
-    teacher.password = undefined;
+    // Cookie options
+    // const options = {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "Strict",
+    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    // };
 
     // Send response
     res
       .status(200)
       .cookie("refreshToken", refreshToken, options)
       .cookie("accessToken", accessToken, options)
-      .json(
-        new apiResponse(200, { accessToken, refreshToken }, "Login successful")
-      );
+      .json(new apiResponse(200, { accessToken, refreshToken }, "Login successful"));
   } catch (error) {
     console.error("Teacher Login Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
+
 // 🔹 Teacher Logout
 export const teacherLogout = asyncHandler(async (req, res) => {
   try {
-    const teacher_id = req.user._id;
+    const teacherId = req.user._id;
 
-    // Find teacher and remove refresh token
-    const teacher = await Teacher.findById(teacher_id);
-    if (!teacher) {
-      throw new apiError(404, "Teacher does not found");
+    // Check if teacherId is present
+    if (!teacherId) {
+      throw new apiError(400, "Teacher ID is required for logout");
     }
 
-    teacher.refreshToken = null;
-    await teacher.save({ validateBeforeSave: false });
+    // Remove refresh token using findByIdAndUpdate
+    const teacher = await Teacher.findByIdAndUpdate(
+      teacherId,
+      { $set: { refreshToken: null } },
+      { new: true, select: "-password" }
+    );
+
+    if (!teacher) {
+      throw new apiError(404, "Teacher not found");
+    }
+
     // Clear cookies
+    // const options = {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "Strict",
+    // };
+
     res.clearCookie("refreshToken", options);
     res.clearCookie("accessToken", options);
 
@@ -296,6 +313,11 @@ export const teacherLogout = asyncHandler(async (req, res) => {
     res.status(200).json(new apiResponse(200, null, "Logout successful"));
   } catch (error) {
     console.error("Teacher Logout Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -315,7 +337,7 @@ export const teacherRefreshToken = asyncHandler(async (req, res) => {
       throw new apiError(403, "Invalid refresh token");
     }
 
-    // Validate refresh token using method (recommended)
+    // Validate refresh token
     const isValid = teacher.validateRefreshToken(refreshToken);
     if (!isValid) {
       throw new apiError(403, "Refresh token expired or invalid");
@@ -325,10 +347,22 @@ export const teacherRefreshToken = asyncHandler(async (req, res) => {
     const newAccessToken = teacher.generateAccessToken();
     const newRefreshToken = teacher.generateRefreshToken();
 
-    // Save new refresh token
-    teacher.refreshToken = newRefreshToken;
-    await teacher.save({ validateBeforeSave: false });
+    // Save new refresh token using findByIdAndUpdate
+    await Teacher.findByIdAndUpdate(
+      teacher._id,
+      { $set: { refreshToken: newRefreshToken } },
+      { new: true, select: "-password" }
+    );
 
+    // Cookie options
+    // const options = {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "Strict",
+    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    // };
+
+    // Send new tokens
     return res
       .status(200)
       .cookie("refreshToken", newRefreshToken, options)
@@ -342,17 +376,26 @@ export const teacherRefreshToken = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     console.error("Refresh Teacher Tokens Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
-// 🔹 Teacher password change
 
+// 🔹 Teacher password change
 export const changeTeacherPassword = asyncHandler(async (req, res) => {
   try {
     const teacher_id = req.user._id;
     const { currentPassword, newPassword } = req.body;
 
+    // Check if teacher_id is present
+    if (!teacher_id) {
+      throw new apiError(400, "Teacher ID is required to change password");
+    }
     // Validate input
     if (!currentPassword || !newPassword) {
       throw new apiError(400, "Current and new passwords are required");

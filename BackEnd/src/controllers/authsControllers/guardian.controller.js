@@ -151,26 +151,18 @@ export const guardianLogin = asyncHandler(async (req, res) => {
       throw new apiError(400, "Guardian ID and password are required");
     }
 
-    // Validate guardianId format
+    // Validate guardianId format (10 digits)
     if (!/^[0-9]{10}$/.test(guardianId)) {
       throw new apiError(400, "Invalid Guardian ID format");
     }
 
-    // Validate password
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
-      throw new apiError(
-        400,
-        "Password must be at least 8 characters, include uppercase, lowercase, and a number"
-      );
-    }
-    // Check if guardian exists
+    // Find guardian and include password
     const guardian = await Guardian.findOne({ guardianId }).select("+password");
-
     if (!guardian) {
       throw new apiError(404, "Guardian does not exist");
     }
 
-    // Check if password is correct
+    // Check password
     const isPasswordValid = await guardian.isPasswordCorrect(password);
     if (!isPasswordValid) {
       throw new apiError(401, "Invalid password");
@@ -180,56 +172,64 @@ export const guardianLogin = asyncHandler(async (req, res) => {
     const accessToken = guardian.generateAccessToken();
     const refreshToken = guardian.generateRefreshToken();
 
-    // Save refresh token to database
-    student.refreshToken = refreshToken;
-    await student.save({ validateBeforeSave: false });
+    // Save refresh token using findByIdAndUpdate
+    await Guardian.findByIdAndUpdate(
+      guardian._id,
+      { $set: { refreshToken } },
+      { new: true, select: "-password" }
+    );
 
-    // remove password from response
-    student.password = undefined;
-
-    // Send response
+    // Send response with cookies
     res
       .status(200)
       .cookie("refreshToken", refreshToken, options)
       .cookie("accessToken", accessToken, options)
-      .json(
-        new apiResponse(200, { accessToken, refreshToken }, "Login successful")
-      );
+      .json(new apiResponse(200, { accessToken, refreshToken }, "Login successful"));
   } catch (error) {
     console.error("Guardian Login Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 // 🔹 Get Guardian refreshGuardianTokens
 export const refreshGuardianTokens = asyncHandler(async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-  
+
     if (!refreshToken) {
       throw new apiError(401, "Refresh token missing");
     }
-  
+
     // Find the guardian with matching refresh token
     const guardian = await Guardian.findOne({ refreshToken });
     if (!guardian) {
       throw new apiError(403, "Invalid refresh token");
     }
-  
-    // Validate refresh token using method (recommended)
+
+    // Validate refresh token
     const isValid = guardian.validateRefreshToken(refreshToken);
     if (!isValid) {
       throw new apiError(403, "Refresh token expired or invalid");
     }
-  
+
     // Generate new tokens
     const newAccessToken = guardian.generateAccessToken();
     const newRefreshToken = guardian.generateRefreshToken();
-  
-    // Save new refresh token
-    guardian.refreshToken = newRefreshToken;
-    await guardian.save({ validateBeforeSave: false });
-  
+
+    // Save new refresh token using findByIdAndUpdate
+    await Guardian.findByIdAndUpdate(
+      guardian._id,
+      { $set: { refreshToken: newRefreshToken } },
+      { new: true, select: "-password" }
+    );
+
+    // Send new tokens with cookies
     return res
       .status(200)
       .cookie("refreshToken", newRefreshToken, options)
@@ -243,24 +243,38 @@ export const refreshGuardianTokens = asyncHandler(async (req, res) => {
       );
   } catch (error) {
     console.error("Refresh Guardian Tokens Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
+
 // 🔹 Get Guardian Logout
 export const guardianLogout = asyncHandler(async (req, res) => {
   try {
-    const guardian_id = req.user._id;
+    const guardianId = req.user._id;
 
-    // Find guardian and remove refresh token
-    const guardian = await Guardian.findById(guardian_id);
-    if (!guardian) {
-      throw new apiError(404, "Guardian does not found");
+    // Validate guardianId
+    if (!guardianId) {
+      throw new apiError(400, "Guardian ID is required for logout");
     }
 
-    guardian.refreshToken = null;
-    await guardian.save({ validateBeforeSave: false });
-    // Clear cookies
+    // Remove refresh token using findByIdAndUpdate
+    const guardian = await Guardian.findByIdAndUpdate(
+      guardianId,
+      { $set: { refreshToken: null } },
+      { new: true, select: "-password" }
+    );
+
+    if (!guardian) {
+      throw new apiError(404, "Guardian not found");
+    }
+
+    // Clear cookies using imported options
     res.clearCookie("refreshToken", options);
     res.clearCookie("accessToken", options);
 
@@ -268,9 +282,15 @@ export const guardianLogout = asyncHandler(async (req, res) => {
     res.status(200).json(new apiResponse(200, null, "Logout successful"));
   } catch (error) {
     console.error("Guardian Logout Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 // Change password for guardian
 export const changeGuardianPassword = asyncHandler(async (req, res) => {
@@ -278,6 +298,11 @@ export const changeGuardianPassword = asyncHandler(async (req, res) => {
     const guardian_id = req.user._id;
     const { currentPassword, newPassword } = req.body;
 
+    // Check if guardian_id is present
+    if (!guardian_id) {
+      throw new apiError(400, "Guardian ID is required to change password");
+    }
+    
     // Validate input
     if (!currentPassword || !newPassword) {
       throw new apiError(400, "Current and new passwords are required");

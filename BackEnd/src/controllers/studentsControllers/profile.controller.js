@@ -12,6 +12,11 @@ export const getStudentProfile = asyncHandler(async (req, res) => {
   try {
     const student_id = req.user._id;
 
+    // validate student_id
+    if (!student_id) {
+      throw new apiError(400, "Student ID is required to get profile");
+    }
+
     const student = await Student.findById(student_id).select(
       "-password -refreshToken"
     );
@@ -34,6 +39,7 @@ export const updateStudentPersonalInformation = asyncHandler(
   async (req, res) => {
     try {
       const student_id = req.user._id;
+
       const {
         firstName,
         middleName,
@@ -43,6 +49,11 @@ export const updateStudentPersonalInformation = asyncHandler(
         gender,
         bloodGroup,
       } = req.body;
+
+      // Validate student_id
+      if (!student_id) {
+        throw new apiError(400, "Student ID is required to update personal information");
+      }
 
       // Validate required fields
       if (!firstName || !middleName || !dateOfBirth || !gender) {
@@ -81,163 +92,189 @@ export const updateStudentPersonalInformation = asyncHandler(
         throw new apiError(400, "Invalid blood group value");
       }
 
-      const student = await Student.findById(student_id);
-      if (!student) {
-        throw new apiError(404, "Student not found");
+      // Prepare update object
+      const updateData = {
+        firstName,
+        middleName,
+        dateOfBirth,
+        gender,
+      };
+      if (prefixName) updateData.prefixName = prefixName;
+      if (lastName) updateData.lastName = lastName;
+      if (bloodGroup) updateData.bloodGroup = bloodGroup.toLowerCase();
+
+      // Update student in one DB operation
+      const updatedStudent = await Student.findByIdAndUpdate(
+        student_id,
+        { $set: updateData },
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedStudent) throw new apiError(404, "Student not found");
+
+      res.status(200).json(new apiResponse(200, updatedStudent, "Student profile updated"));
+    } catch (error) {
+      console.error("Update Student Personal Information Error:", error);
+
+      if (error instanceof apiError) {
+        return res.status(error.statusCode).json({ message: error.message });
       }
 
-      // Update fields if provided
-      if (prefixName) student.prefixName = prefixName;
-      if (firstName) student.firstName = firstName;
-      if (middleName) student.middleName = middleName;
-      if (lastName) student.lastName = lastName;
-      if (dateOfBirth) student.dateOfBirth = dateOfBirth;
-      if (gender) student.gender = gender;
-      if (bloodGroup) student.bloodGroup = bloodGroup;
-
-      await student.save();
-
-      res
-        .status(200)
-        .json(new  apiResponse(200,student, "Student profile updated", ));
-    } catch (error) {
-      console.error("Update Student personal information Error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
 );
 
 // 🔹 Student Contact information Update
-export const updateStudentContactInformation = asyncHandler(
-  async (req, res) => {
-    try {
-      const student_id = req.user._id;
-      const { address, phoneNumber} = req.body;
+export const updateStudentContactInformation = asyncHandler(async (req, res) => {
+  try {
+    const studentId = req.user._id;
+    const { address, phoneNumber } = req.body;
 
-      // Validate required fields
-      if (!address || !phoneNumber) {
-        throw new apiError(400, "Please provide all required fields");
-      }
+    // validate studentId
+    if (!studentId) {
+      throw new apiError(400, "Student ID is required to update contact information");
+    }
 
-      // validate address
-      if (address.length < 5 || address.length > 200) {
-        throw new apiError(400, "Address must be between 5 and 200 characters");
-      }
+    // Validate required fields
+    if (!address || !phoneNumber) {
+      throw new apiError(400, "Please provide all required fields");
+    }
 
-      // validate phoneNumber
+    // Validate address
+    if (address.length < 5 || address.length > 200) {
+      throw new apiError(400, "Address must be between 5 and 200 characters");
+    }
+
+    // Validate phone number
     if (!/^\d{11}$/.test(phoneNumber)) {
       throw new apiError(400, "Phone number must be exactly 11 digits");
     }
 
-      const student = await Student.findById(student_id);
-      if (!student) {
-        throw new apiError(404, "Student not found");
-      }
+    // Prepare update object
+    const updateData = {
+      address,
+      phoneNumber,
+    };
 
-      // Update fields if provided
-      if (address) student.address = address;
-      if (phoneNumber) student.phoneNumber = phoneNumber;
+    // Update student in one DB operation
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
 
-      await student.save();
+    if (!updatedStudent) throw new apiError(404, "Student not found");
 
-      res
-        .status(200)
-        .json(new apiResponse(200, student, "Student contact information updated"));
-    } catch (error) {
-      console.error("Update Student contact information Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+    res
+      .status(200)
+      .json(new apiResponse(200, updatedStudent, "Student contact information updated"));
+  } catch (error) {
+    console.error("Update Student Contact Information Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
     }
+
+    res.status(500).json({ message: "Internal server error" });
   }
-);
+});
 
 // 🔹 Student Profile Picture Update
-export const updateStudentProfilePicture = asyncHandler(
-  async (req, res) => {
-    try {
-      const student_id = req.user._id;
+export const updateStudentProfilePicture = asyncHandler(async (req, res) => {
+  try {
+    const studentId = req.user._id;
 
-    // validate pic
+    // validate studentId
+    if (!studentId) {
+      throw new apiError(400, "Student ID is required to update profile picture");
+    }
 
-    const pictureLocalPath = req.files?.picture?.[0]?.path || null;
-
-    if (
-      !pictureLocalPath ||
-      !/^.*\.(png|jpg|jpeg|webp)$/i.test(pictureLocalPath)
-    ) {
+    // Validate picture file
+    const pictureLocalPath = await req.files?.picture?.[0]?.path;
+    if (!pictureLocalPath || !/^.*\.(png|jpg|jpeg|webp)$/i.test(pictureLocalPath)) {
       throw new apiError(
         400,
         "Profile picture is required and must be PNG, JPG, JPEG, or WEBP"
       );
     }
-    // upload to cloudinary
 
+    // Upload to Cloudinary
     const uploadResult = await uploadToCloudinary(pictureLocalPath);
-
-    if (!uploadResult || !uploadResult.secure_url) {
+    if (!uploadResult?.secure_url) {
       throw new apiError(500, "Failed to upload profile picture");
     }
 
-    const pictureOnlinePath = uploadResult.secure_url
+    const pictureOnlinePath = uploadResult.secure_url;
 
-      const student = await Student.findById(student_id);
-      if (!student) {
-        throw new apiError(404, "Student not found");
-      }
+    // Update student's profile picture
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: { pic: pictureOnlinePath } },
+      { new: true, select: "-password" }
+    );
 
-      student.pic = uploadResult.secure_url;
-      await student.save();
+    if (!updatedStudent) throw new apiError(404, "Student not found");
 
-      res
-        .status(200)
-        .json(
-           new apiResponse(
-            200,
-            student,
-            "Student profile picture updated",
-          )
-        );
-    } catch (error) {
-      console.error("Update Student profile picture Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+    res
+      .status(200)
+      .json(new apiResponse(200, updatedStudent, "Student profile picture updated"));
+  } catch (error) {
+    console.error("Update Student Profile Picture Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
     }
+
+    res.status(500).json({ message: "Internal server error" });
   }
-);
+});
 
 // 🔹 Student ScholarShip Update
-export const updateStudentScholarShip = asyncHandler(
-    async (req, res) => {
-        try {
-        const student_id = req.user._id;
-        const { scholarShip } = req.body;
-        // Validate required fields
-        if (scholarShip === undefined) {
-            throw new apiError(400, "Please provide all required fields");
-        }
-        // validate scholarShip
-        const scholarShipNum = Number(scholarShip);
-        if (isNaN(scholarShipNum) || scholarShipNum < 0 || scholarShipNum > 100) {
-            throw new apiError(400, "Invalid scholarShip amount");
-        }
+export const updateStudentScholarShip = asyncHandler(async (req, res) => {
+  try {
+    const studentId = req.user._id;
+    const { scholarShip } = req.body;
 
-        const student = await Student.findById(student_id);
-        if (!student) {
-            throw new apiError(404, "Student not found");
-        }
-
-        // Update fields if provided
-        student.scholarShip = scholarShipNum;
-
-        await student.save();
-
-        res
-            .status(200)
-            .json(new  apiResponse(200,student, "Student scholarShip updated", ));
-        } catch (error) {
-        console.error("Update Student scholarShip Error:", error);
-        res.status(500).json({ message: "Internal server error" });
-        }
+    // validate studentId
+    if (!studentId) {
+      throw new apiError(400, "Student ID is required to update scholarship");
     }
-);
+
+    // Validate required field
+    if (!scholarShip) {
+      throw new apiError(400, "Please provide all required fields");
+    }
+
+    // Validate scholarship value
+    const scholarShipNum = Number(scholarShip);
+    if (isNaN(scholarShipNum) || scholarShipNum < 0 || scholarShipNum > 100) {
+      throw new apiError(400, "Invalid scholarShip amount");
+    }
+
+    // Update student scholarship
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: { scholarShip: scholarShipNum } },
+      { new: true, select: "-password" }
+    );
+
+    if (!updatedStudent) throw new apiError(404, "Student not found");
+
+    res
+      .status(200)
+      .json(new apiResponse(200, updatedStudent, "Student scholarShip updated"));
+  } catch (error) {
+    console.error("Update Student Scholarship Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 
 // ================= END OF STUDENT PROFILE CONTROLLERS =================
