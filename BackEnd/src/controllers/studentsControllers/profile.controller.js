@@ -10,7 +10,7 @@ import Student from "../../models/student.model.js";
 // 🔹 Student Profile Retrieval
 export const getStudentProfile = asyncHandler(async (req, res) => {
   try {
-    const student_id = req.user._id;
+    const student_id = req.user._id || req.body.student_id;
 
     // validate student_id
     if (!student_id) {
@@ -18,7 +18,7 @@ export const getStudentProfile = asyncHandler(async (req, res) => {
     }
 
     const student = await Student.findById(student_id).select(
-      "-password -refreshToken"
+     "-password -refreshToken -attendanceRecords -attendanceSummary"
     );
 
     if (!student) {

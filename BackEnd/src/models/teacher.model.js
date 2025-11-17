@@ -340,18 +340,7 @@ const teacherSchema = new mongoose.Schema(
       ],
       default: "junior",
     },
-    attendance: [
-      {
-        date: { type: Date, required: true },
-        status: {
-          type: String,
-          enum: ["present", "absent", "leave", "late", "half-day"],
-          default: "present",
-        },
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
-
+  
     attendanceSummary: [
       {
         year: {

@@ -278,6 +278,27 @@ const studentSchema = new mongoose.Schema(
       type: String,
       default: "student",
     },
+
+    attendanceSummary: [
+      {
+        year: {
+          type: Number,
+          required: true,
+          min: [2025, "Year must be 2025 or later"],
+          validate: {
+            validator(value) {
+              return value <= new Date().getFullYear();
+            },
+            message: "Year cannot be in the future",
+          },
+        },
+        present: { type: Number, default: 0, min: 0 },
+        absent: { type: Number, default: 0, min: 0 },
+        late: { type: Number, default: 0, min: 0 },
+        leave: { type: Number, default: 0, min: 0 },
+        immutable: true, // cannot be changed directly
+      },
+    ],
     borrowedBook: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "BookRent",

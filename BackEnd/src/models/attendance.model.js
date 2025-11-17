@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const attendanceSchema = new mongoose.Schema(
   {
     // Who this attendance record belongs to
-    studentId: {
+    student_id: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref:"Student", // dynamically references correct model
@@ -66,5 +66,33 @@ attendanceSchema.pre("save", function (next) {
 
   next();
 });
+
+attendanceSchema.pre("findOneAndUpdate", async function (next) {
+  try {
+    const update = this.getUpdate(); // fields being updated
+    if (!update.status) return next(); // only check if status is being updated
+
+    const doc = await this.model.findOne(this.getQuery()); // get the document
+    if (!doc) return next();
+
+    const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
+    if (now - doc.createdAt.getTime() > sevenDaysInMs) {
+      return next(new Error("Status cannot be modified after 7 days"));
+    }
+
+    // Optionally validate status
+    const validStatuses = ["present", "absent", "late"];
+    if (!validStatuses.includes(update.status)) {
+      return next(new Error("Invalid status value"));
+    }
+
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 export const Attendance = mongoose.model("Attendance", attendanceSchema);
