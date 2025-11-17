@@ -81,5 +81,5 @@ Date : 17 / 11 /2025
 
      1 . mixed bug in authController.js
      2 . profile.controller.js in studentController.js done 
-     3 . attendanceController.js done 
+     3 . attendanceControllers done 
 

@@ -80,11 +80,12 @@ export const getTeacherAttendanceByDate = asyncHandler(async (req, res) => {
 
     // Find the teacher to get the internal _id
     let teacherExists = null;
-    if (teacherId) {
+    
+     if (teacher_id) {
+      teacherExists = await Teacher.findById(teacher_id).select("_id").lean();
+    } else if (teacherId) {
       teacherExists = await Teacher.findOne({ teacherId }).select("_id").lean();
       teacher_id = teacherExists?._id;
-    } else if (teacher_id) {
-      teacherExists = await Teacher.findById(teacher_id).select("_id").lean();
     }
 
     if (!teacherExists) {
@@ -112,11 +113,11 @@ export const getTeacherAttendanceByDate = asyncHandler(async (req, res) => {
       new apiResponse(
         200,
         attendanceRecord,
-        "Student attendance record retrieved"
+        "Teacher attendance record retrieved"
       )
     );
   } catch (error) {
-    console.error("Get Student Attendance By Day Error:", error);
+    console.error("Get Teacher Attendance By Day Error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

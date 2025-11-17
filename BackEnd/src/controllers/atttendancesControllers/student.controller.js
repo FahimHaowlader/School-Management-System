@@ -82,12 +82,13 @@ export const getStudentAttendanceByDate = asyncHandler(async (req, res) => {
 
     // Find the student to get the internal _id
     let studentExists = null;
-    if (studentId) {
+    
+     if (student_id) {
+      studentExists = await Student.findById(student_id).select("_id").lean();
+    } else if (studentId) {
       studentExists = await Student.findOne({ studentId }).select("_id").lean();
       student_id = studentExists?._id;
-    } else if (student_id) {
-      studentExists = await Student.findById(student_id).select("_id").lean();
-    }
+    } 
 
     if (!studentExists) {
       throw new apiError(404, "Student not found");
