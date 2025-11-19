@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const classSchema = new mongoose.Schema(
   {
-    year: {
+    academicYear: {
       type: Number,
       required: [true, "Year is required"],
       min: [2025, "Year must be 2025 or later"],

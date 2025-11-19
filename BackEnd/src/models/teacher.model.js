@@ -321,6 +321,16 @@ const teacherSchema = new mongoose.Schema(
       enum: ["active", "inactive", "suspended", "transferred", "retired"],
       default: "active",
     },
+    subjects: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Subject",
+          required: true,
+        },
+      ],
+      required: true,
+    },
 
     // role: {
     //   type: String,

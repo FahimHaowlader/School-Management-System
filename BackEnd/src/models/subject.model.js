@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const subjectSchema = new mongoose.Schema(
   {
-    teacherId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Teacher",
-      required: [true, "Teacher ID is required"],
-    },
+    // teacherId: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Teacher",
+    //   required: [true, "Teacher ID is required"],
+    // },
 
     subjectName: {
       type: String,

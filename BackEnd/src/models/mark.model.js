@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 
 const markSchema = new mongoose.Schema(
   {
-    enrollmentId: {
+    enrollment_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Enrollment",
       required: true,
     },
 
-    subjectId: {
+    subject_id: {
       type: mongoose.Schema.Types.ObjectId, // careful: subject links back to teacher(s)
       ref: "Subject",
       required: true,
@@ -41,7 +41,12 @@ const markSchema = new mongoose.Schema(
       required: [true, "Total marks is required"],
       min: [1, "Total marks must be at least 1"],
     },
-
+    paperMarker : {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Teacher",
+      required: [true, "Paper marker (teacher) is required"],
+    },
+    
     examDate: {
       type: Date,
       required: [true, "Exam date is required"],

@@ -4,7 +4,7 @@ import apiResponse from "../../utils/apiResponse.js";
 
 // Model Import
 import Attendance from "../../models/attendance.model.js";
-import  Staff  from "../../models/teacher.model.js";
+import  Staff  from "../../models/staff.model.js";
 
 // 🔹 Staff Attendance Retrieval
 export const getStaffAttendance = asyncHandler(async (req, res) => {
