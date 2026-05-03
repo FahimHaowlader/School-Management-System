@@ -83,3 +83,22 @@ Date : 17 / 11 /2025
      2 . profile.controller.js in studentController.js done 
      3 . attendanceControllers done 
 
+
+Date : 19 / 11 / 2025 
+
+     work:-
+
+     1 . mixes bug in model 
+     2 . student.controller.js in marksControllers
+
+
+Date : 21 / 11 / 2025
+
+     work :-
+     
+     1.student.controller in assignmentsControllers
+
+
+
+
+

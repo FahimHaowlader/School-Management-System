@@ -18,6 +18,11 @@ const assignmentSchema = new mongoose.Schema(
       maxlength: 200,
       trim: true,
     },
+    class_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class",
+      required: [true, "Class ID is required"],
+    },
     routineId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Routine",

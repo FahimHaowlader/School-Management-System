@@ -35,8 +35,38 @@ const enrollmentSchema = new mongoose.Schema(
       late:{
       type: Number,
       default: 0,
-      }
-  },
+      },
+  
+  assignments: {
+      type: [
+        {
+          assignment_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Assignment",
+          },
+          score: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 100, // optional
+          },
+          isSubmitted: {
+            type: Boolean,
+            default: false,
+          },
+          submitedDate: {
+            type: Date,
+            default: null,
+          },
+          submittedDocuments: {
+            type: [String], // File URLs or paths
+            default: [],
+          },
+        },
+      ],
+      default: [],
+    },
+},
   { timestamps: true }
 );
 

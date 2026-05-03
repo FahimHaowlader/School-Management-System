@@ -294,7 +294,6 @@ export const getStudentMarksByYear = asyncHandler(async (req, res) => {
 });
 
 
-// 🔹All Student Mark Retrieval for a Specific Year
 
 
 
