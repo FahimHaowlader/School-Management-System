@@ -99,6 +99,12 @@ Date : 21 / 11 / 2025
      1.student.controller in assignmentsControllers
 
 
+Date : 4 / 05 / 2026 
 
+     work :-
+
+     1.Frontend setup done for basic users
+
+     
 
 
