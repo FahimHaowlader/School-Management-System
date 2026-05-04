@@ -39,7 +39,9 @@ import './App.css'
 //
 
 // import global pages
-//
+import StudentNotFound from '@Global/Pages/StudentNotFound/StudentNotFound'
+import StudentProfile from '@Global/Pages/StudentProfile/StudentProfile'
+
 
 // import local pages 
 import Profile from './Pages/Profile/Profile' 
@@ -55,8 +57,7 @@ import Support from './Pages/Support/Support'
 import Syllabus from './Pages/Syllabus/Syllabus'
 import Event from './Pages/Event/Event'
 import NotFound from './Pages/NotFound/NotFound'  
-import StudentNotFound from './Pages/StudentNotFound/StudentNotFound'
-import StudentProfile from './Pages/StudentProfile/StudentProfile'
+
 
 
 
