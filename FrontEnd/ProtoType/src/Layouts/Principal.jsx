@@ -1,6 +1,6 @@
 import React from 'react'
 import { Outlet } from 'react-router';
-const Principle = () => {
+const Principal = () => {
   return (
    <div>
          <div>
@@ -13,4 +13,4 @@ const Principle = () => {
   )
 }
 
-export default Principle
+export default Principal
