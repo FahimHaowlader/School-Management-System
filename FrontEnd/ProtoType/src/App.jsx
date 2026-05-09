@@ -54,6 +54,7 @@ import StudentClassRoutine from "./Pages/Student/StudentClassRoutine";
 import StudentEvent from "./Pages/Student/StudentEvent";
 import StudentSyllabus from "./Pages/Student/StudentSyllabus";
 import StudentAnnouncement from "./Pages/Student/StudentAnnouncement";
+import StudentSupport from "./Pages/Student/StudentSupport";
 
 // Principal page
 import PrincipalAddStudent from "./Pages/Principal/principalAddStudent";
@@ -137,6 +138,10 @@ function App() {
         {
           path: "announcement",
           element: <StudentAnnouncement />,
+        },
+        {
+          path: "support",
+          element: <StudentSupport />,
         },
         {
           path: "*",
