@@ -89,6 +89,7 @@ import TeacherAssignment from './Pages/Teacher/TeacherAssignment'
 import StaffProfile from './Pages/Staff/StaffProfile';
 import StaffAnnouncement from './Pages/Staff/StaffAnnouncement';
 import StaffEvent from './Pages/Staff/StaffEvent'
+import StaffSupport from './Pages/Staff/StaffSupport';
 
 // Parent page
 import ParentProfile from './Pages/Parent/ParentProfile';
@@ -280,6 +281,10 @@ function App() {
           path:"event",
           element:<StaffEvent/>
         },
+        {
+          path:"support", 
+          element:<StaffSupport/>
+        }
       ]
     },
     {
