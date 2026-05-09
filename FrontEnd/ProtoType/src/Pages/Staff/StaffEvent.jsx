@@ -72,11 +72,11 @@ const StaffEvent = () => {
     }`;
 
   return (
-    <div className='flex flex-row w-full h-screen overflow-hidden font-sans bg-white'>
+    <div className='flex flex-row w-full overflow-hidden font-sans bg-white'>
       {/* Sidebar */}
     
       {/* Main Content */}
-      <div ref={scrollContainerRef} className='flex-1 h-screen bg-gray-50/50 overflow-y-auto scroll-smooth'>
+      <div ref={scrollContainerRef} className='flex-1 bg-gray-50/50 overflow-y-auto scroll-smooth'>
         {/* Header */}
        
 

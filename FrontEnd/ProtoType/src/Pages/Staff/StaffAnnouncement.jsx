@@ -59,7 +59,7 @@ const StaffAnnouncement = () => {
     }`;
 
   return (
-    <div className='flex flex-row w-full h-screen overflow-hidden font-sans bg-white'>
+    <div className='flex flex-row w-full overflow-hidden font-sans bg-white'>
       {/* Sidebar */}
       {/* <aside className='w-64 h-screen p-5 border-r border-gray-100 shrink-0 flex flex-col'>
         <div className='flex mb-10 items-center gap-3 px-2'>
@@ -80,7 +80,7 @@ const StaffAnnouncement = () => {
       </aside> */}
 
       {/* Main Content */}
-      <div ref={scrollContainerRef} className='flex-1 h-screen bg-gray-50/50 overflow-y-auto'>
+      <div ref={scrollContainerRef} className='flex-1  bg-gray-50/50 overflow-y-auto'>
         {/* Header */}
         {/* <header className='h-20 bg-white/80 backdrop-blur-md w-full flex items-center justify-between px-8 sticky top-0 z-20 border-b border-gray-100'> 
           <h1 className='text-2xl font-black text-gray-900'>{activeTitle}</h1>

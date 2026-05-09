@@ -188,6 +188,10 @@ function App() {
           element : <TeacherExamRoutine/>
         },
         {
+          path : "support",
+          element : <TeacherSupport/>
+        },
+        {
           path : "*",
           element : <Navigate to="profile"/>
         }

@@ -113,7 +113,7 @@ const StudentAnnouncement = () => {
   
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] font-sans text-gray-900">
+    <div className=" font-sans text-gray-900">
       
       <main className="">
         <div className="">
