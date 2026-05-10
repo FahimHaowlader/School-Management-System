@@ -70,6 +70,7 @@ import PrincipalAnnouncement from './Pages/Principal/PrincipalAnnouncement';
 import PrincipalSupport from './Pages/Principal/PrincipalSupport';
 import PrincipalEvent from './Pages/Principal/PrincipalEvent';
 import PrincipalClassRoutine from './Pages/Principal/PrincipalClassRoutine';
+import PrincipalClassSection from './Pages/Principal/PrincipalClasssection';  
 
 
 
@@ -222,6 +223,10 @@ function App() {
           element : <PrincipalEvent/>
         },
         {
+          path : "support",
+          element : <PrincipalSupport/>
+        },
+        {
           path : "syllabus",
           element : <PrincipalSyllabus/>
         },
@@ -254,8 +259,8 @@ function App() {
           element:<PrincipalStaffPerformance/>
         },
         {
-          path:"class-section",
-          element:<PrincipalClassRoutine/>
+          path:"sections",
+          element:<PrincipalClassSection/>
         },
         {
           path:"add-parent",
