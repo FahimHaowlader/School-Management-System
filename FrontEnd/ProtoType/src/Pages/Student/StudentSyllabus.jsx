@@ -61,7 +61,7 @@ const StudentSyllabus = () => {
   );
 
   return (
-    <div className="flex min-h-screen bg-gray-50 font-sans text-gray-900">
+    <div className="flex  bg-gray-50 font-sans text-gray-900">
       
    
 

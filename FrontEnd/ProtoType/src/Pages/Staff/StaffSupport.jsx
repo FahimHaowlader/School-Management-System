@@ -44,12 +44,12 @@ const StaffSupport = () => {
     }`;
 
   return (
-    <div className='flex flex-row w-full h-screen overflow-hidden font-sans bg-white'>
+    <div className='flex flex-row w-full  overflow-hidden font-sans bg-white'>
      
      
 
       {/* Main Content */}
-      <div ref={scrollContainerRef} className='flex-1 h-screen bg-gray-50/50 overflow-y-auto'>
+      <div ref={scrollContainerRef} className='flex-1  bg-gray-50/50 overflow-y-auto'>
      
 
         <main className=''>

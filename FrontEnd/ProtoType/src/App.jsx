@@ -98,6 +98,8 @@ import ParentClassRoutine from './Pages/Parent/ParentClassRoutine';
 import ParentSupport from './Pages/Parent/ParentSupport';
 import ParentSyllabus from './Pages/Parent/ParentSyllabus';
 import ParentEvent from './Pages/Parent/ParentEvent';
+import ParentAssignment from './Pages/Parent/ParentAssignment';
+import ParentStudentProfile from './Pages/Parent/ParentStudentProfile';
 
 // Technician Page 
 import TechnicianProfile from './Pages/Technician/TechnicianProfile';
@@ -312,6 +314,14 @@ function App() {
           element:<ParentEvent/>
         },
         {
+          path:"routine",
+          element:<ParentClassRoutine/>
+        },
+        {
+          path:"assignment",
+          element:<ParentAssignment/>
+        },
+        {
           path:"announcement",
           element:<ParentAnnouncement/>
         },
@@ -320,9 +330,10 @@ function App() {
           element:<ParentSyllabus/>
         },
         {
-          path:'routine',
-          element:"<ParentClassRoutine/>"
-        }
+          path: "student-profile",
+          element: <ParentStudentProfile />
+        },
+
       ]
     },
     {
