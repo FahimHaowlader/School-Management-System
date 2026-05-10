@@ -112,7 +112,8 @@ import TechnicianAddStudent from './Pages/Technician/TechnicianAddStudent';
 import TechnicianAddStaff from './Pages/Technician/TechnicianAddStaff';
 import TechnicianAddTeacher from './Pages/Technician/TeachnicianAddTeacher';
 import TechnicianAnnouncement from './Pages/Technician/TechinicianAnnouncement';
-import TechnicianSyllabus from './Pages/Technician/TechinicianSyllabus'
+import TechnicianSyllabus from './Pages/Technician/TechinicianSyllabus';
+import TechnicianSupport from './Pages/Technician/TechnicianSupport';
 
 function App() {
   const router = createBrowserRouter([
@@ -363,7 +364,7 @@ function App() {
         },
         {
           path:"syllabus",
-          element:<Technician/>
+          element:<TechnicianSyllabus/>
         },
         {
           path:"add-parent",
@@ -378,12 +379,20 @@ function App() {
           element:<TechnicianAddStaff/>
         },
         {
-          path:"routine",
+          path:"routines",
           element:<TechnicianClassRoutine/>
         },
         {
           path:"event",
           element: <TechnicianEvent/>
+        },
+        {
+          path:"sections",
+          element:<TechnicianClassSection/>
+        },
+        {
+          path:"support",
+          element:<TechnicianSupport/>
         }
 
       ]
