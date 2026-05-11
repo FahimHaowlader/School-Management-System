@@ -1,12 +1,12 @@
 //import package components
-import { useState } from 'react'
-import { createBrowserRouter, RouterProvider,Navigate } from 'react-router'
+import { useState } from "react";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router";
 
 //import global css
 //
 
-// import local  css 
-import './App.css'
+// import local  css
+import "./App.css";
 
 // import global middlewares
 //
@@ -18,7 +18,8 @@ import './App.css'
 //
 
 // import local Layouts
-//
+import MainLayout from "./Layouts/MainLayout";
+import ProxyLayout from "./Layouts/ProxyLayout";
 
 // import global hooks
 //
@@ -41,27 +42,23 @@ import './App.css'
 // import global pages
 //
 
-// import local pages 
-import Profile from './Pages/Profile/Profile' 
-import Fee from './Pages/Fee/Fee'
-import Calender from './Pages/Calender/Calender'
-import Routine from './Pages/Routine/Routine'
-import Announcement from './Pages/Announcement/Announcement'
-import Result from './Pages/Result/Result'
-import Certificate from './Pages/Certificate/Certificate'
-import Assignment from './Pages/Assignment/Assignment'
-import Attendance from './Pages/Attendance/Attendance'
-import Support from './Pages/Support/Support'
-import Syllabus from './Pages/Syllabus/Syllabus'
-import Event from './Pages/Event/Event'
-import NotFound from './Pages/NotFound/NotFound'  
-
-
+// import local pages
+import Profile from "./Pages/Profile/Profile";
+import Fee from "./Pages/Fee/Fee";
+import Calender from "./Pages/Calender/Calender";
+import Routine from "./Pages/Routine/Routine";
+import Announcement from "./Pages/Announcement/Announcement";
+import Result from "./Pages/Result/Result";
+import Certificate from "./Pages/Certificate/Certificate";
+import Assignment from "./Pages/Assignment/Assignment";
+import Attendance from "./Pages/Attendance/Attendance";
+import Support from "./Pages/Support/Support";
+import Syllabus from "./Pages/Syllabus/Syllabus";
+import Event from "./Pages/Event/Event";
+import NotFound from "./Pages/NotFound/NotFound";
 
 function App() {
-
-
-  const router = createBrowserRouter([  
+  const router = createBrowserRouter([
     // {
     //   path: "/",
     //   children: [
@@ -69,71 +66,77 @@ function App() {
     //       index: true,
     //       Component : Profile
     //     },
-    //     { 
-    //       path: "profile", 
+    //     {
+    //       path: "profile",
     //     Component : Profile
     //     }
     //   ]
     // },
     {
-      path: "/",
-      element : <Navigate to="/profile"/>
+      path: "",
+      element: <ProxyLayout />,
+      children: [
+        {
+          path: "",
+          element: <Navigate to="/profile" />,
+        },
+        {
+          path: "/profile",
+          Component: Profile,
+        },
+        {
+          path: "/fee",
+          Component: Fee,
+        },
+        {
+          path: "/calender",
+          Component: Calender,
+        },
+        {
+          path: "/routine",
+          Component: Routine,
+        },
+        {
+          path: "/announcement",
+          Component: Announcement,
+        },
+        {
+          path: "/result",
+          Component: Result,
+        },
+        {
+          path: "/certificate",
+          Component: Certificate,
+        },
+        {
+          path: "/assignment",
+          Component: Assignment,
+        },
+        {
+          path: "/attendance",
+          Component: Attendance,
+        },
+        {
+          path: "/support",
+          Component: Support,
+        },
+        {
+          path: "/syllabus",
+          Component: Syllabus,
+        },
+        {
+          path: "/event",
+          Component: Event,
+        },
+        {
+          path: "*",
+          Component: NotFound,
+        },
+      ],
     },
-    {
-      path: "/profile",
-      Component : Profile 
-    },
-    {
-      path: "/fee",
-      Component : Fee
-    },
-    {
-      path: "/calender",
-      Component : Calender
-    },
-    {
-      path: "/routine",
-      Component : Routine
-    },
-    {
-      path: "/announcement",
-      Component : Announcement
-    },
-    {
-      path: "/result",
-      Component : Result
-    },
-    {
-      path: "/certificate",
-      Component : Certificate
-    },
-    {
-      path: "/assignment",
-      Component : Assignment
-    },
-    {
-      path: "/attendance",
-      Component : Attendance
-    },
-    {
-      path: "/support",
-      Component : Support
-    },
-    {
-      path: "/syllabus",
-      Component : Syllabus
-    },
-    { 
-      path: "/event",
-      Component : Event
-    },
-    {
-      path: "*",
-      Component : NotFound
-    }
   ]);
 
-  return  <RouterProvider router={router}/>
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
