@@ -74,7 +74,7 @@ function App() {
     // },
     {
       path: "",
-      element: <ProxyLayout />,
+      element: <MainLayout />,
       children: [
         {
           path: "",
