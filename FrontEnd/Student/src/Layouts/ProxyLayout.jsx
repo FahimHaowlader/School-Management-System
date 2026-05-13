@@ -1,58 +1,117 @@
 import React, { useState } from 'react'
+import { Outlet } from 'react-router'
+import DashBoardFooter from '@Global/Components/DashBoardFooter'
 
-const ProxyLayout = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  // Define widths for easy maintenance
-  const sidebarWidth = isCollapsed ? 'w-16' : 'w-1/4';
-  const contentWidth = isCollapsed ? 'w-[calc(100%-4rem)]' : 'w-3/4';
+const MainLayout = () => {
+  const [isMinimized, setIsMinimized] = useState(false);
 
   return (
-    <div className='relative'>
-      {/* 1. STICKY HEADER */}
-      <div className='flex sticky top-0 z-10 bg-white border-b h-16 items-center transition-all duration-300'>
-        {/* LOGO SECTION: Shrinks when collapsed */}
-        <div className={`${sidebarWidth} flex items-center justify-center border-r h-full overflow-hidden transition-all duration-300`}>
-          <button 
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="font-bold whitespace-nowrap"
-          >
-            {isCollapsed ? 'L' : 'Logo'}
-          </button>
-        </div>
+    // relative allows z-index to function correctly against children
+    <div className='relative flex flex-col min-h-screen'>
+      
+      {/* 1. Main Flex Container */}
+      <div className='flex flex-grow'>
         
-        {/* TOP NAV SECTION: Expands when sidebar shrinks */}
-        <div className={`${contentWidth} px-4 transition-all duration-300`}>
-          My Layout
-        </div>
-      </div>
-
-      <div className='flex'>
-        {/* 2. SIDEBAR SECTION */}
-        <div className={`${sidebarWidth} h-[calc(100vh-64px)] overflow-y-scroll border-r sticky top-16 transition-all duration-300 bg-white`}>
-          {Array(50).fill(0).map((_, i) => (
-            <p key={i} className="p-2 whitespace-nowrap overflow-hidden">
-              {isCollapsed ? '🏠' : `Link ${i + 1}`}
-            </p>
-          ))}
-        </div>
-
-        {/* 3. MAIN CONTENT SECTION */}
-        <div className={`${contentWidth} p-10 transition-all duration-300`}>
-          <div className='h-[250vh] bg-gray-50 p-4 rounded-lg'>
-            <h2 className="text-xl font-bold">Main Content Area</h2>
-            <p>The sidebar is currently: <b>{isCollapsed ? 'Minimized' : 'Expanded'}</b></p>
-            <p className="mt-4">Scroll down to see the footer slide over the top.</p>
+        {/* SIDEBAR - Lower z-index so footer can cover it */}
+        <aside 
+          className={`bg-gray-100 h-screen sticky top-0 transition-all duration-300 flex flex-col z-10 border-r border-gray-200 ${
+            isMinimized ? 'w-20' : 'w-60'
+          }`}
+        >
+          {/* Fixed Logo Section */}
+          <div 
+            onClick={() => setIsMinimized(!isMinimized)}
+            className='bg-red-500 h-10 flex-shrink-0 flex items-center justify-center cursor-pointer hover:bg-red-600 transition-colors sticky top-0'
+          >
+            <h1 className='font-bold text-white'>{isMinimized ? 'L' : 'LOGO'}</h1>
           </div>
-        </div>
+
+          {/* SCROLLABLE Navigation Links */}
+         <div 
+  className='overflow-y-auto p-4 flex-grow custom-scrollbar' 
+  style={{ direction: 'rtl' }} 
+>
+  {/* 2. We set direction back to 'ltr' so the text/icons look normal */}
+  <div style={{ direction: 'ltr' }} className='space-y-8' >
+            
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              {/* <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p>
+              <p className='truncate font-medium text-gray-700'>
+                {isMinimized ? '🏠' : `Navigation ${ 1}`}
+              </p> */}
+            </div>
+          </div>
+        </aside>
+
+        {/* MAIN CONTENT AREA */}
+        <main className='flex-grow flex flex-col'>
+          {/* Header - Lower z-index than footer */}
+          <header className='sticky top-0 bg-white h-10 flex-shrink-0 flex items-center px-4 border-b border-gray-300 z-10'>
+            <h1 className='text-lg font-bold text-gray-800'>Main Layout Header</h1>
+          </header>
+          
+          {/* Content - Ensure enough height to test scrolling */}
+          <div className='p-6 flex-grow bg-white'>
+            <div className="min-h-[150vh]">
+               <Outlet />
+               <p className="mt-4 text-gray-500">Scroll down to see the footer cover the sidebar and header...</p>
+            </div>
+          </div>
+        </main>
       </div>
 
-      {/* 4. FOOTER: Higher z-index to cover everything */}
-      <div className='relative z-20 h-screen bg-slate-800 text-white flex items-center justify-center'>
-        <h1 className="text-4xl">Footer (Covers Screen)</h1>
+      {/* 2. Full Width Footer - Higher z-index + relative + solid background */}
+      <div className='relative z-20 bg-white'> 
+         <DashBoardFooter />
       </div>
     </div>
   )
 }
 
-export default ProxyLayout
+export default MainLayout

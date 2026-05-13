@@ -1,24 +1,43 @@
-import React, { useState } from 'react'
-import { Outlet } from 'react-router'
+// import Package components
+import React, { useState, useEffect, useRef } from 'react'
+import { Outlet, NavLink } from 'react-router'
+
+// import  Global Components
 import DashBoardFooter from '@Global/Components/DashBoardFooter'
 
 const MainLayout = () => {
   const [isMinimized, setIsMinimized] = useState(false);
+  const [activeTitle, setActiveTitle] = useState('Profile');
+
+  // Logic: Scroll the entire window to the top when the title changes
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+  }, [activeTitle]);
+
+  const navLinkClasses = ({ isActive }) => 
+    `flex items-center gap-3 py-2 rounded-lg transition-colors  ${
+      isActive 
+        ? 'text-blue-600 bg-blue-50 font-bold' 
+        : 'text-gray-600 hover:bg-gray-100'
+    }`;
 
   return (
-    // relative allows z-index to function correctly against children
+    // min-h-screen allows the page to grow. relative + z-index for footer.
     <div className='relative flex flex-col min-h-screen'>
       
-      {/* 1. Main Flex Container */}
       <div className='flex flex-grow'>
         
-        {/* SIDEBAR - Lower z-index so footer can cover it */}
+        {/* SIDEBAR - Lower z-index (z-10) */}
         <aside 
           className={`bg-gray-100 h-screen sticky top-0 transition-all duration-300 flex flex-col z-10 border-r border-gray-200 ${
             isMinimized ? 'w-20' : 'w-60'
           }`}
         >
-          {/* Fixed Logo Section */}
+          {/* Logo Section - Will be covered by footer because footer is z-20 */}
           <div 
             onClick={() => setIsMinimized(!isMinimized)}
             className='bg-red-500 h-10 flex-shrink-0 flex items-center justify-center cursor-pointer hover:bg-red-600 transition-colors sticky top-0'
@@ -26,88 +45,70 @@ const MainLayout = () => {
             <h1 className='font-bold text-white'>{isMinimized ? 'L' : 'LOGO'}</h1>
           </div>
 
-          {/* SCROLLABLE Navigation Links */}
-         <div 
-  className='overflow-y-auto p-4 flex-grow custom-scrollbar' 
-  style={{ direction: 'rtl' }} 
->
-  {/* 2. We set direction back to 'ltr' so the text/icons look normal */}
-  <div style={{ direction: 'ltr' }} className='space-y-8' >
+          <div 
+            className='overflow-y-auto p-4 flex-grow custom-scrollbar' 
+            style={{ direction: 'rtl' }} 
+          >
+            <div style={{ direction: 'ltr' }} className='space-y-8' >
+              <p className='truncate font-medium text-gray-700'>{isMinimized ? '🏠' : `Navigation 1`}</p>
+              
+              <NavLink to="/profile" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
+                {isMinimized ? '👤' : `Navigation 11`}
+              </NavLink>
+              
+              <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `Navigation 11`}
+              </NavLink>
+
             
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              {/* <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p>
-              <p className='truncate font-medium text-gray-700'>
-                {isMinimized ? '🏠' : `Navigation ${ 1}`}
-              </p> */}
+               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `📚 Attendance`}
+              </NavLink>
+               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `📚 Assignment`}
+              </NavLink>
+               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `📚 Announcement`}
+              </NavLink>
+               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `📚 Syllabus`}
+              </NavLink>
+               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `📚 Syllabus`}
+              </NavLink>
+               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `📚 Syllabus`}
+              </NavLink>
+               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `📚 Syllabus`}
+              </NavLink>
+               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `📚 Syllabus`}
+              </NavLink>
+               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `📚 Syllabus`}
+              </NavLink>
             </div>
           </div>
         </aside>
 
         {/* MAIN CONTENT AREA */}
         <main className='flex-grow flex flex-col'>
-          {/* Header - Lower z-index than footer */}
+          {/* Header - z-10 means it will vanish under the z-20 footer */}
           <header className='sticky top-0 bg-white h-10 flex-shrink-0 flex items-center px-4 border-b border-gray-300 z-10'>
-            <h1 className='text-lg font-bold text-gray-800'>Main Layout Header</h1>
+            <h1 className='text-lg font-bold text-gray-800'>Main Layout Header {activeTitle}</h1>
           </header>
           
-          {/* Content - Ensure enough height to test scrolling */}
-          <div className='p-6 flex-grow bg-white'>
-            <div className="min-h-[150vh]">
+          <div className='p-4 flex-grow bg-white'>
+            <div className="min-h-[250vh]">
                <Outlet />
-               <p className="mt-4 text-gray-500">Scroll down to see the footer cover the sidebar and header...</p>
             </div>
           </div>
         </main>
       </div>
 
-      {/* 2. Full Width Footer - Higher z-index + relative + solid background */}
-      <div className='relative z-20 bg-white'> 
+      {/* FOOTER - z-20 ensures it goes OVER the sidebar and header */}
+      <div className='relative z-20 bg-white border-t border-gray-200'> 
          <DashBoardFooter />
       </div>
     </div>
