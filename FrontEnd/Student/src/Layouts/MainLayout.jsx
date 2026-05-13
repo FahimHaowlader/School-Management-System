@@ -32,11 +32,11 @@ const MainLayout = () => {
       <div className='flex flex-grow'>
         
         {/* SIDEBAR - Lower z-index (z-10) */}
-        <aside 
-          className={`bg-gray-100 h-screen sticky top-0 transition-all duration-300 flex flex-col z-10 border-r border-gray-200 ${
-            isMinimized ? 'w-20' : 'w-60'
-          }`}
-        >
+       <aside 
+  className={`bg-white h-screen sticky top-0 transition-all duration-300 flex flex-col z-10 border-r border-gray-200 flex-shrink-0 ${
+    isMinimized ? 'w-20' : 'w-60'
+  }`}
+>
           {/* Logo Section - Will be covered by footer because footer is z-20 */}
           <div 
             onClick={() => setIsMinimized(!isMinimized)}
@@ -52,6 +52,12 @@ const MainLayout = () => {
             <div style={{ direction: 'ltr' }} className='space-y-8' >
               <p className='truncate font-medium text-gray-700'>{isMinimized ? '🏠' : `Navigation 1`}</p>
               
+              <NavLink to="/profile" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
+                {isMinimized ? '👤' : `Navigation 11`}
+              </NavLink>
+              <NavLink to="/profile" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
+                {isMinimized ? '👤' : `Navigation 11`}
+              </NavLink>
               <NavLink to="/profile" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
                 {isMinimized ? '👤' : `Navigation 11`}
               </NavLink>
@@ -99,7 +105,7 @@ const MainLayout = () => {
             <h1 className='text-lg font-bold text-gray-800'>Main Layout Header {activeTitle}</h1>
           </header>
           
-          <div className='p-4 flex-grow bg-white'>
+          <div className='p-4 flex-grow bg-gray-50'>
             <div className="min-h-[250vh]">
                <Outlet />
             </div>
