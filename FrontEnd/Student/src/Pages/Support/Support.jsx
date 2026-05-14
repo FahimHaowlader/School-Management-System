@@ -42,10 +42,10 @@ const Support = () => {
 
   return (
     <div className="min-h-screen w-full  font-san text-slate-900 ">
-      <main className="max-w-6xl mx-auto space-y-6">
+      <main className=" space-y-5">
         
         {/* --- MAIN CONTENT GRID --- */}
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-5">
           {supportDirectory.map((item, idx) => (
             <div key={idx} className="bg-white rounded-xl shadow-sm hover:shadow-md border border-slate-100 overflow-hidden group hover:border-slate-200 transition-all">
               <div className="flex flex-col lg:flex-row">

@@ -50,36 +50,36 @@ const MainLayout = () => {
             style={{ direction: 'rtl' }} 
           >
             <div style={{ direction: 'ltr' }} className='space-y-8' >
-              <p className='truncate font-medium text-gray-700'>{isMinimized ? '🏠' : `Navigation 1`}</p>
+              
               
               <NavLink to="/profile" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
                 {isMinimized ? '👤' : `Navigation 11`}
               </NavLink>
-              <NavLink to="/profile" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
+              <NavLink to="/routine" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
                 {isMinimized ? '👤' : `Navigation 11`}
               </NavLink>
               <NavLink to="/profile" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
                 {isMinimized ? '👤' : `Navigation 11`}
               </NavLink>
               
-              <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+              <NavLink to="/event" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
                 {isMinimized ? '📚' : `Navigation 11`}
               </NavLink>
 
             
-               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+               <NavLink to="/announcement" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
                 {isMinimized ? '📚' : `📚 Attendance`}
               </NavLink>
                <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
                 {isMinimized ? '📚' : `📚 Assignment`}
               </NavLink>
-               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+               <NavLink to="/assignment" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
                 {isMinimized ? '📚' : `📚 Announcement`}
               </NavLink>
                <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
                 {isMinimized ? '📚' : `📚 Syllabus`}
               </NavLink>
-               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
+               <NavLink to="/support" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
                 {isMinimized ? '📚' : `📚 Syllabus`}
               </NavLink>
                <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
