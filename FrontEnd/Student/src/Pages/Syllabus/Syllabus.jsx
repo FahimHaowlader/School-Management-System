@@ -52,7 +52,7 @@ const Syllabus = () => {
     <div className=" font-sans ">
       <div className="">
         {/* Search Bar Section */}
-        <div className="relative mb-6 group">
+        <div className="relative mb-5 group">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
             <Icon name="search" />
           </div>

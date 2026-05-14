@@ -3,10 +3,10 @@ import { MdChevronLeft, MdChevronRight,MdSchool,MdLayers } from "react-icons/md"
 
 const SubjectBox = ({ subject, teacher }) => (
   <div className="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300">
-    <p className="font-bold text-[10px] text-slate-800 uppercase tracking-tight text-center leading-tight">
+    <p className="font-bold text-[12px] text-slate-800 uppercase tracking-tight text-center leading-tight">
       {subject}
     </p>
-    <p className="text-[8px] font-medium text-slate-500 text-center mt-1 uppercase tracking-wider">
+    <p className="text-[10px] font-medium text-slate-500 text-center mt-1 uppercase tracking-wider">
       {teacher}
     </p>
   </div>
@@ -92,9 +92,9 @@ const Routine = () => {
           <table className="w-full border-separate border-spacing-x-2 border-spacing-y-0">
             <thead>
               <tr>
-                <th className="pb-4 pl-1 text-left text-[9px] font-black uppercase tracking-[0.2em] text-slate-600">Time</th>
+                <th className="pb-4 pl-1 text-left text-[12px] font-black uppercase tracking-[0.2em] text-slate-600">Time</th>
                 {days.map(day => (
-                  <th key={day} className="pb-4 text-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">
+                  <th key={day} className="pb-4 text-center text-[12px] font-black uppercase tracking-[0.2em] text-slate-900">
                     {day}
                   </th>
                 ))}
@@ -105,7 +105,7 @@ const Routine = () => {
                 <React.Fragment key={slot}>
                   <tr>
                     <td className="py-2 whitespace-nowrap">
-                      <div className="text-[11px] font-black text-slate-900">{slot.split(' - ')[0]}</div>
+                      <div className="text-[12px] font-black text-slate-900">{slot.split(' - ')[0]}</div>
                       <div className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">to {slot.split(' - ')[1]}</div>
                     </td>
                     
@@ -125,7 +125,7 @@ const Routine = () => {
                       <td colSpan="7" className="py-4">
                         <div className="flex items-center justify-center gap-8">
                            <div className="h-[1px] flex-1 bg-slate-200"></div>
-                           <span className="text-[8px] font-black text-slate-900 uppercase tracking-[0.8em] whitespace-nowrap">
+                           <span className="text-[12px] font-black text-slate-900 uppercase tracking-[0.8em] whitespace-nowrap">
                              Lunch & Prayer Break
                            </span>
                            <div className="h-[1px] flex-1 bg-slate-200"></div>

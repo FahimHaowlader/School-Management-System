@@ -53,47 +53,51 @@ const MainLayout = () => {
               
               
               <NavLink to="/profile" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
-                {isMinimized ? '👤' : `Navigation 11`}
+                {isMinimized ? '👤' : `Profile`}
               </NavLink>
-              <NavLink to="/routine" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
-                {isMinimized ? '👤' : `Navigation 11`}
-              </NavLink>
-              <NavLink to="/profile" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
-                {isMinimized ? '👤' : `Navigation 11`}
+              <NavLink to="/routine" onClick={() => setActiveTitle("Routine")} className={navLinkClasses}>
+                {isMinimized ? '�' : `Routine`}
               </NavLink>
               
-              <NavLink to="/event" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
-                {isMinimized ? '📚' : `Navigation 11`}
+              <NavLink to="/event" onClick={() => setActiveTitle("Event")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `Event`}
               </NavLink>
 
             
-               <NavLink to="/announcement" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
-                {isMinimized ? '📚' : `📚 Attendance`}
+               <NavLink to="/announcement" onClick={() => setActiveTitle("Announcement")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `Announcement`}
               </NavLink>
-               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
-                {isMinimized ? '📚' : `📚 Assignment`}
+               <NavLink to="/assignment" onClick={() => setActiveTitle("Assignment")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `Assignment`}
               </NavLink>
-               <NavLink to="/assignment" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
-                {isMinimized ? '📚' : `📚 Announcement`}
+              
+               <NavLink to="/syllabus" onClick={() => setActiveTitle("Syllabus")} className={navLinkClasses}>
+                {isMinimized ? '📚' : ` Syllabus`}
               </NavLink>
-               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
-                {isMinimized ? '📚' : `📚 Syllabus`}
+               <NavLink to="/support" onClick={() => setActiveTitle("Support")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `Support`}
               </NavLink>
-               <NavLink to="/support" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
-                {isMinimized ? '📚' : `📚 Syllabus`}
-              </NavLink>
-               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
-                {isMinimized ? '📚' : `📚 Syllabus`}
-              </NavLink>
-               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
-                {isMinimized ? '📚' : `📚 Syllabus`}
-              </NavLink>
-               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
-                {isMinimized ? '📚' : `📚 Syllabus`}
-              </NavLink>
-               <NavLink to="/syllabus" onClick={() => setActiveTitle("syllabus")} className={navLinkClasses}>
-                {isMinimized ? '📚' : `📚 Syllabus`}
-              </NavLink>
+
+               {/* <NavLink to="/certificate" onClick={() => setActiveTitle("Certificate")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `Certificate`}
+              </NavLink> */}
+
+               {/* <NavLink to="/calender" onClick={() => setActiveTitle("Calender")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `Calender`}
+              </NavLink> */}
+
+               {/* <NavLink to="/attendance" onClick={() => setActiveTitle("Attendance")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `Attendance`}
+              </NavLink> */}
+
+               {/* <NavLink to="/fee" onClick={() => setActiveTitle("Fee")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `Fee`}
+              </NavLink> */}
+
+               {/* <NavLink to="/result" onClick={() => setActiveTitle("Result")} className={navLinkClasses}>
+                {isMinimized ? '📚' : `Result`}
+              </NavLink> */}
+
             </div>
           </div>
         </aside>
@@ -106,7 +110,7 @@ const MainLayout = () => {
           </header>
           
           <div className='p-4 flex-grow bg-gray-50'>
-            <div className="min-h-[250vh]">
+            <div className="">
                <Outlet />
             </div>
           </div>
