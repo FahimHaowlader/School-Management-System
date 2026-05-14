@@ -54,7 +54,7 @@ const Event = () => {
   const categories = ["All", "Academic", "Sports", "Cultural"];
   
   return (
-    <div className="min-h-screen font-sans text-slate-900">
+    <div className="font-sans text-slate-900">
       <div className="">
         {/* Action Bar with matched heights */}
         <div className="flex flex-col md:flex-row items-stretch gap-3 mb-5">
