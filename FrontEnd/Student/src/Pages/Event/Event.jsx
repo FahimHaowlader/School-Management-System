@@ -59,16 +59,16 @@ const Event = () => {
         {/* Action Bar with matched heights */}
         <div className="flex flex-col md:flex-row items-stretch gap-3 mb-5">
           {/* Search Input Container */}
-          <div className="relative flex-grow h-11">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-              <Icon name="search" className="w-4 h-4" />
-            </div>
-            <input 
-              type="text" 
-              placeholder="Search for events..." 
-              className="w-full h-full pl-11 pr-4 bg-white border border-slate-200 rounded-xl shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 transition-all text-sm font-medium"
-            />
-          </div>
+         <div className="relative flex-grow h-11 group"> {/* Added 'group' here */}
+  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+    <Icon name="search" className="w-5 h-5" />
+  </div>
+  <input 
+    type="text" 
+    placeholder="Search for events..." 
+    className="w-full h-full pl-11 pr-4 bg-white border border-slate-200 rounded-xl shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 transition-all text-sm font-medium"
+  />
+</div>
           
           {/* Filter Options - Heights match the search input */}
           <div className="flex items-center gap-2">

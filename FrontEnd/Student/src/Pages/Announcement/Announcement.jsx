@@ -21,7 +21,7 @@ const AnnouncementCard = ({ type, title, description, date, imageUrl, unread }) 
   };
 
   return (
-    <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg transition-all group">
+    <div className="p-5 bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg transition-all group">
       <div className="flex flex-col md:flex-row gap-6">
         {/* Thumbnail - Original Size */}
         <div className="w-full md:w-48 lg:w-64 h-40 shrink-0 overflow-hidden rounded-lg border border-slate-100">
@@ -88,13 +88,13 @@ const Announcement = () => {
         
         {/* Search & Filter Row - Unified Height */}
         <div className="flex flex-col lg:flex-row items-stretch gap-3">
-          <div className="relative flex-grow h-11">
+          <div className="relative flex-grow h-11 group">
             <input 
               type="text" 
               placeholder="Search announcements..." 
               className="w-full h-11 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all shadow-sm"
             />
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><Icon name="search" className="w-4 h-4" /></span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500"><Icon name="search" className="w-5 h-5" /></span>
           </div>
 
           <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto no-scrollbar">

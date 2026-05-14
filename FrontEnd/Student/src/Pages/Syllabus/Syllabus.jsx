@@ -49,17 +49,17 @@ const Syllabus = () => {
 
   return (
     <div>
-    <div className="min-h-screen font-sans ">
+    <div className=" font-sans ">
       <div className="">
         {/* Search Bar Section */}
-        <div className="relative mb-8 group">
+        <div className="relative mb-6 group">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
             <Icon name="search" />
           </div>
           <input 
             type="text" 
-            placeholder="Search subject or teacher..." 
-            className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-xl shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 transition-all text-sm font-medium placeholder:text-slate-400"
+            placeholder="Search subject ..." 
+            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 transition-all text-sm font-medium placeholder:text-slate-400"
           />
         </div>
 
