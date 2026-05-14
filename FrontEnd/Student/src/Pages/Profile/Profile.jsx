@@ -14,9 +14,9 @@ const Profile = () => {
             
             {/* Combined Profile & Academic Section */}
             <div className="col-span-1 xl:col-span-2">
-              <div className="flex flex-col gap-y-6 rounded-xl shadow-sm bg-white p-6 border border-slate-200">
+              <div className="flex flex-col gap-y-5 rounded-xl shadow-sm bg-white p-6 border border-slate-200">
                 
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-5">
                   {/* Left Side: Profile Pic & Name */}
                   <div className="flex flex-col md:flex-row items-center gap-6">
                     <div className="relative flex-shrink-0 group cursor-pointer">
