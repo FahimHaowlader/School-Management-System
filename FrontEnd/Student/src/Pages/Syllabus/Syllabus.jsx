@@ -53,13 +53,15 @@ const Syllabus = () => {
       <div className="">
         {/* Search Bar Section */}
         <div className="relative mb-5 group">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
-            <Icon name="search" />
-          </div>
+           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5  h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
           <input 
             type="text" 
             placeholder="Search subject ..." 
-            className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 transition-all text-sm font-medium placeholder:text-slate-400"
+            className="w-full pl-12 pr-4 py-[11px] bg-white border border-slate-200 rounded-xl shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 transition-all text-sm font-medium placeholder:text-slate-400"
           />
         </div>
 
