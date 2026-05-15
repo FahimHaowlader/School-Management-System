@@ -84,14 +84,14 @@ function App() {
           path: "/profile",
           Component: Profile,
         },
-        {
-          path: "/fee",
-          Component: Fee,
-        },
-        {
-          path: "/calender",
-          Component: Calender,
-        },
+        // {
+        //   path: "/fee",
+        //   Component: Fee,
+        // },
+        // {
+        //   path: "/calender",
+        //   Component: Calender,
+        // },
         {
           path: "/routine",
           Component: Routine,
@@ -100,22 +100,22 @@ function App() {
           path: "/announcement",
           Component: Announcement,
         },
-        {
-          path: "/result",
-          Component: Result,
-        },
-        {
-          path: "/certificate",
-          Component: Certificate,
-        },
+        // {
+        //   path: "/result",
+        //   Component: Result,
+        // },
+        // {
+        //   path: "/certificate",
+        //   Component: Certificate,
+        // },
         {
           path: "/assignment",
           Component: Assignment,
         },
-        {
-          path: "/attendance",
-          Component: Attendance,
-        },
+        // {
+        //   path: "/attendance",
+        //   Component: Attendance,
+        // },
         {
           path: "/support",
           Component: Support,
