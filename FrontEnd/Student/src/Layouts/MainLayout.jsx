@@ -278,9 +278,9 @@ const MainLayout = () => {
         {/* MAIN CONTENT AREA */}
         <main className="flex-grow flex flex-col">
           {/* HIGH-END MINIMAL DASHBOARD HEADER */}
-          <header className="h-16 bg-slate-50/70 backdrop-blur-md w-full flex items-center justify-between px-8 sticky top-0 z-20  shadow-sm shadow-slate-100/40">
+          <header className="h-16 bg-slate-50/60 backdrop-blur-md w-full flex items-center justify-between px-5 sticky top-0 z-20  shadow-sm shadow-slate-100/40">
             <div className="flex flex-col text-left">
-              <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none">
+              <h1 className="text-xl uppercase font-black text-slate-900 tracking-tight leading-none">
                 {activeTitle}
               </h1>
 
@@ -346,7 +346,7 @@ const MainLayout = () => {
           </header>
 
           {/* Main Workspace Body */}
-          <div className="p-6 flex-grow bg-slate-50 min-h-[250vh]">
+          <div className="p-5 flex-grow bg-slate-50 min-h-[250vh]">
             <div>
               <Outlet context={{ isGridLayout }} />
             </div>
