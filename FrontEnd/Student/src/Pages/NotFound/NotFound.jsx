@@ -19,7 +19,7 @@ const NotFound = () => {
         <div className="text-center">
           <div className="inline-block px-2 py-1 mb-4">
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">
-              Error Code 04
+              Error Code 404
             </span>
           </div>
           
@@ -32,13 +32,13 @@ const NotFound = () => {
             Please use the side navigation to return to your dashboard.
           </p>
 
-          {/* Action Button */}
+        {/* Action Button */}
           <button 
             onClick={() => window.location.href = '/'}
-            className="group flex items-center justify-center gap-3 mx-auto px-10 py-3.5 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all  active:scale-95 shadow-xl shadow-slate-200/50"
+            className="group flex items-center justify-center gap-3 mx-auto px-8 py-3.5 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-200 active:scale-95 shadow-md "
           >
             <span>Return to Profile</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
           </button>
