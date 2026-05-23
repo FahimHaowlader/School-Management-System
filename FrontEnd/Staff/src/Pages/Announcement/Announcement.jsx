@@ -44,7 +44,7 @@ const AnnouncementCard = ({ type, title, description, date, imageUrl, unread }) 
               )}
             </div>
             
-            <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2 transition-colors group-hover:text-blue-600">
+            <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2 transition-colors ">
               {title}
             </h3>
             
