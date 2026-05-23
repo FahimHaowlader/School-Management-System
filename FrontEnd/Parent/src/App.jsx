@@ -18,7 +18,7 @@ import './App.css'
 //
 
 // import local Layouts
-//
+import MainLayout from './Layouts/MainLayout'  
 
 // import global hooks
 //
@@ -80,8 +80,18 @@ function App() {
     // },
     {
       path: "/",
-      element : <Navigate to="/profile"/>
-    },
+      element : <MainLayout/>,
+      children : [
+        {
+          index: true,
+          Component : Profile
+        },
+        {
+          path: "/profile",
+          Component : Profile
+        },
+      
+    
     {
       path: "/profile",
       Component : Profile 
@@ -142,6 +152,7 @@ function App() {
       path: "*",
       Component : NotFound
     }
+  ]}
   ]);
 
   return  <RouterProvider router={router}/>
