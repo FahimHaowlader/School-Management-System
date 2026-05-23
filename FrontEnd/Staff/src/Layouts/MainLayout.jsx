@@ -137,7 +137,7 @@ const MainLayout = () => {
         <main className='flex-grow flex flex-col'>
           
 {/* HIGH-END MINIMAL DASHBOARD HEADER */}
-<header className='h-16 bg-slate-50/50 backdrop-blur-md w-full flex items-center justify-between px-5 sticky top-0 z-20  shadow-sm shadow-slate-100/40'> 
+<header className='h-16 bg-slate-50/6ß0 backdrop-blur-md w-full flex items-center justify-between px-5 sticky top-0 z-20  shadow-sm shadow-slate-100/40'> 
   <div className='flex flex-col text-left'>
     <h1 className='text-xl uppercase font-black text-slate-900 tracking-tight leading-none'>{activeTitle}</h1>
     
@@ -190,7 +190,7 @@ const MainLayout = () => {
   </div>
 
   <span className="text-xs font-bold text-slate-600 group-hover:text-slate-900 tracking-wide transition-colors hidden md:inline">
-    Switch to Parent
+    Switch to Guardian 
   </span>
 </button>
 
