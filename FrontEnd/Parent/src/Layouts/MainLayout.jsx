@@ -64,7 +64,7 @@ const MainLayout = () => {
         
         {/* SIDEBAR */}
         <aside
-          className={`bg-white h-screen sticky top-0 transition-all duration-300 flex flex-col z-30 flex-shrink-0 border-r border-slate-100 ${
+          className={`bg-white h-screen sticky top-0 transition-all duration-300 flex flex-col z-30 flex-shrink-0  ${
             isMinimized ? "w-20" : "w-64"
           }`}
         >
@@ -79,7 +79,7 @@ const MainLayout = () => {
               </span>
             ) : (
               <div className="w-full flex items-center justify-center">
-                <span className="font-black text-slate-900 text-lg bg-slate-100 w-10 h-10 px-4 flex items-center justify-center rounded-xl shadow-inner">
+                <span className="font-black text-slate-900 text-lg bg-slate-100 w-10 h-10 px-5 flex items-center justify-center rounded-xl shadow-inner">
                   M
                 </span>
               </div>
