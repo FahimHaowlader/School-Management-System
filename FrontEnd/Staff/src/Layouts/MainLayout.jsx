@@ -57,7 +57,7 @@ const MainLayout = () => {
     </>
   ) : (
     <div className="w-full flex items-center justify-center">
-      <span className="font-black text-slate-900 text-lg bg-slate-100 px-4 w-10 h-10 flex items-center justify-center rounded-xl shadow-inner">M</span>
+      <span className="font-black text-slate-900 text-lg bg-slate-100 px-5 w-10 h-10 flex items-center justify-center rounded-xl shadow-inner">M</span>
     </div>
   )}
   
