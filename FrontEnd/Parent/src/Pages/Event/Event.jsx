@@ -28,15 +28,15 @@ const EventCard = ({ category, type, title, description, date, location, targete
   };
 
   return (
-    <div className="group bg-white border border-slate-200 shadow-sm rounded-xl p-5 flex flex-col justify-between hover:border-slate-300 hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out">
+    <div className="group bg-white border border-slate-100 shadow-sm rounded-xl p-5 flex flex-col justify-between  hover:shadow-lg  transition-all duration-300 ease-out">
       <div>
         {/* Badges Matrix */}
         <div className="flex items-center justify-between gap-2 mb-4">
           <div className="flex gap-1.5">
-            <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-blue-100 uppercase tracking-wider">
+            <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2.5 py-0.5 rounded-lg border border-blue-100 uppercase tracking-wider">
               {category}
             </span>
-            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider ${getUrgencyStyles(type)}`}>
+            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-lg border uppercase tracking-wider ${getUrgencyStyles(type)}`}>
               {type}
             </span>
           </div>
