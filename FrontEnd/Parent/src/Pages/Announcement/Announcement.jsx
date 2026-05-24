@@ -101,7 +101,7 @@ const AnnouncementCard = ({ type, title, description, date, imageUrl, unread,tar
         {/* Content Area */}
         <div className="flex flex-col justify-between flex-1 py-1">
           <div>
-            <div className="flex items-center justify-between gap-3 mb-2.5">
+            <div className="flex items-center justify-between gap-3 mb-2">
             <div className="flex items-center gap-2">
               {/* Standard Unified General-Style Type Badge */}
               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badgeStyles[type] || "bg-slate-50 text-slate-600 border-slate-100"}`}>
@@ -174,7 +174,7 @@ const Announcement = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto no-scrollbar pb-1 lg:pb-0">
+          <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto no-scrollbar">
             {categories.map((cat, i) => (
               <button 
                 key={cat}
