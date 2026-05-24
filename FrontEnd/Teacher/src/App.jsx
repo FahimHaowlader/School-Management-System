@@ -1,12 +1,12 @@
 //import package components
-import { useState } from 'react'
-import { createBrowserRouter, RouterProvider,Navigate } from 'react-router'
+import { useState } from "react";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router";
 
 //import global css
 //
 
-// import local  css 
-import './App.css'
+// import local  css
+import "./App.css";
 
 // import global middlewares
 //
@@ -36,30 +36,26 @@ import './App.css'
 //
 
 // import local components
-//
+import MainLayout from "./Layouts/MainLayout";
 
 // import global pages
 //
 
-// import local pages 
-import Profile from './Pages/Profile/Profile' 
-import Calender from './Pages/Calender/Calender'
-import Announcement from './Pages/Announcement/Announcement'
-import Attendance from './Pages/Attendance/Attendance'
-import Support from './Pages/Support/Support'
-import Event from './Pages/Event/Event'
-import Routine from './Pages/Routine/Routine'
-import NotFound from './Pages/NotFound/NotFound'  
-import Marking from './Pages/Assesment/Marking/Marking'
-import Class from './Pages/Class/Class'
-import AddStudent from './Pages/Student/AddStudent/AddStudent'
-
-
+// import local pages
+import Profile from "./Pages/Profile/Profile";
+import Calender from "./Pages/Calender/Calender";
+import Announcement from "./Pages/Announcement/Announcement";
+import Attendance from "./Pages/Attendance/Attendance";
+import Support from "./Pages/Support/Support";
+import Event from "./Pages/Event/Event";
+import Routine from "./Pages/Routine/Routine";
+import NotFound from "./Pages/NotFound/NotFound";
+import Marking from "./Pages/Assesment/Marking/Marking";
+import Class from "./Pages/Class/Class";
+import AddStudent from "./Pages/Student/AddStudent/AddStudent";
 
 function App() {
-
-
-  const router = createBrowserRouter([  
+  const router = createBrowserRouter([
     // {
     //   path: "/",
     //   children: [
@@ -67,63 +63,74 @@ function App() {
     //       index: true,
     //       Component : Profile
     //     },
-    //     { 
-    //       path: "profile", 
+    //     {
+    //       path: "profile",
     //     Component : Profile
     //     }
     //   ]
     // },
     {
       path: "/",
-      element : <Navigate to="/profile"/>
+      element: <MainLayout />,
+      children: [
+        {
+          index: true,
+          Component: Profile,
+        },
+        {
+          path: "/profile",
+          Component: Profile,
+        },
+
+        {
+          path: "/profile",
+          Component: Profile,
+        },
+        {
+          path: "/calender",
+          Component: Calender,
+        },
+        {
+          path: "/routine",
+          Component: Routine,
+        },
+        {
+          path: "/announcement",
+          Component: Announcement,
+        },
+        {
+          path: "/attendance",
+          Component: Attendance,
+        },
+        {
+          path: "/support",
+          Component: Support,
+        },
+        {
+          path: "/event",
+          Component: Event,
+        },
+        {
+          path: "/marking",
+          Component: Marking,
+        },
+        {
+          path: "/class",
+          Component: Class,
+        },
+        {
+          path: "/add-student",
+          Component: AddStudent,
+        },
+        {
+          path: "*",
+          Component: NotFound,
+        },
+      ],
     },
-    {
-      path: "/profile",
-      Component : Profile 
-    },
-    {
-      path: "/calender",
-      Component : Calender
-    },
-    {
-      path: "/routine",
-      Component : Routine
-    },
-    {
-      path: "/announcement",
-      Component : Announcement
-    },
-    {
-      path: "/attendance",
-      Component : Attendance
-    },
-    {
-      path: "/support",
-      Component : Support
-    },
-    { 
-      path: "/event",
-      Component : Event
-    },
-    {
-      path: "/marking",
-      Component : Marking
-    },
-    {
-      path: "/class",
-      Component : Class
-    },
-    {
-      path: "/add-student",
-      Component : AddStudent
-    },
-    {
-      path: "*",
-      Component : NotFound
-    }
   ]);
 
-  return  <RouterProvider router={router}/>
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
