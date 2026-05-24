@@ -15,7 +15,7 @@ const Icon = ({ name, className = "" }) => {
 };
 
 const SyllabusItem = ({ subject, className, teacher, term }) => (
-  <div className="group bg-white border border-slate-100 shadow-sm rounded-xl p-5 transition-all duration-200 hover:shadow-md cursor-default">
+  <div className="group bg-white border border-slate-100 shadow-sm rounded-xl p-5 transition-all duration-200 hover:shadow-lg cursor-default">
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="flex items-center gap-4">
         <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">

@@ -44,7 +44,7 @@ import StudentProfile from '@Global/Pages/StudentProfile/StudentProfile'
 
 
 // import local pages 
-import Profile from './Pages/Profile/Profile' 
+// import Profile from './Pages/Profile/Profile' 
 import Fee from './Pages/Fee/Fee'
 import Calender from './Pages/Calender/Calender'
 import Routine from './Pages/Routine/Routine'
@@ -57,7 +57,7 @@ import Support from './Pages/Support/Support'
 import Syllabus from './Pages/Syllabus/Syllabus'
 import Event from './Pages/Event/Event'
 import NotFound from './Pages/NotFound/NotFound'  
-
+import Profile from "./../../Staff/src/Pages/Profile/Profile"
 
 
 

@@ -60,7 +60,7 @@ const AnnouncementCard = ({ type, title, description, date, imageUrl, unread }) 
             
             {/* Redesigned Button */}
                <div className="flex items-center justify-end mt-auto pt-2">
-            <button className="group/btn flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-900 text-xs font-black rounded-xl border border-slate-100 transition-all hover:bg-slate-900 hover:text-white hover:shadow-lg active:scale-95">
+            <button className="group/btn font-bold flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-900 text-xs font-black rounded-xl border border-slate-100 transition-all hover:bg-slate-900 hover:text-white hover:shadow-lg active:scale-95">
               <span>Continue Reading</span>
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -84,7 +84,7 @@ const Announcement = () => {
 
   return (
     <div className="w-full font-sans text-slate-900">
-      <div className="space-y-6">
+      <div className="space-y-5">
         
         {/* Search & Filter Row - Unified Height */}
         <div className="flex flex-col lg:flex-row items-stretch gap-3">

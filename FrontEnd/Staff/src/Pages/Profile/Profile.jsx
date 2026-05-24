@@ -221,7 +221,7 @@ const Profile = () => {
       
       <div>
         <p className="text-slate-500 font-medium text-xs uppercase tracking-wider">Phone Number</p>
-        <p className="font-semibold mt-1 text-slate-800 capitalize whitespace-nowrap">{teacherData.emergency.phone}</p>
+        <p className="font-semibold mt-1 text-red-800 capitalize whitespace-nowrap">{teacherData.emergency.phone}</p>
       </div>
       
       <div className="min-w-0">
