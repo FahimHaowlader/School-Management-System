@@ -57,7 +57,7 @@ import StudentAnnouncement from "./Pages/Student/StudentAnnouncement";
 import StudentSupport from "./Pages/Student/StudentSupport";
 
 // Principal page
-import PrincipalAddStudent from "./Pages/Principal/principalAddStudent";
+import PrincipalAddStudent from "./Pages/Principal/PrincipalAddStudent";
 import PrincipalProfile from './Pages/Principal/PrincipalProfile'; 
 import PrincipalAddTeacher from './Pages/Principal/PrincipalAddTeacher';
 import PrincipalAddParent from './Pages/Principal/PrincipalAddParent';
@@ -77,7 +77,7 @@ import PrincipalClassSection from './Pages/Principal/PrincipalClasssection';
 // Teacher page 
 import TeacherProfile from "./Pages/Teacher/TeacherProfile";
 import TeacherAssignmnet from './Pages/Teacher/TeacherAssignment';
-import TeacherClassRoutine from './pages/Teacher/TeacherClassRoutine';
+import TeacherClassRoutine from './Pages/Teacher/TeacherClassRoutine';
 import TeacherEvent from './Pages/Teacher/TeacherEvent';
 import TeacherSupport from './Pages/Teacher/TeacherSupport';
 import TeacherSyllabus from './Pages/Teacher/TeacherSyllabus';
