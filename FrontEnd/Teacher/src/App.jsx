@@ -53,6 +53,8 @@ import NotFound from "./Pages/NotFound/NotFound";
 import Marking from "./Pages/Assesment/Marking/Marking";
 import Class from "./Pages/Class/Class";
 import AddStudent from "./Pages/Student/AddStudent/AddStudent";
+import Syllabus from "./Pages/Syllabus/Syllabus";
+import Assignment from "./Pages/Assignment/Assignment";
 
 function App() {
   const router = createBrowserRouter([
@@ -83,8 +85,8 @@ function App() {
         },
 
         {
-          path: "/profile",
-          Component: Profile,
+          path: "/assignment",
+          Component: Assignment,
         },
         {
           path: "/calender",
@@ -105,6 +107,10 @@ function App() {
         {
           path: "/support",
           Component: Support,
+        },
+        {
+          path: "/syllabus",
+          Component: Syllabus,
         },
         {
           path: "/event",

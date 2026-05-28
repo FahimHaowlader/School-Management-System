@@ -244,7 +244,7 @@ const Event = () => {
               className="w-full h-11 pl-11 pr-4 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 outline-none transition-all shadow-sm"
             />
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
-              <Icon name="search" className="w-4 h-4 stroke-[2.5]" />
+              <Icon name="search" className="w-5 h-5 stroke-[2.5]" />
             </div>
           </div>
 

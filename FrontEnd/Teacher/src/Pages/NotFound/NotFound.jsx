@@ -34,7 +34,7 @@ const NotFound = () => {
 
           {/* Action Button */}
           <button 
-            onClick={() => window.location.href = '/'}
+            onClick={() => window.location.href = '/profile'} // Adjust the path as needed
             className="group flex items-center justify-center gap-3 mx-auto px-8 py-3.5 bg-slate-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-200 active:scale-95 shadow-md "
           >
             <span>Return to Profile</span>
