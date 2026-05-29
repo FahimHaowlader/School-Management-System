@@ -57,7 +57,7 @@ import AddStudent from './Pages/Student/AddStudent/AddStudent'
 import AddTeacher from './Pages/Teacher/AddTeacher/AddTeacher' 
 import Event from './Pages/Event/Event' 
 import Announcement from './Pages/Announcement/Announcement'
-
+import Syllabus from './Pages/Syllabus/Syllabus'
 
 function App() {
 
@@ -105,6 +105,10 @@ function App() {
     {
       path: "/calender",
       Component : Calender
+    },
+    {
+      path: "/syllabus",
+      Component : Syllabus
     },
     {
       path: "/routine",
