@@ -10,7 +10,7 @@ import Pic from "../Assets/p.jpg";
 
 const MainLayout = () => {
   const [isMinimized, setIsMinimized] = useState(false);
-  const [activeTitle, setActiveTitle] = useState("Tasks");
+  const [activeTitle, setActiveTitle] = useState("Profile");
   const [isGridLayout, setIsGridLayout] = useState(true);
 
   // Logic: Scroll the entire window to the top when the section changes
@@ -34,6 +34,13 @@ const MainLayout = () => {
         : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-transparent"
     }`;
 
+  // Helper component to render Tooltips when sidebar is minimized
+  const SidebarTooltip = ({ title }) => (
+    <div className="absolute left-full ml-4 px-2.5 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md border border-slate-800 z-50">
+      {title}
+    </div>
+  );
+
   return (
     <div className="relative flex flex-col min-h-screen bg-slate-50 font-sans">
       <div className="flex flex-grow">
@@ -41,7 +48,7 @@ const MainLayout = () => {
         {/* SIDEBAR */}
         <aside
           className={`bg-white h-screen sticky top-0 transition-all duration-300 flex flex-col z-30 flex-shrink-0 ${
-            isMinimized ? "w-20" : "w-64"
+            isMinimized ? "w-24" : "w-64"
           }`}
         >
           {/* Logo/Toggle Section */}
@@ -52,7 +59,6 @@ const MainLayout = () => {
             {!isMinimized ? (
               <span className="font-black text-slate-900 text-xl tracking-tight">
                 My<span className="text-slate-500 font-medium">class</span>
-               
               </span>
             ) : (
               <div className="w-full flex items-center justify-center">
@@ -70,56 +76,139 @@ const MainLayout = () => {
           <div className="overflow-y-auto p-3 flex-grow custom-scrollbar" style={{ direction: "rtl" }}>
             <div style={{ direction: "ltr" }} className="space-y-1">
               
-              {/* Task List Dashboard */}
-              <NavLink to="/tasks" onClick={() => setActiveTitle("Tasks")} className={navLinkClasses}>
+              {/* Profile */}
+              <NavLink to="/profile" onClick={() => setActiveTitle("Profile")} className={navLinkClasses}>
                 <div className="flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75 2.25 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.03 0 1.9.693 2.166 1.638m-7.377 0A48.536 48.536 0 0 1 12 3c1.2 0 2.392.049 3.573.145m-1.787 12.233A3.75 3.75 0 0 0 13.75 11.5H8.25a3.75 3.75 0 0 0-3.682 3.12l-.652 3.911A8.917 8.917 0 0 0 12 21a8.917 8.917 0 0 0 8.084-5.231l-.652-3.911Z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7zm0-11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" />
                   </svg>
                 </div>
-                {!isMinimized ? <span className="truncate tracking-wide">My Tasks</span> : <div className="absolute left-full ml-4 px-2.5 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md border border-slate-800 z-50">My Tasks</div>}
+                {!isMinimized ? <span className="truncate tracking-wide">Profile</span> : <SidebarTooltip title="My Profile" />}
               </NavLink>
 
-              {/* Typing Work / Document Processor */}
-              <NavLink to="/typing" onClick={() => setActiveTitle("Typing")} className={navLinkClasses}>
+                 {/* Teacher / Faculty Desk */}
+              <NavLink to="/teachers" onClick={() => setActiveTitle("Teachers")} className={navLinkClasses}>
+               <div className="flex items-center justify-center flex-shrink-0">
+   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+    </svg>
+  </div>
+                {!isMinimized ? <span className="truncate tracking-wide">Faculties</span> : <SidebarTooltip title="Faculty Desk" />}
+              </NavLink>
+
+                {/* Staff Management */}
+              <NavLink to="/staff" onClick={() => setActiveTitle("Staff")} className={navLinkClasses}>
                 <div className="flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.03 0 1.9.693 2.166 1.638m-7.377 2.47a48.11 48.11 0 0 1 3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a2.25 2.25 0 0 1 2.508 1.94A47.11 47.11 0 0 0 5.105 14c-.07.41-.129.824-.176 1.24m-.176 1.24a2.25 2.25 0 0 1-2.247 1.978H3.5a2.25 2.25 0 0 1-2.247-1.978 48.59 48.59 0 0 1-.176-1.24M1.077 14c.343.05.684.105 1.025.165m0 0a2.25 2.25 0 0 1 2.508-1.94c.315-3.642.962-7.18 1.908-10.518" />
                   </svg>
                 </div>
-                {!isMinimized ? <span className="truncate tracking-wide">Typing Desk</span> : <div className="absolute left-full ml-4 px-2.5 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md border border-slate-800 z-50">Typing Desk</div>}
+                {!isMinimized ? <span className="truncate tracking-wide">Staffs</span> : <SidebarTooltip title="Staff Management" />}
               </NavLink>
 
-              {/* Teacher Help Requests */}
-              <NavLink to="/teacher-help" onClick={() => setActiveTitle("Teacher Assistance")} className={navLinkClasses}>
+             {/* Student Directory */}
+              <NavLink to="/students" onClick={() => setActiveTitle("Students")} className={navLinkClasses}>
                 <div className="flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.174c-.053-.45-.101-.937-.101-1.424 0-4.707 3.53-8.5 7.841-8.5s7.842 3.793 7.842 8.5c0 .487-.048.974-.101 1.424M3 19.5h18M4.5 19.5v-3a2.25 2.25 0 012.25-2.25h10.5a2.25 2.25 0 012.25 2.25v3m-15 0h15" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                   </svg>
                 </div>
-                {!isMinimized ? <span className="truncate tracking-wide">Help Teachers</span> : <div className="absolute left-full ml-4 px-2.5 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md border border-slate-800 z-50">Help Teachers</div>}
+                {!isMinimized ? <span className="truncate tracking-wide">Students</span> : <SidebarTooltip title="Student Directory" />}
               </NavLink>
 
-              {/* Notice Board Management */}
-              <NavLink to="/notices" onClick={() => setActiveTitle("Notices")} className={navLinkClasses}>
+             
+
+              {/* Parent / Guardian */}
+              <NavLink to="/parents" onClick={() => setActiveTitle("Parents")} className={navLinkClasses}>
                 <div className="flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                   </svg>
                 </div>
-                {!isMinimized ? <span className="truncate tracking-wide">Notice Updates</span> : <div className="absolute left-full ml-4 px-2.5 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md border border-slate-800 z-50">Notice Updates</div>}
+                {!isMinimized ? <span className="truncate tracking-wide">Guardians</span> : <SidebarTooltip title="Guardians" />}
               </NavLink>
 
-              {/* General Records & Files */}
-              <NavLink to="/records" onClick={() => setActiveTitle("Records")} className={navLinkClasses}>
+              {/* Routine */}
+              <NavLink to="/routine" onClick={() => setActiveTitle("Routine")} className={navLinkClasses}>
                 <div className="flex items-center justify-center flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-19.5 0A2.25 2.25 0 003 14.25v4.5A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 19.5v-4.5a2.25 2.25 0 00-2.25-1.5m-19.5 0h19.5" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                   </svg>
                 </div>
-                {!isMinimized ? <span className="truncate tracking-wide">Files & Records</span> : <div className="absolute left-full ml-4 px-2.5 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md border border-slate-800 z-50">Files & Records</div>}
+                {!isMinimized ? <span className="truncate tracking-wide">Routine</span> : <SidebarTooltip title="Class Routine" />}
               </NavLink>
 
+            
+
+             
+
+              {/* Classrooms */}
+              <NavLink to="/classes" onClick={() => setActiveTitle("Classes")} className={navLinkClasses}>
+                <div className="flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h8v5H8V7z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 3v15a2 2 0 002 2h3" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20 3v15a2 2 0 01-2 2h-3" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 16h4" />
+                  </svg>
+                </div>
+                {!isMinimized ? <span className="truncate tracking-wide">Class</span> : <SidebarTooltip title="Classrooms" />}
+              </NavLink>
+
+              {/* Assignment Link */}
+              <NavLink to="/assignment" onClick={() => setActiveTitle("Assignment")} className={navLinkClasses}>
+                <div className="flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.03 0 1.9.693 2.166 1.638m-7.377 0A48.536 48.536 0 0 1 12 3c1.2 0 2.392.049 3.573.145m-1.787 12.233A3.75 3.75 0 0 0 13.75 11.5H8.25a3.75 3.75 0 0 0-3.682 3.12l-.652 3.911A8.917 8.917 0 0 0 12 21a8.917 8.917 0 0 0 8.084-5.231l-.652-3.911Z" />
+                  </svg>
+                </div>
+                {!isMinimized ? <span className="truncate tracking-wide">Assignment</span> : <SidebarTooltip title="Assignment" />}
+              </NavLink>
+
+            
+
+              {/* Announcement */}
+              <NavLink to="/announcement" onClick={() => setActiveTitle("Announcement")} className={navLinkClasses}>
+                <div className="flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                  </svg>
+                </div>
+                {!isMinimized ? <span className="truncate tracking-wide">Announcement</span> : <SidebarTooltip title="Announcement" />}
+              </NavLink>
+
+              {/* Event Link */}
+              <NavLink to="/event" onClick={() => setActiveTitle("Event")} className={navLinkClasses}>
+                <div className="flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                    <circle cx="12" cy="12" r="9" strokeLinecap="round" strokeDasharray="4 3" />
+                    <circle cx="12" cy="12" r="3.5" className="fill-current opacity-80" />
+                  </svg>
+                </div>
+                {!isMinimized ? <span className="truncate tracking-wide">Event</span> : <SidebarTooltip title="Event" />}
+              </NavLink>
+
+
+               {/* Syllabus Link */}
+              <NavLink to="/syllabus" onClick={() => setActiveTitle("Syllabus")} className={navLinkClasses}>
+                <div className="flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                  </svg>
+                </div>
+                {!isMinimized ? <span className="truncate tracking-wide">Syllabus</span> : <SidebarTooltip title="Syllabus" />}
+              </NavLink>
+
+              {/* Support */}
+              <NavLink to="/support" onClick={() => setActiveTitle("Support")} className={navLinkClasses}>
+                <div className="flex items-center justify-center flex-shrink-0">
+                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 21l8.982-2.246M18 3.618l1.743-1.307a1.875 1.875 0 1 1 2.25 3l-1.2 1.2m-3.193-2.893a9.96 9.96 0 0 0-6.108-.344l-2.09-.523a1.94 1.94 0 0 0-2.316 2.315l.522 2.09a9.961 9.961 0 0 0 .345 6.108m13.136-9.64a9.959 9.959 0 0 1 .344 6.108l.523 2.09a1.94 1.94 0 0 1-2.315 2.316l-2.09-.522a9.961 9.961 0 0 1-6.108-.345M18 3.618l-3.193 2.893m-3.193 6.25a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                   </svg>
+                </div>
+                {!isMinimized ? <span className="truncate tracking-wide">Support</span> : <SidebarTooltip title="Help & Support" />}
+              </NavLink>
+             
             </div>
           </div>
         </aside>
@@ -146,7 +235,7 @@ const MainLayout = () => {
               {/* Profile Badge */}
               <NavLink 
                 to="/profile" 
-                onClick={() => setActiveTitle("Tasks")}
+                onClick={() => setActiveTitle("Profile")}
                 className="h-12 flex items-center gap-3 bg-white pl-1.5 pr-4 rounded-xl border border-slate-200/80 shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all cursor-pointer group/profile box-border"
               >
                 <img src={Pic} alt="profile" className="w-9 h-9 rounded-lg object-cover border border-slate-100 flex-shrink-0" />
