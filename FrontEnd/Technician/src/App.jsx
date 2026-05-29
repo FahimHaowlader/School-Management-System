@@ -51,7 +51,7 @@ import NotFound from './Pages/NotFound/NotFound'
 import AddAnnouncement from './Pages/Announcement/AddAnnouncement/AddAnnouncement'
 import AllEvent from './Pages/Event/AllEvent/AllEvent'
 import AddClass from './Pages/Class/AddClass/AddClass'
-import AddParent from './Pages/Parent/AddParent/AddParent'
+import Parent from './Pages/Parent/Parent'
 import AddStaff from './Pages/Staff/AddStaff/AddStaff'
 import AddStudent from './Pages/Student/AddStudent/AddStudent'
 import AddTeacher from './Pages/Teacher/AddTeacher/AddTeacher' 
@@ -131,8 +131,8 @@ function App() {
       Component : AddClass
     },
     {
-      path: "/add-parent",
-      Component : AddParent
+      path: "/parent",
+      Component : Parent
     },
     {
       path: "/add-staff",
