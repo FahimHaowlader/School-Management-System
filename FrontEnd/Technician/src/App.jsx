@@ -54,7 +54,9 @@ import AddClass from './Pages/Class/AddClass/AddClass'
 import AddParent from './Pages/Parent/AddParent/AddParent'
 import AddStaff from './Pages/Staff/AddStaff/AddStaff'
 import AddStudent from './Pages/Student/AddStudent/AddStudent'
-import AddTeacher from './Pages/Teacher/AddTeacher/AddTeacher'  
+import AddTeacher from './Pages/Teacher/AddTeacher/AddTeacher' 
+import Event from './Pages/Event/Event' 
+import Announcement from './Pages/Announcement/Announcement'
 
 
 function App() {
@@ -91,6 +93,14 @@ function App() {
     {
       path: "/profile",
       Component : Profile 
+    },
+    {
+      path : "/event",
+       Component : Event,
+    },
+    {
+      path: "/announcement",
+      Component : Announcement
     },
     {
       path: "/calender",
