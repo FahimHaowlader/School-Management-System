@@ -64,10 +64,10 @@ const AnnouncementCard = ({ type, techPriority, title, description, date, imageU
             </p>
 
             {/* Technician Routing & Infrastructure Log */}
-            <div className="mb-4 bg-slate-50 rounded-lg p-2.5 border border-slate-100 font-mono text-[10px] text-slate-500 space-y-0.5">
+            {/* <div className="mb-4 bg-slate-50 rounded-lg p-2.5 border border-slate-100 font-mono text-[10px] text-slate-500 space-y-0.5">
               <span className="font-bold text-slate-700 block uppercase text-[8px] tracking-wider">IT System & Push Logistics:</span>
               <p className="line-clamp-1">{infrastructureLog}</p>
-            </div>
+            </div> */}
           </div>
           
           {/* Action Row explicitly designed for Management */}
