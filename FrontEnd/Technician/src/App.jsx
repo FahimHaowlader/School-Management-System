@@ -50,7 +50,7 @@ import Routine from './Pages/Routine/Routine'
 import NotFound from './Pages/NotFound/NotFound' 
 import AddAnnouncement from './Pages/Announcement/AddAnnouncement/AddAnnouncement'
 import AllEvent from './Pages/Event/AllEvent/AllEvent'
-import AddClass from './Pages/Class/AddClass/AddClass'
+import Class from './Pages/Class/Class'
 import Parent from './Pages/Parent/Parent'
 import AddStaff from './Pages/Staff/AddStaff/AddStaff'
 import AddStudent from './Pages/Student/AddStudent/AddStudent'
@@ -58,7 +58,7 @@ import AddTeacher from './Pages/Teacher/AddTeacher/AddTeacher'
 import Event from './Pages/Event/Event' 
 import Announcement from './Pages/Announcement/Announcement'
 import Syllabus from './Pages/Syllabus/Syllabus'
-
+import Assignment from './Pages/Assignment/Assignment'
 function App() {
 
 
@@ -107,6 +107,10 @@ function App() {
       Component : Calender
     },
     {
+      path: "/Assignment",
+      Component : Assignment
+    },
+    {
       path: "/syllabus",
       Component : Syllabus
     },
@@ -131,8 +135,8 @@ function App() {
       Component : AddAnnouncement
     },
     {
-      path: "/add-class",
-      Component : AddClass
+      path: "/class",
+      Component : Class
     },
     {
       path: "/parent",
