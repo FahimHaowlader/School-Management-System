@@ -260,7 +260,24 @@ const Assignment = () => {
         {/* Filter Toolbar Layout Row */}
         <div className="flex flex-col md:flex-row gap-3 items-center w-full">
           
-          <div className="flex gap-2 w-full md:w-auto shrink-0">
+         
+
+          {/* Search Bar Input */}
+          <div className="w-full flex-grow relative group h-11">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+              <Icon name="search" className="w-5 h-5 stroke-[2.5]" />
+            </div>
+            <input 
+              type="text" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search assignments by parameters..." 
+              className="w-full h-full pl-12 pr-4 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 outline-none transition-all shadow-sm placeholder:text-slate-400"
+            />
+          </div>
+
+
+           <div className="flex gap-2 w-full md:w-auto shrink-0">
             <div className="relative flex-1 sm:w-44 group">
               <select 
                 value={selectedCourse}
@@ -297,20 +314,6 @@ const Assignment = () => {
                 </svg>
               </div>
             </div>
-          </div>
-
-          {/* Search Bar Input */}
-          <div className="w-full flex-grow relative group h-11">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
-              <Icon name="search" className="w-5 h-5 stroke-[2.5]" />
-            </div>
-            <input 
-              type="text" 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search assignments by parameters..." 
-              className="w-full h-full pl-12 pr-4 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 outline-none transition-all shadow-sm placeholder:text-slate-400"
-            />
           </div>
 
         </div>
