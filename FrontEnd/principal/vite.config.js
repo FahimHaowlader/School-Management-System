@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import tailwindcss from '@tailwindcss/vite'
 
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
