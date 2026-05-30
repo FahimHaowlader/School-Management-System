@@ -95,10 +95,10 @@ const Class = () => {
   };
 
   return (
-    <div className="font-sans w-full pt-2 text-left">
+    <div className="font-sans w-full text-left">
       
       {/* COLLAPSIBLE MANAGEMENT CONFIGURATION COMPOSER PANEL */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden transition-all mb-6">
+      <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden transition-all mb-5">
         <div 
           onClick={() => setIsComposerOpen(!isComposerOpen)}
           className="p-4 flex items-center justify-between cursor-pointer bg-slate-50/50 hover:bg-slate-50 transition-colors"
