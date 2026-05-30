@@ -52,9 +52,9 @@ import AddAnnouncement from './Pages/Announcement/AddAnnouncement/AddAnnouncemen
 import AllEvent from './Pages/Event/AllEvent/AllEvent'
 import Class from './Pages/Class/Class'
 import Parent from './Pages/Parent/Parent'
-import AddStaff from './Pages/Staff/AddStaff/AddStaff'
-import AddStudent from './Pages/Student/AddStudent/AddStudent'
-import AddTeacher from './Pages/Teacher/AddTeacher/AddTeacher' 
+import Staff from './Pages/Staff/Staff'
+import Student from './Pages/Student/Student'
+import Teacher from './Pages/Teacher/Teacher' 
 import Event from './Pages/Event/Event' 
 import Announcement from './Pages/Announcement/Announcement'
 import Syllabus from './Pages/Syllabus/Syllabus'
@@ -143,16 +143,16 @@ function App() {
       Component : Parent
     },
     {
-      path: "/add-staff",
-      Component : AddStaff
+      path: "/staff",
+      Component : Staff
     },
     {
-      path: "/add-student",
-      Component : AddStudent
+      path: "/student",
+      Component : Student
     },
     {
-      path: "/add-teacher",
-      Component : AddTeacher
+      path: "/teacher",
+      Component : Teacher
     },
     {
       path: "*",
