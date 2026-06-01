@@ -91,7 +91,7 @@ const MainLayout = () => {
               </span>
             ) : (
               <div className="w-full flex items-center justify-center transition-all duration-200">
-                <span className="font-black text-slate-900 px-4 text-lg bg-slate-100 w-10 h-10 flex items-center justify-center rounded-xl shadow-inner">
+                <span className="font-black text-slate-900 px-5 text-lg bg-slate-100 w-10 h-10 flex items-center justify-center rounded-xl shadow-inner">
                   M
                 </span>
               </div>

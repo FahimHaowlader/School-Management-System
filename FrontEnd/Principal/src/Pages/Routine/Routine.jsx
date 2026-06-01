@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { 
   MdLocationOn, MdBook, MdPrint, MdEdit, MdPerson, 
-  MdNotificationsActive, MdCheck, MdLayers, MdShuffle, MdSearch, MdSchool 
+  MdNotificationsActive, MdLayers, MdShuffle, MdSearch 
 } from "react-icons/md";
 
 // Card with text-left style, border-t, and larger 18px edit button next to room number
@@ -57,9 +57,16 @@ const Routine = () => {
   const [selectedTeacher, setSelectedTeacher] = useState('Dr. Alex Smith');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-  // Pending Adjustments State
+  // --- REVIEWS / PENDING ROUTINE EDITS SUBMITTED BY OTHER STAFF ---
   const [pendingRequests, setPendingRequests] = useState([
-    { id: 1, teacher: "Prof. Sarah Connor", change: "Mon, Slot 3 -> Physics to Math", reason: "Lab Renovations" }
+    {
+      id: 501,
+      className: "Grade 09 - Section A",
+      requestedBy: "Academic Coord. Rahman",
+      timestamp: "5 mins ago",
+      oldValue: { label: "Mon, Slot 3", subject: "Physics", teacher: "Prof. Sarah Connor" },
+      newValue: { label: "Mon, Slot 3", subject: "Mathematics", teacher: "Dr. Alex Smith" }
+    }
   ]);
 
   const periods = [
@@ -84,39 +91,72 @@ const Routine = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const getClassLabel = (numStr) => {
-    const mapping = { '9': 'Nine', '10': 'Ten', '11': 'Eleven', '12': 'Twelve' };
-    return mapping[numStr] || `Class ${numStr}`;
+  // --- ACTION HANDLERS FOR PENDING EDITS ---
+  const handleApproveRequest = (id) => {
+    // Add business logic modification here if connected to a backend database matrix
+    setPendingRequests(pendingRequests.filter(req => req.id !== id));
+  };
+
+  const handleDenyRequest = (id) => {
+    setPendingRequests(pendingRequests.filter(req => req.id !== id));
   };
 
   return (
     <div className="w-full font-sans text-slate-900 antialiased bg-slate-50/30">
       <main className="space-y-5">
         
-        {/* ROW 1: NOTIFICATION APPROVAL QUEUE - HIGH CONTRAST AMBER/YELLOW THEME */}
+        {/* --- EXECUTIVE REVIEW QUEUE: PENDING TIMETABLE ADJUSMENTS --- */}
         {pendingRequests.length > 0 && (
-          <div className="bg-amber-50/60 border border-amber-200 rounded-2xl p-5 shadow-sm transition-all duration-300 print:hidden">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center justify-center w-5 h-5 bg-amber-100 rounded-md border border-amber-200/50">
-                <MdNotificationsActive className="text-amber-800" size={12} />
+          <div className="mb-5 bg-amber-50/60 rounded-xl border border-amber-200/80 shadow-xs overflow-hidden print:hidden">
+            <div className="p-4 border-b border-amber-200/60 flex items-center gap-3">
+              <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-700 flex items-center justify-center shrink-0">
+                <MdNotificationsActive className="text-amber-700" size={15} />
               </div>
-              <h3 className="font-black text-[10px] uppercase tracking-widest text-amber-900">Pending Adjustments</h3>
+              <div>
+                <h5 className="text-xs font-black text-amber-900 uppercase tracking-wider">Awaiting Executive Authorization</h5>
+                <p className="text-[11px] text-amber-700/80 font-medium">Modifications proposed by internal academic coordinators require your final override sign-off.</p>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              {pendingRequests.map(req => (
-                <div key={req.id} className="flex items-center justify-between bg-white border border-amber-200/60 rounded-xl p-3.5 text-xs max-w-xl shadow-sm">
-                  <div className="space-y-0.5">
-                    <p className="font-extrabold text-slate-900 tracking-tight">{req.teacher}</p>
-                    <p className="font-semibold text-amber-800 font-mono text-[11px]">{req.change}</p>
+            <div className="divide-y divide-amber-200/40">
+              {pendingRequests.map((edit) => (
+                <div key={edit.id} className="p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-white/50">
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-bold text-slate-900">{edit.className}</span>
+                      <span className="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-bold uppercase tracking-tight">Schedule Swap</span>
+                    </div>
+                    <p className="text-xs text-slate-500 font-medium">
+                      Submitted by <strong className="text-slate-700 font-semibold">{edit.requestedBy}</strong> • <span className="italic">{edit.timestamp}</span>
+                    </p>
                   </div>
-                  <div className="flex gap-1 shrink-0 ml-4">
+
+                  {/* Compare Parameters */}
+                  <div className="flex flex-wrap items-center gap-4 text-xs">
+                    <div className="bg-slate-100/80 border border-slate-200/60 rounded-lg px-3 py-1.5 text-slate-500">
+                      <span className="block text-[9px] uppercase font-bold text-slate-400">{edit.oldValue.label}</span>
+                      <span className="font-medium">{edit.oldValue.subject} ({edit.oldValue.teacher})</span>
+                    </div>
+                    <div className="text-slate-400 font-bold">➔</div>
+                    <div className="bg-amber-100/80 border border-amber-200/80 rounded-lg px-3 py-1.5 text-amber-900">
+                      <span className="block text-[9px] uppercase font-bold text-amber-500">{edit.newValue.label}</span>
+                      <span className="font-bold">{edit.newValue.subject} ({edit.newValue.teacher})</span>
+                    </div>
+                  </div>
+
+                  {/* Verification Control Actions */}
+                  <div className="flex items-center gap-2 w-full lg:w-auto self-end lg:self-center justify-end">
                     <button 
-                      onClick={() => setPendingRequests([])} 
-                      className="flex items-center justify-center w-8 h-8 bg-amber-600 text-white hover:bg-amber-700 transition-all rounded-lg cursor-pointer outline-none shadow-sm"
-                      title="Approve Change"
+                      onClick={() => handleDenyRequest(edit.id)}
+                      className="px-3 h-8 border border-slate-200 bg-white rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-50 transition-colors cursor-pointer outline-none"
                     >
-                      <MdCheck size={14} />
+                      Deny
+                    </button>
+                    <button 
+                      onClick={() => handleApproveRequest(edit.id)}
+                      className="px-4 h-8 bg-slate-900 text-white rounded-lg text-xs font-bold shadow-sm hover:bg-slate-800 transition-colors cursor-pointer outline-none"
+                    >
+                      Approve Request
                     </button>
                   </div>
                 </div>
@@ -126,7 +166,7 @@ const Routine = () => {
         )}
 
         {/* ROW 2: PRIMARY INTERFACE SWITCHERS & VIEW TOGGLES */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 px-1 print:hidden">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 print:hidden">
           
           {/* Left Block: Duty Switcher (Class / Exam) */}
           <div className="flex items-center gap-4">
@@ -175,38 +215,11 @@ const Routine = () => {
                 Teacher View
               </button>
             </div>
-
-            {/* Modern Identity Dynamic Badge - FIXED & PLACED UNDER ROW 2 CONTAINER ALIGNMENT */}
-            {/* <div className="group flex items-center gap-2 p-1.5 pr-5 bg-white border border-slate-200/60 rounded-full shadow-sm hover:border-indigo-200 transition-colors duration-300">
-              <div className="flex items-center justify-center w-8 h-8 bg-indigo-600 rounded-full shadow-md shadow-indigo-100">
-                <MdSchool className="text-white" size={16} />
-              </div>
-              <div className="flex items-center gap-3 ml-1">
-                <div className="flex flex-col leading-none">
-                  <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-widest mb-0.5">
-                    {scheduleType === 'Class' ? 'Class' : 'Instructor'}
-                  </span>
-                  <span className="text-xs font-black text-slate-800 text-center">
-                    {scheduleType === 'Class' ? getClassLabel(selectedClass) : (selectedTeacher.split('. ')[1] || selectedTeacher)}
-                  </span>
-                </div>
-                {scheduleType === 'Class' && (
-                  <>
-                    <div className="h-6 w-[1.5px] bg-slate-200 rounded-full"></div>
-                    <div className="flex flex-col leading-none">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Section</span>
-                      <span className="text-xs font-black text-slate-800 text-center">{selectedSection}</span>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div> */}
-
           </div>
         </div>
 
-        {/* ROW 3: SEPARATE DEDICATED CONTEXT CONTROLS ROW (TEACHER SEARCH BAR VS CLASS/SECTION FILTERS) */}
-        <div className="px-1 pb-1 print:hidden">
+        {/* ROW 3: SEPARATE DEDICATED CONTEXT CONTROLS ROW */}
+        <div className="pb-1 print:hidden">
           {scheduleType === 'Class' ? (
             
             /* Student View Segmented Dropdowns Layout */
@@ -284,7 +297,7 @@ const Routine = () => {
             <table className="w-full border-separate border-spacing-x-2 border-spacing-y-0">
               <thead>
                 <tr>
-                  <th className="pb-4 pl-1 text-left text-[11px] font-black uppercase tracking-[0.15em]  w-[120px]">Time </th>
+                  <th className="pb-4 pl-1 text-left text-[11px] font-black uppercase tracking-[0.15em] w-[120px]">Time </th>
                   {days.map(day => (
                     <th key={day} className="pb-4 text-center text-[12px] font-black uppercase tracking-[0.15em] text-slate-800">
                       {day}
