@@ -91,7 +91,7 @@ const MainLayout = () => {
               </span>
             ) : (
               <div className="w-full flex items-center justify-center transition-all duration-200">
-                <span className="font-black text-slate-900 text-lg bg-slate-100 w-10 h-10 flex items-center justify-center rounded-xl shadow-inner">
+                <span className="font-black text-slate-900 px-4 text-lg bg-slate-100 w-10 h-10 flex items-center justify-center rounded-xl shadow-inner">
                   M
                 </span>
               </div>
@@ -279,7 +279,7 @@ const MainLayout = () => {
         <main className="flex-grow flex flex-col min-w-0">
           
           {/* HIGH-END MINIMAL DASHBOARD HEADER */}
-          <header className="h-16 bg-slate-50/60 backdrop-blur-md w-full flex items-center justify-between px-5 sticky top-0 z-20 shadow-sm shadow-slate-100/40"> 
+          <header className="h-16 bg-slate-50/60 backdrop-blur-md w-full flex items-center justify-between px-5 sticky top-0 z-60 shadow-sm shadow-slate-100/40"> 
             <div className="flex flex-col text-left">
               <h1 className="text-xl uppercase font-black text-slate-900 tracking-tight leading-none">{activeTitle}</h1>
               
@@ -341,7 +341,6 @@ const MainLayout = () => {
               </button>
             </div>
           </header>
-          
           {/* Main Workspace Body */}
           <div className="p-5 flex-grow bg-slate-50 min-h-[250vh]">
             <div>
@@ -360,4 +359,3 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
- 
