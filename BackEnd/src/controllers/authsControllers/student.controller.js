@@ -366,7 +366,7 @@ export const studentLogout = asyncHandler(async (req, res) => {
 });
 
 // Refresh Student Tokens
-export const refreshStudentTokens = asyncHandler(async (req, res) => {
+export const studentRefreshToken = asyncHandler(async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {

@@ -99,4 +99,5 @@ enrollmentSchema.pre("findOneAndUpdate", function (next) {
   }).catch(next);
 });
 
-export const Enrollment = mongoose.model("Enrollment", enrollmentSchema);
+const Enrollment = mongoose.model("Enrollment", enrollmentSchema);
+export default Enrollment;

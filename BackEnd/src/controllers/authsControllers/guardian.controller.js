@@ -197,8 +197,8 @@ export const guardianLogin = asyncHandler(async (req, res) => {
 });
 
 
-// 🔹 Get Guardian refreshGuardianTokens
-export const refreshGuardianTokens = asyncHandler(async (req, res) => {
+// 🔹 Get Guardian refreshGuardianToken
+export const guardianRefreshToken = asyncHandler(async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
 

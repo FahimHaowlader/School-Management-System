@@ -51,6 +51,10 @@ import examsRouter from "./routes/exams.route.js";
 
 // Mount routes
 
+app.get("/", (req, res) => {
+  res.send("Welcome to the School Management System API");
+});
+
 // public routes
 
 app.use("/api/v1/auths", authsRouter);
@@ -74,9 +78,7 @@ app.use("/api/v1/libraries", librariesRouter);
 app.use("/api/v1/exams", examsRouter);
 
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the School Management System API");
-});
+
 // ================= OPTIONAL (future v2) =================
 // import route 
    // import { parentsRouter2 } from "./routes/parents.route.js";

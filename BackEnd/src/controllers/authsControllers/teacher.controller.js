@@ -9,7 +9,7 @@ import Teacher from "../../models/teacher.model.js";
 
 // 🔹 Teacher Registration
           // not finished yet subjects field
-export const teacherRegister = asyncHandler(async (req, res) => {
+export const teacherRegistration = asyncHandler(async (req, res) => {
   try {
     const { prefixName, firstName, middleName, lastName, dateOfBirth, bloodGroup, address, phoneNumber, password, gender, emergencyContact, joinedAt, role,  } = req.body;
 

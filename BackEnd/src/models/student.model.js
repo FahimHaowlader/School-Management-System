@@ -125,33 +125,58 @@ const studentSchema = new mongoose.Schema(
       match: [/^[0-9]{11}$/, "Phone number must be exactly 11 digits"],
     },
 
-    mother: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Guardian",
-      required: true,
+  mother: {
+      type: {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          refPath: 'mother.motherRef', // Points to the motherRef field inside this object
+          required: [true, "Mother ID is required"]
+        },
+        motherRef: {
+          type: String,
+          enum: ['Teacher', 'Staff', 'Guardian'],
+          required: [true, "Mother type is required"]
+        }
+      }
     },
 
-    father: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Guardian",
-      required: true,
+father: {
+      type: {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          refPath: 'father.fatherRef',
+          required: [true, "Father ID is required"]
+        },
+        fatherRef: {
+          type: String,
+          enum: ['Teacher', 'Staff', 'Guardian'],
+          required: [true, "Father type is required"]
+        }
+      }
     },
 
-    guardian: {
-      guardian_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Guardian",
-        required: [true, "Guardian ID is required"],
+   guardian: {
+      type: {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          refPath: 'guardian.guardianRef', // <-- Must be the full path from the root
+          required: [true, "Guardian ID is required"]
+        },
+        guardianRef: {
+          type: String,
+          enum: ['Teacher', 'Staff', 'Guardian'],
+          required: [true, "Guardian type is required"]
+        },
+        relationshipWithGuardian: {
+          type: String,
+          trim: true,
+          lowercase: true,
+          minlength: [2, "Relationship must be at least 2 characters"],
+          maxlength: [30, "Relationship cannot exceed 30 characters"],
+          required: [true, "Relationship with guardian is required"]
+        }
       },
-      relationshipWithGuardian: {
-        type: String,
-        required: [true, "Relationship with guardian is required"],
-        trim: true,
-        lowercase: true,
-        minlength: [2, "Relationship must be at least 2 characters"],
-        maxlength: [30, "Relationship cannot exceed 30 characters"],
-      },
-      default: null,
+      default: null
     },
 
     pic: {
@@ -192,13 +217,6 @@ const studentSchema = new mongoose.Schema(
       select: false, // must be explicitly selected in queries
     },
 
-    accountType: {
-      type: String,
-      enum: ["student"],
-      default: "student",
-      immutable: true, // cannot be changed later
-      trim: true,
-    },
 
     gender: {
       type: String,
@@ -279,26 +297,29 @@ const studentSchema = new mongoose.Schema(
       default: "student",
     },
 
-    attendanceSummary: [
-      {
-        year: {
-          type: Number,
-          required: true,
-          min: [2025, "Year must be 2025 or later"],
-          validate: {
-            validator(value) {
-              return value <= new Date().getFullYear();
+   attendanceSummary: {
+      type: [
+        {
+          year: {
+            type: Number,
+            required: true,
+            min: [2025, "Year must be 2025 or later"],
+            validate: {
+              validator(value) {
+                return value <= new Date().getFullYear();
+              },
+              message: "Year cannot be in the future",
             },
-            message: "Year cannot be in the future",
           },
+          present: { type: Number, default: 0, min: 0 },
+          absent: { type: Number, default: 0, min: 0 },
+          late: { type: Number, default: 0, min: 0 },
+          leave: { type: Number, default: 0, min: 0 },
         },
-        present: { type: Number, default: 0, min: 0 },
-        absent: { type: Number, default: 0, min: 0 },
-        late: { type: Number, default: 0, min: 0 },
-        leave: { type: Number, default: 0, min: 0 },
-        immutable: true, // cannot be changed directly
-      },
-    ],
+      ],
+      immutable: true, // Now Mongoose applies immutability to the whole array block!
+      default: [],
+    },
     borrowedBook: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "BookRent",
@@ -331,7 +352,7 @@ studentSchema.pre("save", async function (next) {
 });
 
 // 🔹 Compare passwords
-studentsSchema.methods.isPasswordCorrect = async function (password) {
+studentSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
@@ -370,4 +391,7 @@ studentSchema.methods.validateRefreshToken = function (token) {
   }
 };
 
-export const Student = mongoose.model("Student", studentSchema);
+const Student = mongoose.model("Student", studentSchema);
+
+
+export default Student  

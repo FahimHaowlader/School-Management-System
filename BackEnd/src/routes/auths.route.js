@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verifyUser from "../middlewares/verifyUser.middleware.js";
-import {upload} from "../middlewares/upload.middleware.js";
+import {upload} from "../middlewares/multer.middleware.js";
 
 // auths version 1 apies
 
@@ -10,14 +10,14 @@ import {
   studentLogin,
   studentRegistration,
   studentLogout,
-  refreshStudentTokens,
+  studentRefreshToken,
   changeStudentPassword,
 } from "../controllers/authsControllers/student.controller.js";
 
 import {
   guardianLogin,
   guardianRegistration,
-  refreshGuardianTokens,
+  guardianRefreshToken,
   guardianLogout,
   changeGuardianPassword,
 } from "../controllers/authsControllers/guardian.controller.js";
@@ -25,7 +25,7 @@ import {
 import {
   teacherLogin,
   teacherRegistration,
-  refreshTeacherTokens,
+  teacherRefreshToken,
   teacherLogout,
   changeTeacherPassword,
 } from "../controllers/authsControllers/teacher.controller.js";
@@ -33,7 +33,7 @@ import {
 import {
   staffLogin,
   staffRegistration,
-  refreshStaffTokens,
+  staffRefreshToken,
   staffLogout,
   changeStaffPassword,
 } from "../controllers/authsControllers/staff.controller.js";
@@ -72,10 +72,10 @@ authsRouter.post("/staffs/register",
 
 
 // Token refresh routes
-authsRouter.post("/students/refresh-tokens", refreshStudentTokens);
-authsRouter.post("/guardians/refresh-tokens", refreshGuardianTokens);
-authsRouter.post("/teachers/refresh-tokens", refreshTeacherTokens);
-authsRouter.post("/staffs/refresh-tokens", refreshStaffTokens);
+authsRouter.post("/students/refresh-tokens", studentRefreshToken);
+authsRouter.post("/guardians/refresh-tokens", guardianRefreshToken);
+authsRouter.post("/teachers/refresh-tokens", teacherRefreshToken);
+authsRouter.post("/staffs/refresh-tokens", staffRefreshToken);
 
 
 // Logout routes

@@ -203,7 +203,7 @@ guardianSchema.methods.generateRefreshToken = function () {
 };
 
 // 🔹 Validate refresh token
-studentSchema.methods.validateRefreshToken = function (token) {
+guardianSchema.methods.validateRefreshToken = function (token) {
   try {
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
     return decoded?._id?.toString() === this._id.toString();
@@ -213,4 +213,5 @@ studentSchema.methods.validateRefreshToken = function (token) {
 };
 
 
-export const Guardian = mongoose.model("Guardian", guardianSchema);
+const Guardian = mongoose.model("Guardian", guardianSchema);
+export default Guardian;

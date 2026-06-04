@@ -446,7 +446,7 @@ teacherSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 // 🔹 Validate refresh token
-studentSchema.methods.validateRefreshToken = function (token) {
+teacherSchema.methods.validateRefreshToken = function (token) {
   try {
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
     return decoded?._id?.toString() === this._id.toString();
@@ -455,4 +455,5 @@ studentSchema.methods.validateRefreshToken = function (token) {
   }
 };
 
-export const Teacher = mongoose.model("Teacher", teacherSchema);
+const Teacher = mongoose.model("Teacher", teacherSchema);
+export default Teacher;
