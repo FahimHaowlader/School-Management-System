@@ -12,7 +12,7 @@ async function startServer() {
     await connectDB();
     console.log('✅ MongoDB connected.');
 
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 10000;
 
     // Start the server
     server = app.listen(PORT, () => {
