@@ -3,7 +3,8 @@ import apiError from "../../utils/apiError.js";
 import options from "../../utils/options.js";
 import apiResponse from "../../utils/apiResponse.js";
 import uploadToCloudinary from "../../utils/Cloudinary.js";
-
+import deleteLocalFiles from "../../utils/deleteLocalFiles.js";
+import { deleteFromCloudinary } from "../../utils/deleteFromCloudinary.js";
 // Model Import
 import Student from "../../models/student.model.js";
 import Guardian from "../../models/guardian.model.js";
@@ -20,12 +21,27 @@ export const getStudentProfile = asyncHandler(async (req, res) => {
       throw new apiError(400, "Student ID is required to get profile");
     }
 
-    const student = await Student.findById(student_id).select(
-     "-password -refreshToken -attendanceRecords -attendanceSummary"
-    );
+    if(!options.isValidObjectId(student_id)) {
+      throw new apiError(400, "Invalid student ID format");
+    }
+
+  const student = await Student.findById(studentId)
+      .select('name rollNumber mother motherModel father fatherModel guardian guardianModel relationshipWithGuardian emergencyContact')
+      .populate({ path: 'mother', select: 'firstName lastName phone email' })
+      .populate({ path: 'father', select: 'firstName lastName phone email' })
+      .populate({ path: 'guardian', select: 'firstName lastName phone email' })
+      .lean(); // Converts Mongoose Document to plain JS Object so we can modify it
+
 
     if (!student) {
       throw new apiError(404, "Student not found");
+    }
+
+// 2. If guardian is null, delete the empty guardian tracking keys from the response
+    if (studentData.guardian === null) {
+      delete student.guardian;
+      delete student.guardianModel;
+      delete student.relationshipWithGuardian;
     }
 
     res
@@ -186,16 +202,19 @@ export const updateStudentContactInformation = asyncHandler(async (req, res) => 
 // 🔹 Student Profile Picture Update
 export const updateStudentProfilePicture = asyncHandler(async (req, res) => {
   try {
-    const studentId = req.user._id;
+    const student_id = req.user._id || req.body.student_id;
+
+    
 
     // validate studentId
-    if (!studentId) {
+    if (!student_id) {
       throw new apiError(400, "Student ID is required to update profile picture");
     }
 
     // Validate picture file
     const pictureLocalPath = await req.files?.picture?.[0]?.path;
     if (!pictureLocalPath || !/^.*\.(png|jpg|jpeg|webp)$/i.test(pictureLocalPath)) {
+      await deleteLocalFiles(req.files); // Clean up uploaded file if validation fails
       throw new apiError(
         400,
         "Profile picture is required and must be PNG, JPG, JPEG, or WEBP"
@@ -204,6 +223,7 @@ export const updateStudentProfilePicture = asyncHandler(async (req, res) => {
 
     // Upload to Cloudinary
     const uploadResult = await uploadToCloudinary(pictureLocalPath);
+    await deleteLocalFiles(req.files); // Clean up uploaded file if validation fails
     if (!uploadResult?.secure_url) {
       throw new apiError(500, "Failed to upload profile picture");
     }
@@ -211,13 +231,24 @@ export const updateStudentProfilePicture = asyncHandler(async (req, res) => {
     const pictureOnlinePath = uploadResult.secure_url;
 
     // Update student's profile picture
-    const updatedStudent = await Student.findByIdAndUpdate(
-      studentId,
+    const oldStudent = await Student.findByIdAndUpdate(
+      student_id,
       { $set: { pic: pictureOnlinePath } },
-      { new: true, select: "-password" }
+      { new: false, select: "pic" }
     );
 
-    if (!updatedStudent) throw new apiError(404, "Student not found");
+
+    if (!oldStudent){
+      await deleteFromCloudinary(pictureOnlinePath); // Clean up newly uploaded picture if student not found
+      throw new apiError(404, "Student not found");
+    } 
+
+    // If there was an old profile picture, delete it from Cloudinary
+    if (oldStudent.pic) {
+      await deleteFromCloudinary(oldStudent.pic);
+    }
+
+    const updatedStudent =  {...oldStudent.toObject(), pic: pictureOnlinePath }; // Merge old student data with new pic URL
 
     res
       .status(200)
@@ -236,11 +267,11 @@ export const updateStudentProfilePicture = asyncHandler(async (req, res) => {
 // 🔹 Student ScholarShip Update
 export const updateStudentScholarShip = asyncHandler(async (req, res) => {
   try {
-    const studentId = req.user._id;
-    const { scholarShip } = req.body;
+    
+    const { scholarShip,student_id } = req.body;
 
     // validate studentId
-    if (!studentId) {
+    if (!student_id) {
       throw new apiError(400, "Student ID is required to update scholarship");
     }
 
@@ -257,9 +288,9 @@ export const updateStudentScholarShip = asyncHandler(async (req, res) => {
 
     // Update student scholarship
     const updatedStudent = await Student.findByIdAndUpdate(
-      studentId,
+      student_id,
       { $set: { scholarShip: scholarShipNum } },
-      { new: true, select: "-password" }
+      { new: true, select: "scholarShip" }
     );
 
     if (!updatedStudent) throw new apiError(404, "Student not found");
@@ -269,6 +300,48 @@ export const updateStudentScholarShip = asyncHandler(async (req, res) => {
       .json(new apiResponse(200, updatedStudent, "Student scholarShip updated"));
   } catch (error) {
     console.error("Update Student Scholarship Error:", error);
+
+    if (error instanceof apiError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+export const updateEmergencyContact = asyncHandler(async (req, res) => {
+  try {
+    const { emergencyContact,student_id } = req.body;
+
+    // validate studentId
+    if (!student_id) {
+      throw new apiError(400, "Student ID is required to update emergency contact");
+    }
+
+    // Validate required field
+    if (!emergencyContact) {
+      throw new apiError(400, "Please provide all required fields");
+    }
+
+    // Validate emergency contact value
+    if (!["mother", "father", "guardian"].includes(emergencyContact)) {
+      throw new apiError(400, "Invalid emergency contact value");
+    }
+
+    // Update student emergency contact
+    const updatedStudent = await Student.findByIdAndUpdate(
+      student_id,
+      { $set: { emergencyContact } },
+      { new: true, select: "emergencyContact",runValidators: true }
+    );
+
+    if (!updatedStudent) throw new apiError(404, "Student not found");
+
+    res
+      .status(200)
+      .json(new apiResponse(200, updatedStudent, "Student emergency contact updated"));
+  } catch (error) {
+    console.error("Update Student Emergency Contact Error:", error);
 
     if (error instanceof apiError) {
       return res.status(error.statusCode).json({ message: error.message });
