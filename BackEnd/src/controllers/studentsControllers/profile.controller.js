@@ -6,6 +6,9 @@ import uploadToCloudinary from "../../utils/Cloudinary.js";
 
 // Model Import
 import Student from "../../models/student.model.js";
+import Guardian from "../../models/guardian.model.js";
+import Teacher from "../../models/teacher.model.js";
+import Staff from "../../models/staff.model.js"; 
 
 // 🔹 Student Profile Retrieval
 export const getStudentProfile = asyncHandler(async (req, res) => {

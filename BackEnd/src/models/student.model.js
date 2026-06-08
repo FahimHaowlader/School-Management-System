@@ -125,58 +125,49 @@ const studentSchema = new mongoose.Schema(
       match: [/^[0-9]{11}$/, "Phone number must be exactly 11 digits"],
     },
 
-  mother: {
-      type: {
-        _id: {
-          type: mongoose.Schema.Types.ObjectId,
-          refPath: 'mother.motherRef', // Points to the motherRef field inside this object
-          required: [true, "Mother ID is required"]
-        },
-        motherRef: {
-          type: String,
-          enum: ['Teacher', 'Staff', 'Guardian'],
-          required: [true, "Mother type is required"]
-        }
-      }
-    },
+mother: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: 'motherModel',
+    required: [true, "Mother ID is required"]
+  },
+  motherModel: {
+    type: String,
+    enum: ['Teacher', 'Staff', 'Guardian'],
+    required: [true, "Mother type is required"]
+  },
 
-father: {
-      type: {
-        _id: {
-          type: mongoose.Schema.Types.ObjectId,
-          refPath: 'father.fatherRef',
-          required: [true, "Father ID is required"]
-        },
-        fatherRef: {
-          type: String,
-          enum: ['Teacher', 'Staff', 'Guardian'],
-          required: [true, "Father type is required"]
-        }
-      }
-    },
+  father: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: 'fatherModel',
+    required: [true, "Father ID is required"]
+  },
+  fatherModel: {
+    type: String,
+    enum: ['Teacher', 'Staff', 'Guardian'],
+    required: [true, "Father type is required"]
+  },
 
-   guardian: {
-      type: {
-        _id: {
-          type: mongoose.Schema.Types.ObjectId,
-          refPath: 'guardian.guardianRef', // <-- Must be the full path from the root
-          required: [true, "Guardian ID is required"]
-        },
-        guardianRef: {
-          type: String,
-          enum: ['Teacher', 'Staff', 'Guardian'],
-          required: [true, "Guardian type is required"]
-        },
-        relationshipWithGuardian: {
-          type: String,
-          trim: true,
-          lowercase: true,
-          minlength: [2, "Relationship must be at least 2 characters"],
-          maxlength: [30, "Relationship cannot exceed 30 characters"],
-          required: [true, "Relationship with guardian is required"]
-        }
-      },
-      default: null
+  guardian: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: 'guardianModel',
+    default: null
+  },
+  guardianModel: {
+    type: String,
+    enum: ['Teacher', 'Staff', 'Guardian'],
+    required: function() { return this.guardian != null; }
+  },
+  relationshipWithGuardian: {
+    type: String,
+    trim: true,
+    lowercase: true,
+    required: function() { return this.guardian != null; }
+  },
+
+  emergencyContact: {
+      type: String,
+      enum: ['mother', 'father', 'guardian'],
+      required: [true, "Please specify if mother, father, or guardian is the emergency contact"]
     },
 
     pic: {
@@ -281,11 +272,11 @@ father: {
       ],
       default: [],
     },
-    emergencyContact: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Guardian",
-      required: true,
-    },
+    // emergencyContact: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Guardian",
+    //   required: true,
+    // },
 
     refreshToken: {
       type: String,
