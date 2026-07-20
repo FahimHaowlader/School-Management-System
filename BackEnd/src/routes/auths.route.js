@@ -46,50 +46,50 @@ const authsRouter = Router();
 authsRouter.get("/", (req, res) => res.send("auths route"));
 
 //Login routes
-authsRouter.get("/students/login", studentLogin);
-authsRouter.get("/guardians/login", guardianLogin);
-authsRouter.get("/teachers/login", teacherLogin);
-authsRouter.get("/staffs/login", staffLogin);
+authsRouter.get("/student/login", studentLogin);
+authsRouter.get("/guardian/login", guardianLogin);
+authsRouter.get("/teacher/login", teacherLogin);
+authsRouter.get("/staff/login", staffLogin);
 
 authsRouter.use(verifyUser);
 
 // Registration routes
-authsRouter.post("/students/register",
+authsRouter.post("/student/register",
     upload.single( "picture"),
     studentRegistration);
 
-authsRouter.post("/guardians/register",
+authsRouter.post("/guardian/register",
     upload.single( "picture"),
     guardianRegistration);
 
-authsRouter.post("/teachers/register",
+authsRouter.post("/teacher/register",
     upload.single( "picture"),
     teacherRegistration);
 
-authsRouter.post("/staffs/register",
+authsRouter.post("/staff/register",
     upload.single( "picture"),
     staffRegistration);
 
 
 // Token refresh routes
-authsRouter.post("/students/refresh-tokens", studentRefreshToken);
-authsRouter.post("/guardians/refresh-tokens", guardianRefreshToken);
-authsRouter.post("/teachers/refresh-tokens", teacherRefreshToken);
-authsRouter.post("/staffs/refresh-tokens", staffRefreshToken);
+authsRouter.post("/student/refresh-tokens", studentRefreshToken);
+authsRouter.post("/guardian/refresh-tokens", guardianRefreshToken);
+authsRouter.post("/teacher/refresh-tokens", teacherRefreshToken);
+authsRouter.post("/staff/refresh-tokens", staffRefreshToken);
 
 
 // Logout routes
-authsRouter.post("/students/logout", studentLogout);
-authsRouter.post("/guardians/logout", guardianLogout);
-authsRouter.post("/teachers/logout", teacherLogout);
-authsRouter.post("/staffs/logout", staffLogout);
+authsRouter.post("/student/logout", studentLogout);
+authsRouter.post("/guardian/logout", guardianLogout);
+authsRouter.post("/teacher/logout", teacherLogout);
+authsRouter.post("/staff/logout", staffLogout);
 
 
 // Change password routes
-authsRouter.put("/students/change-password", changeStudentPassword);
-authsRouter.put("/guardians/change-password", changeGuardianPassword);
-authsRouter.put("/teachers/change-password", changeTeacherPassword);
-authsRouter.put("/staffs/change-password", changeStaffPassword);
+authsRouter.put("/student/change-password", changeStudentPassword);
+authsRouter.put("/guardian/change-password", changeGuardianPassword);
+authsRouter.put("/teacher/change-password", changeTeacherPassword);
+authsRouter.put("/staff/change-password", changeStaffPassword);
 
 export default authsRouter;
 
