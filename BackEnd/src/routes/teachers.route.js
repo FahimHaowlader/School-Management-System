@@ -5,6 +5,7 @@ import { Router } from "express";
 
 const teachersRouter = Router();
 
+teachersRouter.get("/", (req, res) => res.send("teachers route"));
 
 // ----- define your routes here ----
 

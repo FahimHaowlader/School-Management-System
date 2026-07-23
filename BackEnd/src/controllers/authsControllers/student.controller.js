@@ -469,4 +469,42 @@ export const changeStudentPassword = asyncHandler(async (req, res) => {
   }
 });
 
+
+// Forget Student Password
+export const forgetStudentPassword = asyncHandler(async (req, res) => {
+  try {
+    const { studentId, newPassword } = req.body;
+
+    // Validate input
+    if (!studentId || !newPassword) {
+      throw new apiError(400, "Student ID and new password are required");
+    }
+
+    // Validate new password strength
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(newPassword)) {
+      throw new apiError(
+        400,
+        "New password must be at least 8 characters, include uppercase, lowercase, and a number"
+      );
+    }
+
+    // Find student
+    const student = await Student.findOne({ studentId }).select("+password");
+    if (!student) {
+      throw new apiError(404, "Student not found");
+    }
+
+    // Update to new password
+    student.password = newPassword;
+    await student.save();
+
+    // Send response
+    res
+      .status(200)
+      .json(new apiResponse(200, null, "Password reset successfully"));
+  } catch (error) {
+    console.error("Forget Student Password Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 // End of Student Controllers

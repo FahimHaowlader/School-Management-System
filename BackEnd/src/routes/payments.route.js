@@ -5,6 +5,7 @@ import { Router } from "express";
 
 const paymentsRouter = Router();
 
+paymentsRouter.get("/", (req, res) => res.send("payments route"));
 
 // ----- define your routes here ----
 

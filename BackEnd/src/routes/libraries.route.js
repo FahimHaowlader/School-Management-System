@@ -5,6 +5,7 @@ import { Router } from "express";
 
 const librariesRouter = Router();
 
+librariesRouter.get("/", (req, res) => res.send("libraries route"));
 
 // ----- define your routes here ----
 

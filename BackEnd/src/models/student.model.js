@@ -159,6 +159,7 @@ mother: {
   },
   relationshipWithGuardian: {
     type: String,
+    enum: ['uncle', 'auntie', 'sister', 'brother', 'grandfather', 'grandmother', 'other'],
     trim: true,
     lowercase: true,
     required: function() { return this.guardian != null; }

@@ -5,6 +5,8 @@ import { Router } from "express";
 
 const announcementsRouter = Router();
 
+ announcementsRouter.get("/", (req, res) => res.send("announcements route"));
+
 
 // ----- define your routes here ----
 

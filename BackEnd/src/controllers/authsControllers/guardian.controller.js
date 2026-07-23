@@ -343,3 +343,46 @@ export const changeGuardianPassword = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+// Forget password for guardian
+export const forgetGuardianPassword = asyncHandler(async (req, res) => {
+  try {
+    const { phoneNumber, newPassword } = req.body;
+
+    // Validate input
+    if (!phoneNumber || !newPassword) {
+      throw new apiError(400, "Phone number and new password are required");
+    }
+
+    // Validate phone number format
+    if (!/^\d{11}$/.test(phoneNumber)) {
+      throw new apiError(400, "Phone number must be exactly 11 digits");
+    }
+
+    // Validate new password strength
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(newPassword)) {
+      throw new apiError(
+        400,
+        "New password must be at least 8 characters, include uppercase, lowercase, and a number"
+      );
+    }
+
+    // Find guardian by phone number
+    const guardian = await Guardian.findOne ({ phoneNumber }).select("+password");
+    if (!guardian) {
+      throw new apiError(404, "Guardian not found");
+    }
+
+    // Update to new password
+    guardian.password = newPassword;
+    await guardian.save();
+
+    // Send response
+    res
+      .status(200)
+      .json(new apiResponse(200, null, "Password reset successfully"));
+  } catch (error) {
+    console.error("Forget Guardian Password Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});

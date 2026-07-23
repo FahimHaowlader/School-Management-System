@@ -5,6 +5,7 @@ import { Router } from "express";
 
 const parentsRouter = Router();
 
+parentsRouter.get("/", (req, res) => res.send("parents route"));
 
 // ----- define your routes here ----
 

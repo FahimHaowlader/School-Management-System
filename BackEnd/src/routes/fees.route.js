@@ -5,6 +5,7 @@ import { Router } from "express";
 
 const feesRouter = Router();
 
+feesRouter.get("/", (req, res) => res.send("fees route"));
 
 // ----- define your routes here ----
 

@@ -5,6 +5,7 @@ import { Router } from "express";
 
 const marksRouter = Router();
 
+marksRouter.get("/", (req, res) => res.send("marks route"));
 
 // ----- define your routes here ----
 

@@ -5,6 +5,7 @@ import { Router } from "express";
 
 const classesRouter = Router();
 
+classesRouter.get("/", (req, res) => res.send("classes route"));
 
 // ----- define your routes here ----
 

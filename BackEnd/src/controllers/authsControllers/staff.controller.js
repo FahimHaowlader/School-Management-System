@@ -413,5 +413,47 @@ export const changeStaffPassword = asyncHandler(async (req, res) => {
   }
 });
 
+// Forgot password for staff
+export const forgotStaffPassword = asyncHandler(async (req, res) => {
+  try {
+    const { staffId, newPassword } = req.body;
+
+    // Validate input
+    if (!staffId || !newPassword) {
+      throw new apiError(400, "Staff ID and new password are required");
+    }
+
+    // Validate staffId format (7 digits)
+    if (!/^[0-9]{7}$/.test(staffId)) {
+      throw new apiError(400, "Invalid Staff ID format");
+    }
+
+    // Validate new password
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(newPassword)) {
+      throw new apiError(
+        400,
+        "New password must be at least 8 characters, include uppercase, lowercase, and a number"
+      );
+    }
+
+    // Find staff by staffId
+    const staff = await Staff.findOne({ staffId });
+    if (!staff) {
+      throw new apiError(404, "Staff not found");
+    }
+
+    // Update password
+    staff.password = newPassword;
+    await staff.save();
+
+    res
+      .status(200)
+      .json(new apiResponse(200, null, "Password reset successfully"));
+  } catch (error) {
+    console.error("Forgot Staff Password Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 

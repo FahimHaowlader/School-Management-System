@@ -434,3 +434,44 @@ export const changeTeacherPassword = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
+// Forget password 
+
+export const forgetTeacherPassword = asyncHandler(async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validate input
+    if (!email) {
+      throw new apiError(400, "Email is required");
+    }
+
+    // Find teacher by email
+    const teacher = await Teacher.findOne({ email });
+    if (!teacher) {
+      throw new apiError(404, "Teacher not found");
+    }
+
+    // Generate reset token
+    const resetToken = teacher.generateResetToken();
+
+    // Save reset token to the teacher document
+    teacher.resetToken = resetToken;
+    await teacher.save();
+
+    // Send reset token via email (implementation not shown)
+    // sendResetEmail(email, resetToken);
+
+    res.status(200).json(
+      new apiResponse(
+        200,
+        { resetToken },
+        "Password reset token generated successfully"
+      )
+    );
+  } catch (error) {
+    console.error("Forget Teacher Password Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});

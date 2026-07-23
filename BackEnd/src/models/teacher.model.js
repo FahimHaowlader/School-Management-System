@@ -244,6 +244,14 @@ const teacherSchema = new mongoose.Schema(
       ],
       default: [],
     }, 
+
+    children: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Student",
+        // Best practice default for an array is an empty array
+        default: [],
+      }],
+        
     
     teachingHistory: {
       type: [

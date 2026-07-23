@@ -9,35 +9,36 @@ import { deleteFromCloudinary } from "../../utils/deleteFromCloudinary.js";
 import Student from "../../models/student.model.js";
 import Guardian from "../../models/guardian.model.js";
 import Teacher from "../../models/teacher.model.js";
-import Staff from "../../models/staff.model.js"; 
+import Staff from "../../models/staff.model.js";
 
 // 🔹 Student Profile Retrieval
 export const getStudentProfile = asyncHandler(async (req, res) => {
   try {
-    const student_id = req.user._id || req.body.student_id;
+    const student_id = req.user._id;
 
     // validate student_id
     if (!student_id) {
       throw new apiError(400, "Student ID is required to get profile");
     }
 
-    if(!options.isValidObjectId(student_id)) {
+    if (!options.isValidObjectId(student_id)) {
       throw new apiError(400, "Invalid student ID format");
     }
 
-  const student = await Student.findById(studentId)
-      .select('name rollNumber mother motherModel father fatherModel guardian guardianModel relationshipWithGuardian emergencyContact')
-      .populate({ path: 'mother', select: 'firstName lastName phone email' })
-      .populate({ path: 'father', select: 'firstName lastName phone email' })
-      .populate({ path: 'guardian', select: 'firstName lastName phone email' })
+    const student = await Student.findById(studentId)
+      .select(
+        "name rollNumber mother motherModel father fatherModel guardian guardianModel relationshipWithGuardian emergencyContact",
+      )
+      .populate({ path: "mother", select: "firstName lastName phone email" })
+      .populate({ path: "father", select: "firstName lastName phone email" })
+      .populate({ path: "guardian", select: "firstName lastName phone email" })
       .lean(); // Converts Mongoose Document to plain JS Object so we can modify it
-
 
     if (!student) {
       throw new apiError(404, "Student not found");
     }
 
-// 2. If guardian is null, delete the empty guardian tracking keys from the response
+    // 2. If guardian is null, delete the empty guardian tracking keys from the response
     if (studentData.guardian === null) {
       delete student.guardian;
       delete student.guardianModel;
@@ -71,7 +72,10 @@ export const updateStudentPersonalInformation = asyncHandler(
 
       // Validate student_id
       if (!student_id) {
-        throw new apiError(400, "Student ID is required to update personal information");
+        throw new apiError(
+          400,
+          "Student ID is required to update personal information",
+        );
       }
 
       // Validate required fields
@@ -126,12 +130,14 @@ export const updateStudentPersonalInformation = asyncHandler(
       const updatedStudent = await Student.findByIdAndUpdate(
         student_id,
         { $set: updateData },
-        { new: true, runValidators: true }
+        { new: true, runValidators: true },
       );
 
       if (!updatedStudent) throw new apiError(404, "Student not found");
 
-      res.status(200).json(new apiResponse(200, updatedStudent, "Student profile updated"));
+      res
+        .status(200)
+        .json(new apiResponse(200, updatedStudent, "Student profile updated"));
     } catch (error) {
       console.error("Update Student Personal Information Error:", error);
 
@@ -141,83 +147,104 @@ export const updateStudentPersonalInformation = asyncHandler(
 
       res.status(500).json({ message: "Internal server error" });
     }
-  }
+  },
 );
 
 // 🔹 Student Contact information Update
-export const updateStudentContactInformation = asyncHandler(async (req, res) => {
-  try {
-    const studentId = req.user._id;
-    const { address, phoneNumber } = req.body;
+export const updateStudentContactInformation = asyncHandler(
+  async (req, res) => {
+    try {
+      const studentId = req.user._id;
+      const { address, phoneNumber, mail } = req.body;
 
-    // validate studentId
-    if (!studentId) {
-      throw new apiError(400, "Student ID is required to update contact information");
+      // validate studentId
+      if (!studentId) {
+        throw new apiError(
+          400,
+          "Student ID is required to update contact information",
+        );
+      }
+
+      // Validate required fields
+      if (!address || !phoneNumber || !mail) {
+        throw new apiError(400, "Please provide all required fields");
+      }
+
+      // Validate address
+      if (address.length < 5 || address.length > 200) {
+        throw new apiError(400, "Address must be between 5 and 200 characters");
+      }
+
+      // Validate phone number
+      if (!/^\d{11}$/.test(phoneNumber)) {
+        throw new apiError(400, "Phone number must be exactly 11 digits");
+      }
+
+      // Validate email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(mail)) {
+        throw new apiError(400, "Invalid email format");
+      }
+
+      // Prepare update object
+      const updateData = {
+        address,
+        phoneNumber,
+      };
+
+      // Update student in one DB operation
+      const updatedStudent = await Student.findByIdAndUpdate(
+        studentId,
+        { $set: updateData },
+        { new: true, runValidators: true },
+      );
+
+      if (!updatedStudent) throw new apiError(404, "Student not found");
+
+      res
+        .status(200)
+        .json(
+          new apiResponse(
+            200,
+            updatedStudent,
+            "Student contact information updated",
+          ),
+        );
+    } catch (error) {
+      console.error("Update Student Contact Information Error:", error);
+
+      if (error instanceof apiError) {
+        return res.status(error.statusCode).json({ message: error.message });
+      }
+
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    // Validate required fields
-    if (!address || !phoneNumber) {
-      throw new apiError(400, "Please provide all required fields");
-    }
-
-    // Validate address
-    if (address.length < 5 || address.length > 200) {
-      throw new apiError(400, "Address must be between 5 and 200 characters");
-    }
-
-    // Validate phone number
-    if (!/^\d{11}$/.test(phoneNumber)) {
-      throw new apiError(400, "Phone number must be exactly 11 digits");
-    }
-
-    // Prepare update object
-    const updateData = {
-      address,
-      phoneNumber,
-    };
-
-    // Update student in one DB operation
-    const updatedStudent = await Student.findByIdAndUpdate(
-      studentId,
-      { $set: updateData },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedStudent) throw new apiError(404, "Student not found");
-
-    res
-      .status(200)
-      .json(new apiResponse(200, updatedStudent, "Student contact information updated"));
-  } catch (error) {
-    console.error("Update Student Contact Information Error:", error);
-
-    if (error instanceof apiError) {
-      return res.status(error.statusCode).json({ message: error.message });
-    }
-
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
+  },
+);
 
 // 🔹 Student Profile Picture Update
 export const updateStudentProfilePicture = asyncHandler(async (req, res) => {
   try {
-    const student_id = req.user._id || req.body.student_id;
-
-    
+    const student_id = req.user._id;
 
     // validate studentId
     if (!student_id) {
-      throw new apiError(400, "Student ID is required to update profile picture");
+      throw new apiError(
+        400,
+        "Student ID is required to update profile picture",
+      );
     }
 
     // Validate picture file
     const pictureLocalPath = await req.files?.picture?.[0]?.path;
-    if (!pictureLocalPath || !/^.*\.(png|jpg|jpeg|webp)$/i.test(pictureLocalPath)) {
+    if (
+      !pictureLocalPath ||
+      !/^.*\.(png|jpg|jpeg|webp)$/i.test(pictureLocalPath)
+    ) {
       await deleteLocalFiles(req.files); // Clean up uploaded file if validation fails
       throw new apiError(
         400,
-        "Profile picture is required and must be PNG, JPG, JPEG, or WEBP"
+        "Profile picture is required and must be PNG, JPG, JPEG, or WEBP",
       );
     }
 
@@ -234,25 +261,26 @@ export const updateStudentProfilePicture = asyncHandler(async (req, res) => {
     const oldStudent = await Student.findByIdAndUpdate(
       student_id,
       { $set: { pic: pictureOnlinePath } },
-      { new: false, select: "pic" }
+      { new: false, select: "pic" },
     );
 
-
-    if (!oldStudent){
+    if (!oldStudent) {
       await deleteFromCloudinary(pictureOnlinePath); // Clean up newly uploaded picture if student not found
       throw new apiError(404, "Student not found");
-    } 
+    }
 
     // If there was an old profile picture, delete it from Cloudinary
     if (oldStudent.pic) {
       await deleteFromCloudinary(oldStudent.pic);
     }
 
-    const updatedStudent =  {...oldStudent.toObject(), pic: pictureOnlinePath }; // Merge old student data with new pic URL
+    const updatedStudent = { ...oldStudent.toObject(), pic: pictureOnlinePath }; // Merge old student data with new pic URL
 
     res
       .status(200)
-      .json(new apiResponse(200, updatedStudent, "Student profile picture updated"));
+      .json(
+        new apiResponse(200, updatedStudent, "Student profile picture updated"),
+      );
   } catch (error) {
     console.error("Update Student Profile Picture Error:", error);
 
@@ -264,58 +292,17 @@ export const updateStudentProfilePicture = asyncHandler(async (req, res) => {
   }
 });
 
-// 🔹 Student ScholarShip Update
-export const updateStudentScholarShip = asyncHandler(async (req, res) => {
+// update emergency contact
+export const requestToUpdateEmergencyContact = asyncHandler(async (req, res) => {
   try {
-    
-    const { scholarShip,student_id } = req.body;
+    const { emergencyContact, student_id } = req.body;
 
     // validate studentId
     if (!student_id) {
-      throw new apiError(400, "Student ID is required to update scholarship");
-    }
-
-    // Validate required field
-    if (!scholarShip) {
-      throw new apiError(400, "Please provide all required fields");
-    }
-
-    // Validate scholarship value
-    const scholarShipNum = Number(scholarShip);
-    if (isNaN(scholarShipNum) || scholarShipNum < 0 || scholarShipNum > 100) {
-      throw new apiError(400, "Invalid scholarShip amount");
-    }
-
-    // Update student scholarship
-    const updatedStudent = await Student.findByIdAndUpdate(
-      student_id,
-      { $set: { scholarShip: scholarShipNum } },
-      { new: true, select: "scholarShip" }
-    );
-
-    if (!updatedStudent) throw new apiError(404, "Student not found");
-
-    res
-      .status(200)
-      .json(new apiResponse(200, updatedStudent, "Student scholarShip updated"));
-  } catch (error) {
-    console.error("Update Student Scholarship Error:", error);
-
-    if (error instanceof apiError) {
-      return res.status(error.statusCode).json({ message: error.message });
-    }
-
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-export const updateEmergencyContact = asyncHandler(async (req, res) => {
-  try {
-    const { emergencyContact,student_id } = req.body;
-
-    // validate studentId
-    if (!student_id) {
-      throw new apiError(400, "Student ID is required to update emergency contact");
+      throw new apiError(
+        400,
+        "Student ID is required to update emergency contact",
+      );
     }
 
     // Validate required field
@@ -332,14 +319,20 @@ export const updateEmergencyContact = asyncHandler(async (req, res) => {
     const updatedStudent = await Student.findByIdAndUpdate(
       student_id,
       { $set: { emergencyContact } },
-      { new: true, select: "emergencyContact",runValidators: true }
+      { new: true, select: "emergencyContact", runValidators: true },
     );
 
     if (!updatedStudent) throw new apiError(404, "Student not found");
 
     res
       .status(200)
-      .json(new apiResponse(200, updatedStudent, "Student emergency contact updated"));
+      .json(
+        new apiResponse(
+          200,
+          updatedStudent,
+          "Student emergency contact updated",
+        ),
+      );
   } catch (error) {
     console.error("Update Student Emergency Contact Error:", error);
 
@@ -351,9 +344,4 @@ export const updateEmergencyContact = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 // ================= END OF STUDENT PROFILE CONTROLLERS =================
-
-
-

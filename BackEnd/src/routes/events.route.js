@@ -5,6 +5,7 @@ import { Router } from "express";
 
 const eventsRouter = Router();
 
+eventsRouter.get("/", (req, res) => res.send("events route"));
 
 // ----- define your routes here ----
 

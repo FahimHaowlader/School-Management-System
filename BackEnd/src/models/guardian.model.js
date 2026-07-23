@@ -84,6 +84,7 @@ const guardianSchema = new mongoose.Schema(
     phoneNumber: {
       type: String,
       required: [true, "Phone number is required"],
+      unique: true,
       trim: true,
       match: [/^[0-9]{11}$/, "Phone number must be exactly 11 digits"],
     },
@@ -112,6 +113,17 @@ const guardianSchema = new mongoose.Schema(
       select: false,
     },
 
+    mail: {
+      type: String,
+      unique: true,
+      trim: true,
+      lowercase: true,
+      match: [
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        "Please fill a valid email address",
+      ],
+    },
+
     accountType: {
       type: String,
       enum: ["guardian"],
@@ -137,22 +149,13 @@ const guardianSchema = new mongoose.Schema(
       },
     },
 
-    // Fixed 3 children
-    children1: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
-      default: null,
-    },
-    children2: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
-      default: null,
-    },
-    children3: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
-      default: null,
-    },
+   children: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Student",
+    // Best practice default for an array is an empty array
+    default: [],
+  }],
+    
 
     refreshToken: { type: String, select: false, default: null }
 

@@ -110,6 +110,7 @@ const staffSchema = new mongoose.Schema(
       select: false,
     },
 
+
     accountType: {
       type: String,
       enum: ["staff"],
@@ -156,6 +157,14 @@ const staffSchema = new mongoose.Schema(
       required: [true, "Joining date is required"],
       set: (value) => new Date(value),
     },
+
+    children: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Student",
+        // Best practice default for an array is an empty array
+        default: [],
+      }],
+        
 
     leavedAt: {
       type: Date,

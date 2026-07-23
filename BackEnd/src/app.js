@@ -75,7 +75,7 @@ app.use("/api/v1/auths", authsRouter);
 
 // for  testing purpose only we stop the verifyuser 
 // app.use(verifyUser); // verify user middleware
-app.use("/api/v1/parents", parentsRouter);
+app.use("/api/v1/guardians", parentsRouter);
 app.use("/api/v1/teachers", teachersRouter);
 app.use("/api/v1/staffs", staffsRouter);
 app.use("/api/v1/students", studentsRouter);
