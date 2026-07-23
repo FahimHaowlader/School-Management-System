@@ -46,30 +46,12 @@ const authsRouter = Router();
 authsRouter.get("/", (req, res) => res.send("auths route"));
 
 //Login routes
-authsRouter.get("/student/login", studentLogin);
-authsRouter.get("/guardian/login", guardianLogin);
-authsRouter.get("/teacher/login", teacherLogin);
-authsRouter.get("/staff/login", staffLogin);
+authsRouter.post("/student/login", studentLogin);
+authsRouter.post("/guardian/login", guardianLogin);
+authsRouter.post("/teacher/login", teacherLogin);
+authsRouter.post("/staff/login", staffLogin);
 
 authsRouter.use(verifyUser);
-
-// Registration routes
-authsRouter.post("/student/register",
-    upload.single( "picture"),
-    studentRegistration);
-
-authsRouter.post("/guardian/register",
-    upload.single( "picture"),
-    guardianRegistration);
-
-authsRouter.post("/teacher/register",
-    upload.single( "picture"),
-    teacherRegistration);
-
-authsRouter.post("/staff/register",
-    upload.single( "picture"),
-    staffRegistration);
-
 
 // Token refresh routes
 authsRouter.post("/student/refresh-tokens", studentRefreshToken);
@@ -90,6 +72,25 @@ authsRouter.put("/student/change-password", changeStudentPassword);
 authsRouter.put("/guardian/change-password", changeGuardianPassword);
 authsRouter.put("/teacher/change-password", changeTeacherPassword);
 authsRouter.put("/staff/change-password", changeStaffPassword);
+
+// have to check that is it should be technician or principal 
+
+// Registration routes
+authsRouter.post("/student/register",
+    upload.single( "picture"),
+    studentRegistration);
+
+authsRouter.post("/guardian/register",
+    upload.single( "picture"),
+    guardianRegistration);
+
+authsRouter.post("/teacher/register",
+    upload.single( "picture"),
+    teacherRegistration);
+
+authsRouter.post("/staff/register",
+    upload.single( "picture"),
+    staffRegistration);
 
 export default authsRouter;
 

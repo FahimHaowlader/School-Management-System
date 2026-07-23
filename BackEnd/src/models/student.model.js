@@ -222,6 +222,14 @@ mother: {
       set: (value) => new Date(value),
     },
 
+    accountType: {
+      type: String,
+      enum: ["student"],
+      default: "student",
+      immutable: true,
+      trim: true,
+    },
+
     // classes: [
     //   {
     //     classId: {

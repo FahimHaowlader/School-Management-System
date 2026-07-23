@@ -52,8 +52,20 @@ import examsRouter from "./routes/exams.route.js";
 // Mount routes
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the School Management System API");
+  res.status(200).json({
+    success: true,
+    message: "Welcome to the MyClass API",
+  });
 });
+
+
+app.get("/api/v1/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Welcome to the MyClass API v1",
+  });
+});
+
 
 // public routes
 
@@ -61,7 +73,8 @@ app.use("/api/v1/auths", authsRouter);
 
 // protected routes
 
-app.use(verifyUser); // verify user middleware
+// for  testing purpose only we stop the verifyuser 
+// app.use(verifyUser); // verify user middleware
 app.use("/api/v1/parents", parentsRouter);
 app.use("/api/v1/teachers", teachersRouter);
 app.use("/api/v1/staffs", staffsRouter);
