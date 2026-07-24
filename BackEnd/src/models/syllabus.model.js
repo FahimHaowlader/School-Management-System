@@ -13,23 +13,43 @@ const syllabusSchema = new mongoose.Schema(
       ref: "Subject",
       required: [true, "Subject reference is required"], 
     },
+    teacherId: {
+       type: mongoose.Schema.Types.ObjectId,
+       ref: "Teacher",
+       required: [true, "Teacher ID is required"],
+     },
+     madeBy: {
+  type: mongoose.Schema.Types.ObjectId,
+  required: [true, "Creator ID is required"],
+  refPath: "madeByModel", // Dynamically inspects the 'madeByModel' field on the document
+},
 
-    attachments: {
-      type: [
-        {
-          type: String,
-          trim: true,
-          required: [true, "Attachment file path is required"],
-        },
-      ],
-      required: [true, "At least one attachment is required"],
-      validate: {
-        validator: function (arr) {
-          return Array.isArray(arr) && arr.length > 0;
-        },
-        message: "Attachments array cannot be empty",
-      },
+     madeByModel: {
+  type: String,
+  required: [true, "Creator model type is required"],
+  enum: {
+    values: ["Staff", "Teacher"],
+    message: "madeByModel must be either 'Staff' or 'Teacher'",
+  },
+},
+
+    isApproved: {
+      type: Boolean,
+      default: null,
     },
+
+    attachment: {
+    type: String,
+  required: [true, "Attachment PDF file path is required"],
+  trim: true,
+  validate: {
+    validator: function (val) {
+      // Optional: Ensures the string ends with .pdf (case-insensitive)
+      return typeof val === "string" && val.toLowerCase().endsWith(".pdf");
+    },
+    message: "Attachment must be a valid PDF file path or URL",
+  },
+},
   },
   { timestamps: true }
 );
