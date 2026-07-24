@@ -27,7 +27,14 @@ const announcementSchema = new mongoose.Schema(
 
     isApproved: {
       type: Boolean,
-      default: false,
+      default: null,
+    },
+
+    category: {
+      type: String,
+      enum: ["general", "academic", "event", "other"],
+      required: [true, "Category is required"],
+      immutable: true,
     },
 
     createdBy: {
@@ -48,44 +55,16 @@ const announcementSchema = new mongoose.Schema(
     audience: {
       type: [
         {
-          group: {
-            type: String,
-            enum: [
-              "all",
-              "teachers",
-              "allstudents",
-              "students",
-              "staff",
-              "students&teachers",
-              "students&staff",
-              "teachers&staff",
-              "parents",
-              "students&parents",
-              "teachers&parents",
-            ],
-            required: true,
-            trim: true,
-          },
-          classId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Class",
-            required: function () {
-              const studentGroups = [
-                "students",
-                "students&teachers",
-                "students&staff",
-                "students&parents",
-                "teachers&parents",
-              ];
-              return this.group && studentGroups.includes(this.group);
-            },
-          },
+          type: String,
+          enum: ["all", "teacher", "staff", "guardian"],
+          trim: true,
+          lowercase: true,
         },
       ],
       required: [true, "At least one audience group is required"],
       validate: {
         validator: function (value) {
-          return value.length > 0;
+          return Array.isArray(value) && value.length > 0;
         },
         message: "At least one audience group must be specified.",
       },
