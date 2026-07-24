@@ -13,7 +13,7 @@ const eventSchema = new mongoose.Schema(
 
     description: {
       type: String,
-      required: true,
+      required: [true, "Description is required"],
       trim: true,
       maxlength: [500, "Description cannot exceed 500 characters"],
       immutable: true,
@@ -22,14 +22,16 @@ const eventSchema = new mongoose.Schema(
     startingDate: {
       type: Date,
       required: [true, "Starting date is required"],
-      set: (value) => new Date(value),
+      set: (value) => (value ? new Date(value) : value),
       validate: [
         {
-          validator: (value) => !isNaN(value.getTime?.()) || !isNaN(new Date(value).getTime()),
+          validator: (value) => value instanceof Date && !isNaN(value.getTime()),
           message: "Invalid starting date format",
         },
         {
           validator: function (value) {
+            // Skip check on updates if document is already saved and startingDate hasn't changed
+            if (!this.isModified("startingDate")) return true;
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             return value >= today;
@@ -47,7 +49,9 @@ const eventSchema = new mongoose.Schema(
         {
           validator: function (value) {
             if (!value) return true; // allow null
-            return !isNaN(value.getTime?.()) && this.startingDate && value >= this.startingDate;
+            const startDate = this.startingDate || this.getUpdate()?.startingDate;
+            if (!startDate) return true;
+            return value >= startDate;
           },
           message: "Ending date cannot be before starting date",
         },
@@ -84,12 +88,13 @@ const eventSchema = new mongoose.Schema(
       maxlength: [100, "Location cannot exceed 100 characters"],
     },
 
-    type: {
+    category: {
       type: String,
       enum: ["academic", "cultural", "sports", "other"],
       default: "academic",
       required: true,
       trim: true,
+      lowercase: true,
     },
 
     attachment: {
@@ -100,69 +105,51 @@ const eventSchema = new mongoose.Schema(
 
     isApproved: {
       type: Boolean,
-      default: false,
+      default: null,
     },
 
     createdBy: {
       id: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        required: [true, "Creator ID is required"],
         refPath: "createdBy.type",
         immutable: true,
       },
       type: {
         type: String,
-        enum: ["Staff", "Teacher", "Admin"],
-        required: true,
+        enum: ["Staff", "Teacher"],
+        required: [true, "Creator type is required"],
         immutable: true,
       },
     },
 
+    pic: {
+      type: String,
+      required: [true, "Profile picture is required"],
+      trim: true,
+      match: [
+        /^(https?:\/\/.*\.(?:png|jpg|jpeg|webp))$/i,
+        "Invalid image URL. Must end with .png, .jpg, .jpeg, or .webp",
+      ],
+    },
+
     audience: {
-          type: [
-            {
-              group: {
-                type: String,
-                enum: [
-                  "all",
-                  "teachers",
-                  "allstudents",
-                  "students",
-                  "staff",
-                  "students&teachers",
-                  "students&staff",
-                  "teachers&staff",
-                  "parents",
-                  "students&parents",
-                  "teachers&parents",
-                ],
-                required: true,
-                trim: true,
-              },
-              classId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Class",
-                required: function () {
-                  const studentGroups = [
-                    "students",
-                    "students&teachers",
-                    "students&staff",
-                    "students&parents",
-                    "teachers&parents",
-                  ];
-                  return this.group && studentGroups.includes(this.group);
-                },
-              },
-            },
-          ],
-          required: [true, "At least one audience group is required"],
-          validate: {
-            validator: function (value) {
-              return value.length > 0;
-            },
-            message: "At least one audience group must be specified.",
-          },
+      type: [
+        {
+          type: String,
+          enum: ["all", "teachers", "staff", "guardian", "students"],
+          trim: true,
+          lowercase: true,
         },
+      ],
+      required: [true, "At least one audience group is required"],
+      validate: {
+        validator: function (value) {
+          return Array.isArray(value) && value.length > 0;
+        },
+        message: "At least one audience group must be specified.",
+      },
+    },
   },
   { timestamps: true }
 );
