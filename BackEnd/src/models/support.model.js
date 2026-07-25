@@ -64,7 +64,7 @@ const supportSchema = new mongoose.Schema(
       type: Boolean,
       default: null,
     },
-    forWhom: {
+    userType: {
       type: String,
       enum: ["teacher", "staff", "guardian", "student", "all"],
       required: [true, "For whom is required"],
