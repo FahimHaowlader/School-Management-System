@@ -29,11 +29,11 @@ const routineSchema = new mongoose.Schema(
       ref: "Subject",
       required: [true, "Subject is required"],  
     },
-    // teacherId: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Teacher",
-    //   required: [true, "Teacher is required"],
-    // },
+    teacherId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Teacher",
+      required: [true, "Teacher is required"],
+    },
     classId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Class",
