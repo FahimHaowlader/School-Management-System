@@ -11,27 +11,22 @@ import Assignment from "../../models/assignment.model.js";
 
 
 //  Assignment overview for a specific academic year And Class
-
 export const getStudentAssignmentsDetailedForYearAndClass = asyncHandler(async (req, res) => {
   try {
-    let student_id = req.user?._id || req.body.student_id;
-    const studentId = req.body.studentId;
+  
+    const student_id = req.body.student_id;
     const { academicYear } = req.body;
 
     // ---------------- Validate Inputs ----------------
-    if (!student_id && !studentId)
+    if (!student_id)
       throw new apiError(400, "Student ID is required");
     if (!academicYear)
       throw new apiError(400, "Academic year is required");
 
     // ---------------- Find Student ----------------
-    let studentExists;
-    if (student_id) {
-      studentExists = await Student.findById(student_id).select("_id").lean();
-    } else {
-      studentExists = await Student.findOne({ studentId }).select("_id").lean();
-      student_id = studentExists?._id;
-    }
+  
+     const studentExists = await Student.findById(student_id).select("_id").lean();
+   
     if (!studentExists)
       throw new apiError(404, "Student not found");
 
@@ -84,9 +79,6 @@ export const getStudentAssignmentsDetailedForYearAndClass = asyncHandler(async (
         },
       },
     ]);
-
-    if (!data || data.length === 0)
-     throw new apiError(404, "No assignments found for the specified year and class");
 
     return res.status(200)
     .json(new apiResponse( 
@@ -180,7 +172,6 @@ export const assignmentSubmitByStudent = asyncHandler(async (req, res) => {
 
 
 // 🔹 Student submitted documnet view 
-
 export const viewSubmittedDocumentsByStudent = asyncHandler(async (req, res) => {
   try {
     const student_id = req.user?._id;
@@ -244,5 +235,116 @@ export const viewSubmittedDocumentsByStudent = asyncHandler(async (req, res) => 
   }
 });
 
+
+// 🔹 Student view assignment marks 
+export const viewAssignmentMarksByStudent = asyncHandler(async (req, res) => {
+  try {
+    const student_id = req.user?._id;
+    const { assignmentId } = req.body;
+
+    // ---------------- Validate Inputs ----------------
+    if (!student_id) {
+      throw new apiError(400, "Student ID is required");
+    }
+    if (!assignmentId) {
+      throw new apiError(400, "Assignment ID is required");
+    }
+
+    // ---------------- Find Enrollment and Assignment ----------------
+    const enrollment = await Enrollment.findOne(
+      { student_id, "assignments.assignment_id": assignmentId },
+      { "assignments.$": 1 } // Project only the matched assignment
+    ).lean();
+
+    if (!enrollment || !enrollment.assignments || enrollment.assignments.length === 0) {
+      throw new apiError(404, "Enrollment or Assignment not found for this student");
+    }
+
+    const assignmentEntry = enrollment.assignments[0];
+    const score = assignmentEntry.marks || null;
+
+    // ---------------- Optional: Include Assignment Info ----------------
+    const assignment = await Assignment.findById(assignmentId)
+      .select("title description submissionDate mark assignmentCode attachment subject_id")
+      .lean();
+
+    if (!assignment) {
+      throw new apiError(404, "Assignment not found");
+    }
+
+    const response = {
+      assignment_id: assignment._id,
+      title: assignment.title,
+      description: assignment.description,
+      submissionDate: assignment.submissionDate,
+      mark: assignment.mark,
+      paper: assignment.attachment,
+      assignmentCode: assignment.assignmentCode,
+      subject_id: assignment.subject_id,
+      score,
+    };
+
+    // ---------------- Return Success ----------------
+    return res.status(200).json({
+      status: 200,
+      data: response,
+      message: "Assignment marks retrieved successfully",
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      status: 500,
+      data: null,
+      message: "Server error: " + error.message,
+    });
+  }
+});
+
+
+// student  assignment resubmission
+export const resubmitAssignmentByStudent = asyncHandler(async (req, res) => {
+  try {
+    const student_id = req.user?._id;
+    const { assignmentId, submittedDocuments } = req.body;
+
+    // ---------------- Validate Inputs ----------------
+    if (!student_id) throw new apiError(400, "Student ID is required");
+    if (!assignmentId) throw new apiError(400, "Assignment ID is required");
+    if (!submittedDocuments || !Array.isArray(submittedDocuments) || submittedDocuments.length === 0) {
+      throw new apiError(400, "At least one submitted document is required for resubmission");
+    }
+
+    // ---------------- Update Assignment Resubmission ----------------
+    const enrollment = await Enrollment.findOneAndUpdate(
+      { student_id, "assignments.assignment_id": assignmentId },
+      {
+        $set: {
+          "assignments.$.isSubmitted": true,
+          "assignments.$.submittedDate": new Date(),
+          "assignments.$.submittedDocuments": submittedDocuments,
+        },
+      },
+      { new: true } // return updated document
+    );
+
+    if (!enrollment) {
+      throw new apiError(404, "Enrollment or Assignment not found for this student");
+    }
+
+    // ---------------- Return Success Response ----------------
+    return res.status(200).json({
+      status: 200,
+      data: null,
+      message: "Assignment resubmitted successfully",
+    });
+
+  } catch (error) {
+    return res.status(error.status || 500).json({
+      status: error.status || 500,
+      data: null,
+      message: error.message || "Server error",
+    });
+  }
+});
 
 
