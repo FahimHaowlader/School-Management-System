@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import asyncHandler from "../../utils/asyncHandler.js";
 import apiError from "../../utils/apiError.js";
 import options from "../../utils/options.js";
@@ -527,6 +528,49 @@ export const deleteGuardianAccountByStudent  = asyncHandler(async (req, res) => 
       return res.status(error.statusCode).json({ message: error.message });
     }
 
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+//get student profile by id
+export const getStudentProfileById = asyncHandler(async (req, res) => {
+  try {
+    const student_id = req.query.id;
+
+    // validate student_id
+    if (!student_id) {
+      throw new apiError(400, "Student ID is required to get profile");
+    }
+
+    if(!mongoose.Types.ObjectId.isValid(student_id)) {
+      throw new apiError(400, "Invalid student ID format");
+    }
+
+    const student = await Student.findById(studentId)
+      .select(
+        "name rollNumber mother motherModel father fatherModel guardian guardianModel relationshipWithGuardian emergencyContact",
+      )
+      .populate({ path: "mother", select: "firstName lastName phone email" })
+      .populate({ path: "father", select: "firstName lastName phone email" })
+      .populate({ path: "guardian", select: "firstName lastName phone email" })
+      .lean(); // Converts Mongoose Document to plain JS Object so we can modify it
+
+    if (!student) {
+      throw new apiError(404, "Student not found");
+    }
+
+    // 2. If guardian is null, delete the empty guardian tracking keys from the response
+    if (studentData.guardian === null) {
+      delete student.guardian;
+      delete student.guardianModel;
+      delete student.relationshipWithGuardian;
+    }
+
+    res
+      .status(200)
+      .json(new apiResponse(200, student, "Student profile retrieved"));
+  } catch (error) {
+    console.error("Get Student Profile Error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
