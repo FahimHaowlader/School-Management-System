@@ -128,13 +128,13 @@ export const getStudentAssignmentDetailedById = asyncHandler(async (req, res) =>
 export const assignmentSubmitByStudent = asyncHandler(async (req, res) => {
   try {
     const student_id = req.user?._id;
-    const { assignmentId, submittedDocuments } = req.body;
+    const { assignmentId, submittedDocument } = req.body;
 
     // ---------------- Validate Inputs ----------------
     if (!student_id) throw new apiError(400, "Student ID is required");
     if (!assignmentId) throw new apiError(400, "Assignment ID is required");
-    if (!submittedDocuments || !Array.isArray(submittedDocuments) || submittedDocuments.length === 0) {
-      throw new apiError(400, "At least one submitted document is required");
+    if (!submittedDocument) {
+      throw new apiError(400, "Submitted document is required");
     }
 
     // ---------------- Update Assignment Submission ----------------

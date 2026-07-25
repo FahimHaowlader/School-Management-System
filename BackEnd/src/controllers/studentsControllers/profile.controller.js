@@ -241,7 +241,7 @@ export const updateStudentProfilePicture = asyncHandler(async (req, res) => {
       !pictureLocalPath ||
       !/^.*\.(png|jpg|jpeg|webp)$/i.test(pictureLocalPath)
     ) {
-      await deleteLocalFiles(req.files); // Clean up uploaded file if validation fails
+      await deleteLocalFiles([req.files]); // Clean up uploaded file if validation fails
       throw new apiError(
         400,
         "Profile picture is required and must be PNG, JPG, JPEG, or WEBP",
@@ -250,7 +250,7 @@ export const updateStudentProfilePicture = asyncHandler(async (req, res) => {
 
     // Upload to Cloudinary
     const uploadResult = await uploadToCloudinary(pictureLocalPath);
-    await deleteLocalFiles(req.files); // Clean up uploaded file if validation fails
+    await deleteLocalFiles([req.files]); // Clean up uploaded file if validation fails
     if (!uploadResult?.secure_url) {
       throw new apiError(500, "Failed to upload profile picture");
     }
