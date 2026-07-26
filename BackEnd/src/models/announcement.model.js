@@ -23,19 +23,29 @@ const announcementSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: null,
-    },
+    }, // Optional attachment URL or path check the .pdf is it 
 
     isApproved: {
       type: Boolean,
       default: null,
     },
-
+ status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+      immutable: true,
+    },
     category: {
       type: String,
       enum: ["general", "academic", "event", "other"],
       required: [true, "Category is required"],
       immutable: true,
     },
+    checkAfterReview: {
+      type: Boolean,
+      default: false,
+    },
+  
 
     createdBy: {
       id: {
@@ -68,6 +78,12 @@ const announcementSchema = new mongoose.Schema(
         },
         message: "At least one audience group must be specified.",
       },
+    },
+    RejectionReason: {
+      type: String,
+      trim: true,
+      default: null,
+      maxlength: [200, "Rejection reason cannot exceed 200 characters"],
     },
   },
   { timestamps: true }

@@ -71,6 +71,12 @@ const assignmentSchema = new mongoose.Schema(
       min: 10,
       max: 100,
     },
+    madeBy:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Teacher",
+      required: [true, "Teacher ID is required"],
+    },
+   
     attachment: {
       type: String, // Could be URL to uploaded file (PDF, image, etc.)
       trim: true,
