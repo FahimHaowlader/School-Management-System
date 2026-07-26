@@ -12,8 +12,13 @@ const enrollmentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Class",
       required: true,
-      immutable: true, // classId cannot change
     },
+    marks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Mark",
+      },
+    ],
     result: {
       type: String,
       enum: ["a+", "a", "a-", "b", "c", "d", "f"],

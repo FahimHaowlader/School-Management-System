@@ -76,12 +76,12 @@ const teacherSchema = new mongoose.Schema(
           const minDate = new Date(
             today.getFullYear() - 80,
             today.getMonth(),
-            today.getDate()
+            today.getDate(),
           );
           const maxDate = new Date(
             today.getFullYear() - 18,
             today.getMonth(),
-            today.getDate()
+            today.getDate(),
           );
 
           return value >= minDate && value <= maxDate;
@@ -243,16 +243,17 @@ const teacherSchema = new mongoose.Schema(
         },
       ],
       default: [],
-    }, 
+    },
 
-    children: [{
+    children: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Student",
         // Best practice default for an array is an empty array
         default: [],
-      }],
-        
-    
+      },
+    ],
+
     teachingHistory: {
       type: [
         {
@@ -294,7 +295,7 @@ const teacherSchema = new mongoose.Schema(
       lowercase: true,
       maxlength: [500, "Vision cannot exceed 500 characters"],
       default: null,
-    }, 
+    },
 
     joinedAt: {
       type: Date,
@@ -340,6 +341,22 @@ const teacherSchema = new mongoose.Schema(
       required: true,
     },
 
+    // Recommended schema structure for Class + Subject pairs:
+    classes: [
+      {
+        class_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Class",
+          required: true,
+        },
+        subject_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Subject",
+          required: true,
+        },
+      },
+    ],
+
     // role: {
     //   type: String,
     //   enum: ["normal", "librarian", "technician"],
@@ -358,7 +375,7 @@ const teacherSchema = new mongoose.Schema(
       ],
       default: "junior",
     },
-  
+
     attendanceSummary: [
       {
         year: {
@@ -388,7 +405,7 @@ const teacherSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // ✅ Prevent modifying attendance status after 15 days
@@ -402,7 +419,7 @@ teacherSchema.pre("save", function (next) {
       const diffDays = (today - record.createdAt) / (1000 * 60 * 60 * 24);
       if (diffDays > 15 && this.isModified(`attendance.${record._id}.status`)) {
         return next(
-          new Error("Attendance status cannot be modified after 15 days")
+          new Error("Attendance status cannot be modified after 15 days"),
         );
       }
     }
@@ -421,7 +438,7 @@ teacherSchema.methods.generateAccessToken = function () {
       role: this.role,
     },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY },
   );
 };
 
@@ -432,7 +449,7 @@ teacherSchema.methods.generateRefreshToken = function () {
       _id: this._id,
     },
     process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY },
   );
 };
 

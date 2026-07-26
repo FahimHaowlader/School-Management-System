@@ -11,6 +11,7 @@ import Student from "../../models/student.model.js";
 import Guardian from "../../models/guardian.model.js";
 import Teacher from "../../models/teacher.model.js";
 import Staff from "../../models/staff.model.js";
+import Class from "../../models/class.model.js";
 
 
 // 🔹 Student ScholarShip Update
@@ -575,6 +576,53 @@ export const getStudentProfileById = asyncHandler(async (req, res) => {
   }
 });
 
+// get student by search query
+export const getStudentBySearch = asyncHandler(async (req, res) => {
+  try {
+    const class_id = req.query?.class_id;
+    const searchQuery = req.query?.search;
+
+    if (!class_id) {
+      throw new apiError(400, "Class ID is required");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(class_id)) {
+      throw new apiError(400, "Invalid class ID");
+    }
+
+    if (!searchQuery) {
+      throw new apiError(400, "Search query is required");
+    }
+
+    // Use a case-insensitive regex to search for students by name or roll number
+    const regex = new RegExp(searchQuery, "i");
+
+    const students = await Class.find({
+      _id: class_id,
+      $or: [
+        { "students.fullName": { $regex: regex } },
+        { "students.rollNumber": { $regex: regex } },
+      ],
+    })
+      .select("students")
+      .populate({ 
+        path: "students",
+        select: "fullName rollNumber",
+      });
+
+    if (!students || students.length === 0) {
+      throw new apiError(404, "No students found matching the search criteria");
+    }
+
+    res
+      .status(200)
+      .json(new apiResponse(200, students, "Students fetched successfully"));
+  } catch (error) {
+    console.error("Get Students by Search Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+   
 
 
 

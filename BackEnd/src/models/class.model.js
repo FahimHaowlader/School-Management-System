@@ -20,8 +20,8 @@ const classSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
       enum: {
-        values: ["A", "B", "C", "D"],
-        message: "Section must be a single uppercase letter A-D",
+        values: ["a", "b", "c", "d"],
+        message: "Section must be a single lowercase letter a-d",
       },
     },
     group: {
@@ -41,6 +41,12 @@ const classSchema = new mongoose.Schema(
       ref: "Teacher", // assuming you have a Teacher model
       default: null,
     },
+    students: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Student", // assuming you have a Student model
+      },
+    ],
   },
   { timestamps: true }
 );
