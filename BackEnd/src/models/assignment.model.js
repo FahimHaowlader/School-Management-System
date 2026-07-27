@@ -82,7 +82,12 @@ const assignmentSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
       default: null,
-    }
+    },
+    isGraded: {
+      type: Boolean,
+      default: false,
+    },
+    
   },
   { timestamps: true }
 );

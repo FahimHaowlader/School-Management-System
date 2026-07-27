@@ -164,5 +164,27 @@ export const getReviewedAnnouncementsByTeacher = asyncHandler(async (req, res) =
   }
 });
 
+// get the pending announcements by the teacher
+export const getPendingAnnouncementsByTeacher = asyncHandler(async (req, res) => {
+  try {
+    const announcements = await Announcement.find({
+      createdBy: req.user._id,
+      status: "pending",
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    if (!announcements || announcements.length === 0) {
+      throw new apiError(404, "No pending announcements found for this teacher");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, announcements, "Pending announcements fetched successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
 
 
