@@ -39,3 +39,27 @@ export const getRoutineSlots = asyncHandler(async (req, res) => {
     throw new apiError(500, error.message || "Internal Server Error");
   }
 });
+
+// get routine of a specific class section
+export const getRoutineByClassSection = asyncHandler(async (req, res) => {
+  try {
+    const { classId, sectionId } = req.query;
+
+    if (!classId || !sectionId) {
+      throw new apiError(400, "Both classId and sectionId query parameters are required");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(classId) || !mongoose.Types.ObjectId.isValid(sectionId)) {
+      throw new apiError(400, "Invalid classId or sectionId");
+    }
+
+    const routine = await Routine.findOne({ classId, sectionId }).populate("subjectId teacherId classId");
+    if (!routine) {
+      throw new apiError(404, "Routine not found for the specified class and section");
+    }
+
+    return res.status(200).json(new apiResponse(200, routine, "Routine fetched successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message || "Internal Server Error");
+  }
+});
