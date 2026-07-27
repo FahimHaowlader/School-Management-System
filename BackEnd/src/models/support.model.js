@@ -71,6 +71,19 @@ const supportSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    isApprove: {
+      type: Boolean,
+      default: null,
+    },
+    checkAfterReview: {
+      type: Boolean,
+      default: null,
+    },
+    reactionReason: {
+      type: String,
+      trim: true,
+      default: null,
+    },
   },
   {
     timestamps: true,
