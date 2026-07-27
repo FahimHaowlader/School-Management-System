@@ -37,6 +37,16 @@ const syllabusSchema = new mongoose.Schema(
       type: Boolean,
       default: null,
     },
+    checkAfterReview: {
+      type: Boolean,
+      default: null,
+    },
+
+    ReactionReason: {
+      type: String,
+      trim: true,
+      default: null,
+    },
 
     attachment: {
     type: String,

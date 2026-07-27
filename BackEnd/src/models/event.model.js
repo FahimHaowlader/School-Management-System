@@ -150,8 +150,31 @@ const eventSchema = new mongoose.Schema(
         message: "At least one audience group must be specified.",
       },
     },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+    RejectionReason: {
+      type: String,
+      trim: true,
+      default: null,
+      maxlength: [200, "Rejection reason cannot exceed 200 characters"],
+    },
+    checkAfterReview: {
+      type: Boolean,
+      default: false,
+    },
+    result :[
+      {type: mongoose.Schema.Types.ObjectId,
+      ref: "Achievement",
+      default: [],}
+    ],
+    
+    
   },
   { timestamps: true }
 );
+
 
 export const Event = mongoose.model("Event", eventSchema);
