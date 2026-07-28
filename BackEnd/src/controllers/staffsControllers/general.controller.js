@@ -265,3 +265,41 @@ export const getAllReviewedStaffRequests = asyncHandler(async (req, res) => {
     throw new apiError(500, error.message);
   }
 });
+
+
+// update the emergency contact of the staff by id
+export const updateStaffEmergencyContact = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { emergencyContact } = req.body;
+
+    // Validate ID existence and string type
+    if (!id || typeof id !== "string") {
+      throw new apiError(400, "Staff ID is required and must be a string");
+    }
+
+    // Validate if the provided ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid staff ID format");
+    }
+
+    // Find the staff by ID
+    const staff = await Staff.findById(id);
+
+    if (!staff) {
+      throw new apiError(404, "Staff not found");
+    }
+
+    // Update the emergency contact if provided
+    if (emergencyContact) staff.emergencyContact = emergencyContact;
+
+    // Save the updated staff member
+    await staff.save();
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, staff, "Staff emergency contact updated successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
