@@ -267,3 +267,57 @@ export const deleteGuardianById = asyncHandler(async (req, res) => {
     throw new apiError(500, error.message);
   }
 });
+
+// suspend guardian by ID
+export const suspendGuardianById = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid guardian ID");
+    }
+
+    const guardian = await Guardian.findById(id);
+
+    if (!guardian) {
+      throw new apiError(404, "Guardian not found");
+    }
+
+    // Update the suspended status of the guardian
+    guardian.suspended = true;
+    await guardian.save();
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, guardian, "Guardian suspended successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+// unsuspend guardian by ID
+export const unsuspendGuardianById = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid guardian ID");
+    }
+
+    const guardian = await Guardian.findById(id);
+
+    if (!guardian) {
+      throw new apiError(404, "Guardian not found");
+    }
+
+    // Update the suspended status of the guardian
+    guardian.suspended = false;
+    await guardian.save();
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, guardian, "Guardian unsuspended successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});

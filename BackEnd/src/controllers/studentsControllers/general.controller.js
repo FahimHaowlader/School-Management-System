@@ -622,6 +622,389 @@ export const getStudentBySearch = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
+// get count of the all student
+export const getStudentCount = asyncHandler(async (req, res) => {
+  try {
+    const studentCount = await Student.countDocuments();
+    res
+      .status(200)
+      .json(new apiResponse(200, { count: studentCount }, "Student count fetched successfully"));
+  } catch (error) {
+    console.error("Get Student Count Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// get all student with pagination
+export const getAllStudents = asyncHandler(async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 students per page if not provided
+    const skip = (page - 1) * limit;
+
+    const students = await Student.find()
+      .skip(skip)
+      .limit(limit)
+      .select("firstName lastName rollNumber classId")
+      .populate({ path: "classId", select: "name" });
+
+    // Get the total count of students for pagination info
+    const totalStudents = await Student.countDocuments();
+
+    if (!students || students.length === 0) {
+      throw new apiError(404, "No students found");
+    }
+
+    return res.status(200).json(
+      new apiResponse(200, {
+        students,
+        totalStudents,
+        currentPage: page,
+        totalPages: Math.ceil(totalStudents / limit),
+      }, "Students fetched successfully")
+    );
+  } catch (error) {
+    console.error("Get All Students Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// get student by id
+export const getStudentById = asyncHandler(async (req, res) => {
+  try {
+    const studentId = req.params.id;
+
+    if (!studentId) {
+      throw new apiError(400, "Student ID is required");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      throw new apiError(400, "Invalid student ID format");
+    }
+
+    const student = await Student.findById(studentId)
+      .select("firstName lastName rollNumber classId")
+      .populate({ path: "classId", select: "name" });
+
+    if (!student) {
+      throw new apiError(404, "Student not found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, student, "Student fetched successfully"));
+  } catch (error) {
+    console.error("Get Student by ID Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// search students by name or roll number
+export const searchStudents = asyncHandler(async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    if (!search) {
+      throw new apiError(400, "Search query parameter is required");
+    }
+
+    // Create a case-insensitive regex for searching
+    const searchRegex = new RegExp(search, "i");
+
+    // Find students that match the search criteria in firstName, lastName, or rollNumber
+    const students = await Student.find({
+      $or: [
+        { firstName: { $regex: searchRegex } },
+        { lastName: { $regex: searchRegex } },
+        { rollNumber: { $regex: searchRegex } },
+      ],
+    });
+
+    if (!students || students.length === 0) {
+      throw new apiError(404, "No students found matching the search criteria");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, students, "Students retrieved successfully"));
+  } catch (error) {
+    console.error("Search Students Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// suspended student 
+export const suspendStudent = asyncHandler(async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      throw new apiError(400, "Student ID is required to suspend a student");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      throw new apiError(400, "Invalid student ID format");
+    }
+
+    const suspendedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: { isSuspended: true } },
+      { new: true, select: "firstName lastName rollNumber isSuspended" }
+    );
+
+    if (!suspendedStudent) {
+      throw new apiError(404, "Student not found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, suspendedStudent, "Student suspended successfully"));
+  } catch (error) {
+    console.error("Suspend Student Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+// unsuspended student
+export const unsuspendStudent = asyncHandler(async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      throw new apiError(400, "Student ID is required to unsuspend a student");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      throw new apiError(400, "Invalid student ID format");
+    }
+
+    const unsuspendedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: { isSuspended: false } },
+      { new: true, select: "firstName lastName rollNumber isSuspended" }
+    );
+
+    if (!unsuspendedStudent) {
+      throw new apiError(404, "Student not found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, unsuspendedStudent, "Student unsuspended successfully"));
+  } catch (error) {
+    console.error("Unsuspend Student Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+// add new student by teacher or staff
+export const addNewStudent = asyncHandler(async (req, res) => {
+  try {
+    const { firstName, lastName, rollNumber, classId } = req.body;
+    const accountType = req.user.accountType;
+
+    if (accountType !== "teacher" && accountType !== "staff") {
+      throw new apiError(403, "Unauthorized to add a new student");
+    }
+
+    // Validate required fields
+    if (!firstName || !lastName || !rollNumber || !classId) {
+      throw new apiError(400, "Please provide all required fields");
+    }
+
+    // Validate classId format
+    if (!mongoose.Types.ObjectId.isValid(classId)) {
+      throw new apiError(400, "Invalid class ID format");
+    }
+
+    // Check if the class exists
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) {
+      throw new apiError(404, "Class not found");
+    }
+
+    // Check if a student with the same roll number already exists in the class
+    const existingStudent = await Student.findOne({ rollNumber, classId });
+    if (existingStudent) {
+      throw new apiError(400, "A student with this roll number already exists in the class");
+    }
+
+    // Create a new student
+    const newStudent = new Student({
+      firstName,
+      lastName,
+      rollNumber,
+      classId,
+    });
+
+    await newStudent.save();
+
+    res
+      .status(201)
+      .json(new apiResponse(201, newStudent, "New student added successfully"));
+  } catch (error) {
+    console.error("Add New Student Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// delete student by teacher or staff
+export const deleteStudent = asyncHandler(async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const accountType = req.user.accountType;
+
+    if (accountType !== "teacher" && accountType !== "staff") {
+      throw new apiError(403, "Unauthorized to delete a student");
+    }
+
+    // Validate studentId format
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      throw new apiError(400, "Invalid student ID format");
+    }
+
+    // Check if the student exists
+    const existingStudent = await Student.findById(studentId);
+    if (!existingStudent) {
+      throw new apiError(404, "Student not found");
+    }
+
+    // Delete the student
+    await Student.findByIdAndDelete(studentId);
+
+    res
+      .status(200)
+      .json(new apiResponse(200, null, "Student deleted successfully"));
+  } catch (error) {
+    console.error("Delete Student Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// update emergency contact of student by teacher or staff
+export const updateEmergencyContact = asyncHandler(async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const { emergencyContact } = req.body;
+    const accountType = req.user.accountType;
+
+    if (accountType !== "teacher" && accountType !== "staff") {
+      throw new apiError(403, "Unauthorized to update emergency contact");
+    }
+
+    // Validate studentId format
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      throw new apiError(400, "Invalid student ID format");
+    }
+
+    // Validate required field
+    if (!emergencyContact) {
+      throw new apiError(400, "Emergency contact is required");
+    }
+
+    // Update the emergency contact of the student
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: { emergencyContact } },
+      { new: true, select: "emergencyContact" }
+    );
+
+    if (!updatedStudent) {
+      throw new apiError(404, "Student not found");
+    }
+
+    res
+      .status(200)
+      .json(new apiResponse(200, updatedStudent, "Emergency contact updated successfully"));
+  } catch (error) {
+    console.error("Update Emergency Contact Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// all pending requests made by students
+export const getAllPendingRequests = asyncHandler(async (req, res) => {
+  try {
+    const accountType = req.user.accountType;
+
+    if (accountType !== "teacher" && accountType !== "staff") {
+      throw new apiError(403, "Unauthorized to view pending requests");
+    }
+
+    // Fetch all students with pending scholarship requests
+    const pendingRequests = await Student.find({ isScholarshipRequestPending: true })
+      .select("firstName lastName rollNumber scholarShip requestedScholarshipNum")
+      .lean();
+
+    if (!pendingRequests || pendingRequests.length === 0) {
+      throw new apiError(404, "No pending scholarship requests found");
+    }
+    
+    res
+      .status(200)
+      .json(new apiResponse(200, pendingRequests, "Pending scholarship requests fetched successfully"));
+  } catch (error) {
+    console.error("Get All Pending Requests Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// review and approve or reject a pending  request made by a student
+export const reviewPendingRequest = asyncHandler(async (req, res) => {
+  try {
+    const { studentId, action } = req.body;
+    const accountType = req.user.accountType;
+
+    if (accountType !== "teacher" && accountType !== "staff") {
+      throw new apiError(403, "Unauthorized to review pending requests");
+    }
+
+    // Validate required fields
+    if (!studentId || !action) {
+      throw new apiError(400, "Student ID and action are required");
+    }
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      throw new apiError(400, "Invalid student ID format");
+    }
+
+    // Validate action value
+    if (!["approve", "reject"].includes(action)) {
+      throw new apiError(400, "Action must be either 'approve' or 'reject'");
+    }
+
+    // Fetch the student with the pending request
+    const student = await Student.findById(studentId).select("firstName lastName rollNumber scholarShip requestedScholarshipNum isScholarshipRequestPending");
+    if (!student) {
+      throw new apiError(404, "Student not found");
+    }
+
+    if (!student.isScholarshipRequestPending) {
+      throw new apiError(400, "This student does not have a pending scholarship request");
+    }
+
+    // Update the student's scholarship based on the action
+    if (action === "approve") {
+      student.scholarShip = student.requestedScholarshipNum;
+    }
+    student.isScholarshipRequestPending = false; // Mark the request as reviewed
+    student.requestedScholarshipNum = undefined; // Clear the requested scholarship number
+
+    await student.save();
+
+    res
+      .status(200)
+      .json(new apiResponse(200, student, `Scholarship request ${action}d successfully`));
+  } catch (error) {
+    console.error("Review Pending Request Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
    
 
 
