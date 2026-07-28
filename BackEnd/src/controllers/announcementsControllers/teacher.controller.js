@@ -39,6 +39,40 @@ export const createAnnouncementByTeacher = asyncHandler(async (req, res) => {
 });
 
 
+// search the announcement by teacher
+export const searchAnnouncementsByTeacher = asyncHandler(async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    if (!search) {
+      throw new apiError(400, "Search query parameter is required");
+    }
+
+    // Create a case-insensitive regex for searching
+    const searchRegex = new RegExp(search, "i");
+
+    // Find announcements that match the search criteria in title or content
+    const announcements = await Announcement.find({
+      createdBy: req.user._id,
+      $or: [
+        { title: { $regex: searchRegex } },
+        { content: { $regex: searchRegex } },
+      ],
+    });
+
+    if (!announcements || announcements.length === 0) {
+      throw new apiError(404, "No announcements found matching the search criteria");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, announcements, "Announcements fetched successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+
 // update the announcement by teacher
 export const updateAnnouncementByTeacher = asyncHandler(async (req, res) => {
   try {
