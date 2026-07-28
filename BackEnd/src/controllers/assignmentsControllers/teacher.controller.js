@@ -315,5 +315,39 @@ export const updateAssignmentGradeByTeacher = asyncHandler(async (req, res, next
     }
 });
 
+// delete assignment by teacher
+export const deleteAssignmentByTeacher = asyncHandler(async (req, res, next) => {
+    try {
+        const { assignmentId } = req.params;
+        const teacherId = req.user._id;
 
+        if (!assignmentId) {
+            return next(new apiError("Assignment ID parameter is required", 400));
+        }
+
+        // 1. Verify the assignment exists and belongs to this teacher
+        const assignment = await Assignment.findOne({
+            _id: assignmentId,
+            teacher: teacherId
+        });
+
+        if (!assignment) {
+            return next(new apiError("Assignment not found or unauthorized access", 404));
+        }
+
+        // 2. Delete the assignment
+        await Assignment.deleteOne({ _id: assignmentId });
+
+        // 3. Optionally, delete all related submissions for this assignment
+        await Submission.deleteMany({ assignment: assignmentId });
+
+        // 4. Return response
+        return res.status(200).json({
+            success: true,
+            message: "Assignment and related submissions deleted successfully"
+        });
+    } catch (error) {
+        return next(new apiError(error.message || "Failed to delete assignment", 500));
+    }
+});
 
