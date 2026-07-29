@@ -208,3 +208,36 @@ export const getRoutineByTeacher = asyncHandler(async (req, res) => {
   }
 });
 
+// get all pending routines for a specific teacher
+export const getPendingRoutinesByTeacher = asyncHandler(async (req, res) => {
+  try {
+    const teacherId = req.user._id; // Assuming the teacher's ID is available in req.user
+
+    if (!teacherId) {
+      throw new apiError(400, "Teacher ID is required");
+    }
+
+    const pendingRoutines = await Routine.find({ teacherId, status: "pending" }).populate("subjectId classId sectionId timeSlotId");
+    return res.status(200).json(new apiResponse(200, pendingRoutines, "Pending routines fetched successfully for the teacher"));
+  } catch (error) {
+    throw new apiError(500, error.message || "Internal Server Error");
+  }
+});
+
+
+// get all reviewed routines for a specific teacher
+export const getReviewedRoutinesByTeacher = asyncHandler(async (req, res) => {
+  try {
+    const teacherId = req.user._id; // Assuming the teacher's ID is available in req.user
+
+    if (!teacherId) {
+      throw new apiError(400, "Teacher ID is required");
+    }
+
+    const reviewedRoutines = await Routine.find({ teacherId, status: { $in: ["approved", "rejected"] } }).populate("subjectId classId sectionId timeSlotId");
+    return res.status(200).json(new apiResponse(200, reviewedRoutines, "Reviewed routines fetched successfully for the teacher"));
+  } catch (error) {
+    throw new apiError(500, error.message || "Internal Server Error");
+  }
+});
+
