@@ -63,3 +63,19 @@ export const getRoutineByClassSection = asyncHandler(async (req, res) => {
     throw new apiError(500, error.message || "Internal Server Error");
   }
 });
+
+// get routines for specific year
+export const getRoutinesByYear = asyncHandler(async (req, res) => {
+  try {
+    const { year } = req.query;
+
+    if (!year) {
+      throw new apiError(400, "Year query parameter is required");
+    }
+
+    const routines = await Routine.find({ year }).populate("subjectId teacherId classId");
+    return res.status(200).json(new apiResponse(200, routines, "Routines fetched successfully for the specified year"));
+  } catch (error) {
+    throw new apiError(500, error.message || "Internal Server Error");
+  }
+}); 

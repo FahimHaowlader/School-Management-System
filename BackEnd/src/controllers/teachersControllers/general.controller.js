@@ -290,3 +290,21 @@ export const updateEmergencyContact = asyncHandler(async (req, res) => {
     throw new apiError(500, error.message);
   }
 }); 
+
+
+// get all teacher 
+export const getAllTeachersList = asyncHandler(async (req, res) => {
+  try {
+    const teachers = await Teacher.find().select("name email role").lean();
+
+    if (!teachers || teachers.length === 0) {
+      throw new apiError(404, "No teachers found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, teachers, "Teachers fetched successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
