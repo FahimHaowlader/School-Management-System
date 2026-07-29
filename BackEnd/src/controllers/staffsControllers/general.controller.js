@@ -303,3 +303,181 @@ export const updateStaffEmergencyContact = asyncHandler(async (req, res) => {
     throw new apiError(500, error.message);
   }
 });
+
+// update the status by principal 
+export const updateStaffStatusByPrincipal = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // Validate ID existence and string type
+    if (!id || typeof id !== "string") {
+      throw new apiError(400, "Staff ID is required and must be a string");
+    }
+
+    // Validate if the provided ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid staff ID format");
+    }
+
+    // Find the staff by ID
+    const staff = await Staff.findById(id);
+
+    if (!staff) {
+      throw new apiError(404, "Staff not found");
+    }
+
+    // Update the status if provided
+    if (status) staff.status = status;
+
+    // Save the updated staff member
+    await staff.save();
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, staff, "Staff status updated successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+// add  new staff by principal
+export const addNewStaffByPrincipal = asyncHandler(async (req, res) => {
+  try {
+    const { name, email, role, emergencyContact } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !role) {
+      throw new apiError(400, "Name, email, and role are required");
+    }
+
+    // Check if the staff with the same email already exists
+    const existingStaff = await Staff.findOne({ email });
+    if (existingStaff) {
+      throw new apiError(400, "Staff with this email already exists");
+    }
+
+    // Create a new staff member
+    const newStaff = new Staff({ name, email, role, emergencyContact });
+    await newStaff.save();
+
+    return res
+      .status(201)
+      .json(new apiResponse(201, newStaff, "Staff created successfully by principal"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+//  get the performance of the staff by id
+export const getStaffPerformanceById = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ID existence and string type
+    if (!id || typeof id !== "string") {
+      throw new apiError(400, "Staff ID is required and must be a string");
+    }
+
+    // Validate if the provided ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid staff ID format");
+    }
+
+    // Find the staff by ID
+    const staff = await Staff.findById(id);
+
+    if (!staff) {
+      throw new apiError(404, "Staff not found");
+    }
+
+    // Assuming performance data is stored in the staff document
+    const performanceData = staff.performance; // Adjust based on your schema
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, performanceData, "Staff performance fetched successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+// update the cemergency contact of the staff by principal
+export const updateStaffEmergencyContactByPrincipal = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { emergencyContact } = req.body;
+
+    // Validate ID existence and string type
+    if (!id || typeof id !== "string") {
+      throw new apiError(400, "Staff ID is required and must be a string");
+    }
+
+    // Validate if the provided ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid staff ID format");
+    }
+
+    // Find the staff by ID
+    const staff = await Staff.findById(id);
+
+    if (!staff) {
+      throw new apiError(404, "Staff not found");
+    }
+
+    // Update the emergency contact if provided
+    if (emergencyContact) staff.emergencyContact = emergencyContact;
+
+    // Save the updated staff member
+    await staff.save();
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, staff, "Staff emergency contact updated successfully by principal"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+// action on staff by principal (activate/deactivate)
+export const actionOnStaffByPrincipal = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { action } = req.body;
+
+    // Validate ID existence and string type
+    if (!id || typeof id !== "string") {
+      throw new apiError(400, "Staff ID is required and must be a string");
+    }
+
+    // Validate if the provided ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid staff ID format");
+    }
+
+    // Find the staff by ID
+    const staff = await Staff.findById(id);
+
+    if (!staff) {
+      throw new apiError(404, "Staff not found");
+    }
+
+    // Perform the action based on the provided action type
+    if (action === "activate") {
+      staff.active = true;
+    } else if (action === "deactivate") {
+      staff.active = false;
+    } else {
+      throw new apiError(400, "Invalid action. Use 'activate' or 'deactivate'");
+    }
+
+    // Save the updated staff member
+    await staff.save();
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, staff, `Staff ${action}d successfully by principal`));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
