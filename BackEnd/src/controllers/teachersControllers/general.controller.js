@@ -308,3 +308,211 @@ export const getAllTeachersList = asyncHandler(async (req, res) => {
     throw new apiError(500, error.message);
   }
 });
+
+
+// update the status of the teacher by id
+export const updateTeacherStatusById = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid teacher ID");
+    }
+
+    if (!status || !["active", "inactive"].includes(status)) {
+      throw new apiError(400, "Invalid status value. Must be 'active' or 'inactive'");
+    }
+
+    const updatedTeacher = await Teacher.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    ).lean();
+
+    if (!updatedTeacher) {
+      throw new apiError(404, "Teacher not found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, updatedTeacher, "Teacher status updated successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+
+// add new one by principal
+export const addNewTeacherByPrincipal = asyncHandler(async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !password || !role) {
+      throw new apiError(400, "Name, email, password, and role are required");
+    }
+
+    // Check if teacher/user already exists
+    const existingTeacher = await Teacher.findOne({ email });
+    if (existingTeacher) {
+      throw new apiError(409, "Teacher with this email already exists");
+    }
+
+    // Create new teacher
+    const teacher = await Teacher.create({
+      name,
+      email: email.toLowerCase().trim(),
+      password, // Handled by pre-save hook in your schema if using bcrypt
+      role,
+      status: "approved", // Directly approve the teacher since it's added by principal
+    });
+
+    // Fetch created record excluding sensitive data like password
+    const createdTeacher = await Teacher.findById(teacher._id).select(
+      "-password"
+    );
+
+    if (!createdTeacher) {
+      throw new apiError(500, "Something went wrong while registering the teacher");
+    }
+
+    return res
+      .status(201)
+      .json(
+        new apiResponse(201, createdTeacher, "Teacher registered successfully by principal")
+      );
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+// update yhe. teacher by principal
+export const updateTeacherByPrincipal = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, role, emergencyContact } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid teacher ID");
+    }
+
+    // Validate required fields
+    if (!name || !email || !role) {
+      throw new apiError(400, "Name, email, and role are required");
+    }
+
+    // Check if the email is already taken by another teacher
+    const existingTeacher = await Teacher.findOne({ email, _id: { $ne: id } });
+    if (existingTeacher) {
+      throw new apiError(409, "Another teacher with this email already exists");
+    }
+
+    // Update the teacher's details
+    const updatedTeacher = await Teacher.findByIdAndUpdate(
+      id,
+      { name, email: email.toLowerCase().trim(), role, emergencyContact },
+      { new: true }
+    ).lean();
+
+    if (!updatedTeacher) {
+      throw new apiError(404, "Teacher not found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, updatedTeacher, "Teacher updated successfully by principal"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+// updae the emergency contact of the teacher by principal
+export const updateEmergencyContactByPrincipal = asyncHandler(async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const { emergencyContact } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+      throw new apiError(400, "Invalid teacher ID");
+    }
+
+    if (!emergencyContact) {
+      throw new apiError(400, "Emergency contact is required");
+    }
+
+    const teacher = await Teacher.findById(teacherId);
+
+    if (!teacher) {
+      throw new apiError(404, "Teacher not found");
+    }
+
+    teacher.emergencyContact = emergencyContact;
+    await teacher.save();
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, teacher, "Emergency contact updated successfully by principal"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+// action on teacher by principal
+export const takeActionOnTeacherByPrincipal = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { action } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid teacher ID");
+    }
+
+    if (!action || !["approve", "reject"].includes(action)) {
+      throw new apiError(400, "Invalid action. Must be 'approve' or 'reject'");
+    }
+
+    const teacher = await Teacher.findById(id);
+    
+    if (!teacher) {
+      throw new apiError(404, "Teacher not found");
+    }
+
+    // Update the teacher's status based on the action
+    teacher.status = action === "approve" ? "approved" : "rejected";
+    await teacher.save();
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, teacher, `Teacher request ${action}d successfully by principal`));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+
+// get teacher performance by id
+export const getTeacherPerformanceById = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new apiError(400, "Invalid teacher ID");
+    }
+
+    const teacher = await Teacher.findById(id).lean();
+
+    if (!teacher) {
+      throw new apiError(404, "Teacher not found");
+    }
+
+    // Assuming you have a method to calculate performance metrics
+    const performanceMetrics = await calculateTeacherPerformanceMetrics(id);
+
+    return res
+      .status(200)
+      .json(new apiResponse(200, performanceMetrics, "Teacher performance fetched successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
