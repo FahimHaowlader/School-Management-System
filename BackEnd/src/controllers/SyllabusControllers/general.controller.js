@@ -72,3 +72,105 @@ export const getSyllabusByClassAndYear = asyncHandler(async (req, res, ) => {
 });
 
 
+// update syllabus for a specific class and subject
+export const updateSyllabus = asyncHandler(async (req, res) => {
+  const { classId, subjectId, syllabusContent } = req.body;
+
+  if (!classId || !subjectId || !syllabusContent) {
+    return next(new apiError(400, "classId, subjectId, and syllabusContent are required"));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(classId) || !mongoose.Types.ObjectId.isValid(subjectId)) {
+    return next(new apiError(400, "Invalid classId or subjectId"));
+  }
+
+  const syllabus = await Syllabus.findOne({ classId, subjectId });
+
+  if (!syllabus) {
+    return next(new apiError(404, "Syllabus not found for the specified class and subject"));
+  }
+
+  syllabus.syllabusContent = syllabusContent;
+  await syllabus.save();
+
+  res.status(200).json(new apiResponse(200, "Syllabus updated successfully", syllabus));
+});
+
+// add new syllabus for a specific class and subject
+export const addSyllabus = asyncHandler(async (req, res) => {
+  const { classId, subjectId, syllabusContent } = req.body;
+
+  if (!classId || !subjectId || !syllabusContent) {
+    return next(new apiError(400, "classId, subjectId, and syllabusContent are required"));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(classId) || !mongoose.Types.ObjectId.isValid(subjectId)) {
+    return next(new apiError(400, "Invalid classId or subjectId"));
+  }
+
+  const existingSyllabus = await Syllabus.findOne({ classId, subjectId });
+
+  if (existingSyllabus) {
+    return next(new apiError(409, "Syllabus already exists for the specified class and subject"));
+  }
+
+  const newSyllabus = new Syllabus({
+    classId,
+    subjectId,
+    syllabusContent,
+  });
+
+  await newSyllabus.save();
+
+  res.status(201).json(new apiResponse(201, "Syllabus added successfully", newSyllabus));
+});
+
+// delete syllabus for a specific class and subject
+export const deleteSyllabus = asyncHandler(async (req, res) => {
+  const { classId, subjectId } = req.body;
+
+  if (!classId || !subjectId) {
+    return next(new apiError(400, "classId and subjectId are required"));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(classId) || !mongoose.Types.ObjectId.isValid(subjectId)) {
+    return next(new apiError(400, "Invalid classId or subjectId"));
+  }
+
+  const syllabus = await Syllabus.findOne({ classId, subjectId });
+
+  if (!syllabus) {
+    return next(new apiError(404, "Syllabus not found for the specified class and subject"));
+  }
+
+  await syllabus.remove();
+
+  res.status(200).json(new apiResponse(200, "Syllabus deleted successfully", syllabus));
+});
+
+
+// replace the pdf file of a syllabus for a specific class and subject
+export const replaceSyllabusPdf = asyncHandler(async (req, res) => {
+  const { classId, subjectId } = req.body;
+  const pdfFile = req.file; // Assuming you're using multer for file uploads
+
+  if (!classId || !subjectId || !pdfFile) {
+    return next(new apiError(400, "classId, subjectId, and pdfFile are required"));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(classId) || !mongoose.Types.ObjectId.isValid(subjectId)) {
+    return next(new apiError(400, "Invalid classId or subjectId"));
+  }
+
+  const syllabus = await Syllabus.findOne({ classId, subjectId });
+
+  if (!syllabus) {
+    return next(new apiError(404, "Syllabus not found for the specified class and subject"));
+  }
+
+  // Assuming you have a field in your Syllabus model to store the PDF file path
+  syllabus.pdfFile = pdfFile.path; // Update the path to the new PDF file
+  await syllabus.save();
+
+  res.status(200).json(new apiResponse(200, "Syllabus PDF replaced successfully", syllabus));
+});
