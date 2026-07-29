@@ -79,3 +79,32 @@ export const getRoutinesByYear = asyncHandler(async (req, res) => {
     throw new apiError(500, error.message || "Internal Server Error");
   }
 }); 
+
+
+// serach free techer for specific time slot
+export const searchFreeTeachersByTimeSlot = asyncHandler(async (req, res) => {
+  try {
+    const { timeSlotId } = req.query;
+
+    if (!timeSlotId) {
+      throw new apiError(400, "timeSlotId query parameter is required");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(timeSlotId)) {
+      throw new apiError(400, "Invalid timeSlotId");
+    }
+
+    // Find all routines that have the specified time slot
+    const routinesWithTimeSlot = await Routine.find({ timeSlotId }).select("teacherId");
+
+    // Extract teacher IDs from the routines
+    const busyTeacherIds = routinesWithTimeSlot.map(routine => routine.teacherId.toString());
+
+    // Find teachers who are not in the busyTeacherIds list
+    const freeTeachers = await Teacher.find({ _id: { $nin: busyTeacherIds } });
+
+    return res.status(200).json(new apiResponse(200, freeTeachers, "Free teachers fetched successfully for the specified time slot"));
+  } catch (error) {
+    throw new apiError(500, error.message || "Internal Server Error");
+  }
+});
