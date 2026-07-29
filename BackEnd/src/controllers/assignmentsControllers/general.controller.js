@@ -259,3 +259,124 @@ export const updateAssignmentResultById = asyncHandler(async (req, res) => {
     throw new apiError(500, error.message);
   }
 });
+
+
+// update assingment basic details by principal
+export const updateAssignmentDetailsById = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, dueDate } = req.body;
+
+    if (!id) {
+      throw new apiError(400, "Assignment ID is required");
+    }
+
+    // Find the assignment by ID
+    const assignment = await Assignment.findById(id);
+
+    if (!assignment) {
+      throw new apiError(404, "Assignment not found");
+    }
+
+    // Update the assignment details if provided
+    if (title) assignment.title = title;
+    if (description) assignment.description = description;
+    if (dueDate) assignment.dueDate = dueDate;
+
+    await assignment.save();
+
+    return res.status(200).json(new apiResponse(200, assignment, "Assignment details updated successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+
+// gading the assignment by principal
+export const gradeAssignmentById = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { studentId, grade } = req.body;
+
+    if (!id || !studentId || grade === undefined) {
+      throw new apiError(400, "Assignment ID, student ID, and grade are required");
+    }
+
+    // Find the assignment by ID
+    const assignment = await Assignment.findById(id);
+
+    if (!assignment) {
+      throw new apiError(404, "Assignment not found");
+    }
+
+    // Check if the student already has a grade for this assignment
+    const existingGradeIndex = assignment.grades.findIndex(
+      (g) => g.studentId.toString() === studentId
+    );
+
+    if (existingGradeIndex !== -1) {
+      // Update the existing grade
+      assignment.grades[existingGradeIndex].grade = grade;
+    } else {
+      // Add a new grade entry
+      assignment.grades.push({ studentId, grade });
+    }
+
+    await assignment.save();
+
+    return res.status(200).json(new apiResponse(200, assignment, "Assignment graded successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+// delete assignment by id
+export const deleteAssignmentById = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      throw new apiError(400, "Assignment ID is required");
+    }
+
+    // Find the assignment by ID
+    const assignment = await Assignment.findById(id);
+
+    if (!assignment) {
+      throw new apiError(404, "Assignment not found");
+    }
+
+    await assignment.remove();
+
+    return res.status(200).json(new apiResponse(200, null, "Assignment deleted successfully"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
+// add a new assignment for a specific class
+export const addAssignmentForClass = asyncHandler(async (req, res) => {
+  try {
+    const { classId, title, description, dueDate } = req.body;
+
+    if (!classId || !title || !description || !dueDate) {
+      throw new apiError(400, "classId, title, description, and dueDate are required");
+    }
+
+    // Create a new assignment document for the specific class
+    const newAssignment = new Assignment({
+      classId,
+      title,
+      description,
+      dueDate,
+      createdBy: req.user._id, // Assuming req.user contains the authenticated user's info
+    });
+
+    await newAssignment.save();
+
+    return res.status(201).json(new apiResponse(201, newAssignment, "Assignment added successfully for the class"));
+  } catch (error) {
+    throw new apiError(500, error.message);
+  }
+});
+
